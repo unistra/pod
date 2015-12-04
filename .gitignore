@@ -7,6 +7,7 @@
 *.o
 *.so
 *.pyc
+*.egg-info
 
 # Packages #
 ############
@@ -42,7 +43,7 @@ Thumbs.db
 #################
 *settings.py
 *urls-lille1.py
-*wsgi.py
+#*wsgi.py
 import_data/
 media/
 *pods/fixtures/
@@ -56,6 +57,7 @@ jwplayer/
 pod_project/pods/viewsv1.py
 *.bak
 .coverage
+.tox
 
 
 # IDE Files #
