@@ -74,11 +74,11 @@ def dev():
         'web': ['192.168.1.2'],
         'lb': ['192.168.1.2'],
     }
-    env.backends = env.roledefs['web']
+    env.backends = ['127.0.0.1']
     env.server_name = 'podcast-dev.u-strasbg.fr'
     env.short_server_name = 'podcast-dev'
-    env.static_folder = '/site_media/'
-    env.server_ip = '192.168.1.2'
+    env.static_folder = '/static/'
+    env.server_ip = ''
     env.no_shared_sessions = False
     env.server_ssl_on = False
     env.goal = 'dev'
@@ -97,7 +97,7 @@ def test():
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-test1.u-strasbg.fr'
     env.short_server_name = 'podcast-test1'
-    env.static_folder = '/site_media/'
+    env.static_folder = '/static/'
     env.server_ip = ''
     env.no_shared_sessions = False
     env.server_ssl_on = True
