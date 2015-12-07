@@ -58,6 +58,7 @@ pod_project/pods/viewsv1.py
 *.bak
 .coverage
 .tox
+assets/
 
 
 # IDE Files #

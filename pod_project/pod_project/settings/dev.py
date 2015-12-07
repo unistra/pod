@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from os import environ
-from os.path import join, normpath
+from os.path import join, normpath, dirname, abspath, basename
 from .base import *
+
+######################
+# Path configuration #
+######################
+
+DJANGO_ROOT = dirname(dirname(abspath(__file__)))
+SITE_ROOT = dirname(DJANGO_ROOT)
+SITE_NAME = basename(DJANGO_ROOT)
 
 #######################
 # Debug configuration #
@@ -43,7 +51,7 @@ CAS_SERVER_URL = environ.get('CAS_SERVER_URL')
 
 USE_LDAP_TO_POPULATE_USER = True
 AUTH_LDAP_SERVER_URI = environ.get('AUTH_LDAP_SERVER_URI')
-AUTH_LDAP_BIND_DN = environ.get('AUTH_LDAP_BIND_DN') 
+AUTH_LDAP_BIND_DN = environ.get('AUTH_LDAP_BIND_DN')
 AUTH_LDAP_BIND_PASSWORD = environ.get('AUTH_LDAP_BIND_PASSWORD')
 AUTH_LDAP_SCOPE = 'ONELEVEL'
 
@@ -154,3 +162,29 @@ LOGGING = {
         }
     }
 }
+
+##############################
+# Static files configuration #
+##############################
+
+# Absolute path to the directory static files should be collected to.
+# Don't put anything in this directory yourself; store your static files
+# in apps' "static/" subdirectories and in STATICFILES_DIRS.
+# Example: "/var/www/example.com/static/"
+STATIC_ROOT = normpath(join(SITE_ROOT, 'assets'))
+
+# URL prefix for static files.
+# Example: "http://example.com/static/", "http://static.example.com/"
+STATIC_URL = '/site_media/'
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+    normpath(join("core", 'static')),
+)
+
+# List of finder classes that know how to find static files in
+# various locations.
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
