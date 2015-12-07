@@ -23,6 +23,7 @@ env.remote_virtualenv_dir = join(env.remote_virtualenv_root,
                                  env.application_name)  # venv for webapp dir
 # git repository url
 env.remote_repo_url = '../.' # Relative git local folder because github doesn't support git archive
+env.remote_repo_specific_folder = 'pod_project' # specify a subfolder for the remote repository
 env.local_tmp_dir = '/tmp'  # tmp dir
 env.remote_static_root = '/var/www/static/'  # root of static files
 env.locale = 'fr_FR.UTF-8'  # locale to use on remote
@@ -80,7 +81,7 @@ def dev():
     env.server_ip = '192.168.1.2'
     env.no_shared_sessions = False
     env.server_ssl_on = False
-    env.goal = 'test'
+    env.goal = 'dev'
     env.socket_port = '8000'
     env.socket_host = '127.0.0.1'
     env.map_settings = {}
