@@ -197,3 +197,10 @@ LOGGING = {
 
 STATIC_ROOT = normpath(join(SITE_ROOT, 'assets'))
 STATIC_URL = '/static/'
+
+##############################
+# Media files configuration #
+##############################
+
+MEDIA_ROOT = "os.path.join('/srv/pod', 'media')"
+MEDIA_URL = '/media/'
