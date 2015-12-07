@@ -10,6 +10,9 @@ ADMINS = (
     ('morgan.bohn', 'morgan.bohn@unistra.fr'),
 )
 
+DEBUG = False
+TEMPLATE_DEBUG = False
+
 ##############
 # Secret key #
 ##############
@@ -42,12 +45,12 @@ TEMPLATE_LOADERS = (
 # Database configuration #
 ##########################
 
-DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'                                                                                                             
-DATABASES['default']['PORT'] = '5432'                                                                                                             
-DATABASES['default']['HOST'] = '{{ default_db_host }}'                                                                                                             
-DATABASES['default']['USER'] = '{{ default_db_user }}'                                                                                                               
-DATABASES['default']['PASSWORD'] = '{{ default_db_password }}'                                                                                                       
-DATABASES['default']['NAME'] = '{{ default_db_name }}' 
+DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+DATABASES['default']['PORT'] = '5432'
+DATABASES['default']['HOST'] = '{{ default_db_host }}'
+DATABASES['default']['USER'] = '{{ default_db_user }}'
+DATABASES['default']['PASSWORD'] = '{{ default_db_password }}'
+DATABASES['default']['NAME'] = '{{ default_db_name }}'
 
 
 #######################

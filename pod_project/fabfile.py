@@ -14,7 +14,7 @@ env.remote_owner = 'django'  # remote server user
 env.remote_group = 'di'  # remote server group
 
 env.application_name = 'pod'   # name of webapp
-env.root_package_name = 'pod'  # name of app in webapp
+env.root_package_name = 'pod_project'  # name of app in webapp
 
 env.remote_home = '/home/django'  # remote home root
 env.remote_python_version = '2.7'  # python version
@@ -22,7 +22,7 @@ env.remote_virtualenv_root = join(env.remote_home, '.virtualenvs')  # venv root
 env.remote_virtualenv_dir = join(env.remote_virtualenv_root,
                                  env.application_name)  # venv for webapp dir
 # git repository url
-env.remote_repo_url = 'https://github.com/unistra/pod.git'
+env.remote_repo_url = '../.' # Relative git local folder because github doesn't support git archive
 env.local_tmp_dir = '/tmp'  # tmp dir
 env.remote_static_root = '/var/www/static/'  # root of static files
 env.locale = 'fr_FR.UTF-8'  # locale to use on remote
@@ -37,12 +37,12 @@ env.verbose_output = False # True for verbose output
 # env.dest_path = '' # if not set using env_local_tmp_dir
 # env.excluded_files = ['pron.jpg'] # file(s) that rsync should exclude when deploying app
 # env.extra_ppa_to_install = ['ppa:vincent-c/ponysay'] # extra ppa source(s) to use
-env.extra_pkg_to_install = ['libmysqlclient-dev','graphviz','libgraphviz-dev', 'pkg-config', 'libldap2-dev', 'libsasl2-dev',
+env.extra_pkg_to_install = ['g++', 'libmysqlclient-dev','graphviz','libgraphviz-dev', 'pkg-config', 'libldap2-dev', 'libsasl2-dev',
         'libssl-dev', 'libjpeg-dev', 'python-imaging', 'libfreetype6-dev', 'python-chardet', 'python-fpconst', 'python-apt', 'python-debian',
         'python-debianbts', 'python-reportbug', ' python-soappy'] # extra debian/ubuntu package(s) to install on remote
 # env.cfg_shared_files = ['config','/app/path/to/config/config_file'] # config files to be placed in shared config dir
 # env.extra_symlink_dirs = ['mydir','/app/mydir'] # dirs to be symlinked in shared directory
-# env.verbose = True # verbose display for pydiploy default value = True
+env.verbose = True # verbose display for pydiploy default value = True
 # env.req_pydiploy_version = "0.9" # required pydiploy version for this fabfile
 # env.no_config_test = False # avoid config checker if True
 # env.maintenance_text = "" # add a customize maintenance text for maintenance page
@@ -65,6 +65,26 @@ env.chaussette_backend = 'waitress' # name of chaussette backend to use. You nee
 # env.nginx_start_confirmation = True # if True when nginx is not started
 # needs confirmation to start it.
 
+@task
+def dev():
+    """Define test stage"""
+    env.user = 'vagrant'
+    env.roledefs = {
+        'web': ['192.168.1.2'],
+        'lb': ['192.168.1.2'],
+    }
+    env.backends = env.roledefs['web']
+    env.server_name = 'podcast-dev.u-strasbg.fr'
+    env.short_server_name = 'podcast-dev'
+    env.static_folder = '/site_media/'
+    env.server_ip = '192.168.1.2'
+    env.no_shared_sessions = False
+    env.server_ssl_on = False
+    env.goal = 'test'
+    env.socket_port = '8000'
+    env.socket_host = '127.0.0.1'
+    env.map_settings = {}
+    execute(build_env)
 
 @task
 def test():

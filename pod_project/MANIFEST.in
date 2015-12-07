@@ -1,2 +1,3 @@
 include requirements.txt
+include manage.py
 recursive-include requirements *.txt
