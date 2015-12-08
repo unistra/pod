@@ -98,8 +98,8 @@ FMS_ROOT_URL = ''
 # Video #
 #########
 
-FFMPEG = '/usr/bin/ffmpeg'
-FFPROBE = '/usr/bin/ffprobe'
+FFMPEG = '/usr/local/ffmpeg/ffmpeg'
+FFPROBE = '/usr/local/ffmpeg/ffprobe'
 
 ########
 # Misc #
