@@ -202,5 +202,5 @@ STATIC_URL = '/static/'
 # Media files configuration #
 ##############################
 
-MEDIA_ROOT = "os.path.join('/srv/pod', 'media')"
+MEDIA_ROOT = "/srv/media/pod"
 MEDIA_URL = '/media/'
