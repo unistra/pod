@@ -49,7 +49,7 @@ media/
 *pods/fixtures/
 pod_project/urls.py
 ## Lang files
-locale/
+#locale/
 *.mo
 ## Others
 jwplayer/
