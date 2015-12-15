@@ -57,10 +57,39 @@ Installation
 
 * Préparer une machine virtuelle Ubuntu 14.04
 * Pour test, preprod et prod, créer une base de données postgresql vide. On utilise sqlite en dev.
-* Installer manuellement Elasticsearch 1.X
-* Installer manuellement ffmpeg
+* Installer manuellement Elasticsearch 1.6:
+
+  * apt-get install openjdk-7-jre-headless
+  * wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+  * echo "deb http://packages.elastic.co/elasticsearch/1.6/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-1.6.list
+  * sudo apt-get update && sudo apt-get install elasticsearch
+  * sudo update-rc.d elasticsearch defaults 95 10
+
+* Configurer elasticsearch dans /etc/elasticsearch/elasticsearch.yml : ::
+
+        #POD
+        cluster.name: pod
+        node.name: Pod1
+        network.host: 127.0.0.1
+        discovery.zen.ping.multicast.enabled: false
+        discovery.zen.ping.unicast.hosts: ["127.0.0.1"]
+
+* Installer manuellement ffmpeg:
+
+  * cd /usr/local/
+  * wget http://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz
+  * tar -Jxvf ffmpeg-release-64bit-static.tar.xz
+  * rm ffmpeg-release-64bit-static.tar.xz
+  * mv ffmpeg-X.X.X-64bit-static ffmpeg
+  * ln -s /usr/local/ffmpeg/ffmpeg ffmpeg
+  * ln -s /usr/local/ffmpeg/ffmpeg-10bit ffmpeg-10bit
+  * ln -s /usr/local/ffmpeg/ffprobe ffprobe
+  * ln -s /usr/local/ffmpeg/ffserver ffserver
+  * ln -s /usr/local/ffmpeg/qt-faststart qt-faststart
+
+* Créer le répertoire des médias : mkdir -p /srv/media/pod && chown -R django:di /srv/media
 * Préparer l'environnement python via pydiploy : **fab prod pre_install**
-* Déployer le code de la branche **unistra** via pydiploy: **fab tag:unistra deploy --set default_db_host=X,default_db_user=X,default_db_password=X,default_db_name=X,cas_server_url=X,auth_ldap_server_uri=X,auth_ldap_bind_dn=X,auth_ldap_bind_password=X,auth_ldap_base_dn=X**
+* Déployer le code de la branche **unistra** via pydiploy: **fab tag:unistra prod deploy --set default_db_host=X,default_db_user=X,default_db_password=X,default_db_name=X,cas_server_url=X,auth_ldap_server_uri=X,auth_ldap_bind_dn=X,auth_ldap_bind_password=X,auth_ldap_base_dn=X**
 * Finir la configuration via pydiploy: **fab prod post_install**
 
 Il reste encore du paramétrage manuel à faire. A voir pour l'automatiser plus tard.

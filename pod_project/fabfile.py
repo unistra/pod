@@ -92,19 +92,20 @@ def dev():
 @task
 def test():
     """Define test stage"""
+    env.user = 'root'
     env.roledefs = {
-        'web': ['podcast-test1.u-strasbg.fr'],
-        'lb': ['podcast-test1.u-strasbg.fr'],
+        'web': ['podcast-test.u-strasbg.fr'],
+        'lb': ['podcast-test.u-strasbg.fr'],
     }
     env.backends = ['127.0.0.1']
-    env.server_name = 'podcast-test1.u-strasbg.fr'
-    env.short_server_name = 'podcast-test1'
+    env.server_name = 'podcast-test.u-strasbg.fr'
+    env.short_server_name = 'podcast-test'
     env.static_folder = '/static/'
     env.server_ip = ''
     env.no_shared_sessions = False
     env.server_ssl_on = True
-    env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr-cert.pem'
-    env.path_to_cert_key = '/etc/ssl/private/wildcard.u-strasbg.fr-key.pem'
+    env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
+    env.path_to_cert_key = '/etc/ssl/private/wildcard.u-strasbg.fr.key'
     env.goal = 'test'
     env.socket_port = '8000'
     env.socket_host = '127.0.0.1'
