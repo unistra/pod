@@ -47,6 +47,7 @@ EMAIL_SUBJECT_PREFIX = "pod"
 # Authentication #
 ##################
 
+USE_CAS = True
 CAS_SERVER_URL = environ.get('CAS_SERVER_URL')
 
 USE_LDAP_TO_POPULATE_USER = True
