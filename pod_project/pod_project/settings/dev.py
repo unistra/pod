@@ -62,7 +62,7 @@ AUTH_LDAP_UID_TEST = ""
 AUTH_USER_ATTR_MAP = {
     'first_name': 'givenName',
     'last_name': 'sn',
-    'email': 'mailLocalAddress',
+    'email': 'mail',
     'affiliation': 'eduPersonPrimaryAffiliation'
 }
 AFFILIATION_STAFF = ('employee', 'faculty')
