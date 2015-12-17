@@ -84,7 +84,8 @@ AUTH_LDAP_BIND_DN = '{{ auth_ldap_bind_dn }}'
 AUTH_LDAP_BIND_PASSWORD = '{{ auth_ldap_bind_password }}'
 AUTH_LDAP_SCOPE = 'ONELEVEL'
 
-AUTH_LDAP_USER_SEARCH = ('{{ auth_ldap_base_dn }}', "(uid=%(uid)s)")
+AUTH_LDAP_BASE_DN = '{{ auth_ldap_base_dn }}'
+AUTH_LDAP_USER_SEARCH = (AUTH_LDAP_BASE_DN, "(uid=%(uid)s)")
 AUTH_LDAP_UID_TEST = ""
 
 AUTH_USER_ATTR_MAP = {
