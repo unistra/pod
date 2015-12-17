@@ -65,7 +65,7 @@ AUTH_USER_ATTR_MAP = {
     'email': 'mail',
     'affiliation': 'eduPersonPrimaryAffiliation'
 }
-AFFILIATION_STAFF = ('employee', 'faculty')
+AFFILIATION_STAFF = ('employee', 'faculty', 'researcher')
 
 ############
 # Template #
