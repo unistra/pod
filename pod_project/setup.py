@@ -25,7 +25,7 @@ recursive_requirements('requirements.txt', libraries, dependency_links)
 
 setup(
     name='pod',
-    version='1.3.6',
+    version='1.4.1',
     packages=find_packages(),
     install_requires=libraries,
     dependency_links=dependency_links,
