@@ -80,11 +80,11 @@ Installation
   * tar -Jxvf ffmpeg-release-64bit-static.tar.xz
   * rm ffmpeg-release-64bit-static.tar.xz
   * mv ffmpeg-X.X.X-64bit-static ffmpeg
-  * ln -s /usr/local/ffmpeg/ffmpeg ffmpeg
-  * ln -s /usr/local/ffmpeg/ffmpeg-10bit ffmpeg-10bit
-  * ln -s /usr/local/ffmpeg/ffprobe ffprobe
-  * ln -s /usr/local/ffmpeg/ffserver ffserver
-  * ln -s /usr/local/ffmpeg/qt-faststart qt-faststart
+  * ln -s /usr/local/ffmpeg/ffmpeg /usr/local/bin/ffmpeg
+  * ln -s /usr/local/ffmpeg/ffmpeg-10bit /usr/local/bin/ffmpeg-10bit
+  * ln -s /usr/local/ffmpeg/ffprobe /usr/local/bin/ffprobe
+  * ln -s /usr/local/ffmpeg/ffserver /usr/local/bin/ffserver
+  * ln -s /usr/local/ffmpeg/qt-faststart /usr/local/bin/qt-faststart
 
 * Créer le répertoire des médias : mkdir -p /srv/media/pod && chown -R django:di /srv/media
 * Préparer l'environnement python via pydiploy : **fab prod pre_install**
