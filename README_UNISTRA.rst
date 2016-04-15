@@ -45,12 +45,11 @@ sera assez simple de merger les commits du dépôt source depuis la branche mast
 
 Dans le cas d'un pull request d'une fonctionnalité, il faudra:
 
-* Effectuer les modifications du code dans la branche unistra. Le commit devra être propre, ne concerner qu'une seule fonctionnalité,
+* Effectuer les modifications du code dans la branche unistra en ajoutant des tests unitaires. Le commit devra être propre, ne concerner qu'une seule fonctionnalité,
   et fonctionner sur le dépôt distant
-* Ajouter des tests unitaires
-* Forker la branche master vers une branche spécifique
-* Utiliser git cherry pick pour n'appliquer que le commit de la fonctionnalité
-* Faire le pull request
+* Synchroniser master avec le master distant, forker la branch master dans une branche qui respecte la convention de nommage du dépôt d'origine (ex: dotmobo/bugfix-correct_unit_tests)
+* Utiliser git cherry pick pour n'appliquer que le commit de la fonctionnalité dans cette branche
+* Faire le pull request de cette branche
 
 Installation
 ------------
