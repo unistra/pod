@@ -60,7 +60,7 @@ Installation
 
   * apt-get install openjdk-7-jre-headless
   * wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-  * echo "deb http://packages.elastic.co/elasticsearch/1.6/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-1.6.list
+  * echo "deb https://packages.elastic.co/elasticsearch/2.x/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-2.x.list
   * sudo apt-get update && sudo apt-get install elasticsearch
   * sudo update-rc.d elasticsearch defaults 95 10
 
@@ -97,7 +97,13 @@ On peut utiliser pour l'instant pydiploy via **fab prod custom_manage_cmd:ma_com
 * **python manage.py makemigrations** && **python manage.py migrate**
 * **python manage.py loaddata core/fixtures/initial_data.json**
 * **python manage.py createsuperuser --username root**
+
+Concernant elasticsearch:
+
+* dans l'interfaçe d'admin de pod, il faut modifier l'url qui est dans Sites
+* si l'index pod existe déjà : **curl -XDELETE 'http://localhost:9200/pod/'**
 * **python manage.py create_pod_index**
+* si des vidéos sont déjà présentes : **python manage.py index_videos __ALL__**
 
 TODO
 ----
