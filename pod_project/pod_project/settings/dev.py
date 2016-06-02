@@ -95,6 +95,8 @@ WEBTV = '<a href="http://webtv.univ.fr" id="webtv" class="btn btn-info btn-sm">'
 
 FMS_LIVE_URL = ''
 FMS_ROOT_URL = ''
+# import socket
+# FMS_ROOT_URL = "http://" + socket.gethostname() + '.u-strasbg.fr:8001'
 
 #########
 # Video #
