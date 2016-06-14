@@ -180,3 +180,10 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = "/srv/media/pod"
 MEDIA_URL = '/media/'
+
+########################
+# Disable webm and wav #
+########################
+
+ENCODE_WEBM = False
+ENCODE_WAV = False
