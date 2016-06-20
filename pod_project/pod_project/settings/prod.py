@@ -130,6 +130,26 @@ FMS_ROOT_URL = ''
 
 FFMPEG = '/usr/local/ffmpeg/ffmpeg'
 FFPROBE = '/usr/local/ffmpeg/ffprobe'
+VIDEO_EXT_ACCEPT = (
+    '.3gp',
+    '.avi',
+    '.divx',
+    '.flv',
+    '.m2p',
+    '.m4v',
+    '.mkv',
+    '.mov',
+    '.mp4',
+    '.mpeg',
+    '.mpg',
+    '.mts',
+    '.wmv',
+    '.mp3',
+    '.ogg',
+    '.wav',
+    '.wma',
+    '.webm'
+)
 
 ########
 # Misc #
