@@ -64,7 +64,10 @@ env.chaussette_backend = 'waitress' # name of chaussette backend to use. You nee
 env.media_folder = '/media' # path of media folder
 env.remote_media_folder = '/srv/media/pod' # root of media files
 
-env.nginx_location_extra_directives = ['client_max_body_size 3G'] # add directive(s) to nginx config file in location part
+env.nginx_location_extra_directives = [
+    'client_max_body_size 3G', 'proxy_connect_timeout 600',
+    'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
+] # add directive(s) to nginx config file in location part
 # env.nginx_start_confirmation = True # if True when nginx is not started
 # needs confirmation to start it.
 
