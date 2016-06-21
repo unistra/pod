@@ -33,6 +33,7 @@ Les fichiers et dossiers spécifiques liés à cette version sont les suivants:
 * Le fichier **tox.ini** qui permet d'exécuter les tests unitaires sous différents environnements
 * Le fichier **pod_project/pod_project/wsgi.py** qui est un template pour pydiploy permettant l'utilisation d'un serveur wsgi
 * Le dossier **pod_project/pod_project/settings**, qui contient l'ensemble des fichiers de configuration pour les différents environnements:
+* Le dossier **pod_project/elasticsearch**, qui contient la configuration d'elasticsearch pour tox  
 
   * **base.py**: Contient les paramètres communs. C'est une copie exacte du fichier **settings-sample.py**
   * **dev.py**: Contient la configuration de l'environnement de développement
@@ -104,6 +105,12 @@ Concernant elasticsearch:
 * si l'index pod existe déjà : **curl -XDELETE 'http://localhost:9200/pod/'**
 * **python manage.py create_pod_index**
 * si des vidéos sont déjà présentes : **python manage.py index_videos __ALL__**
+
+Pour lancer les tests unitaires :
+
+* Il faut installer **docker** au préalable pour utiliser un elasticsearch dans
+  les tests
+* Puis, exécuter la commande **tox**
 
 TODO
 ----

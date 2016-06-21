@@ -55,3 +55,10 @@ FFPROBE = 'nice -19 /usr/local/ffmpeg/ffprobe'
 ########
 
 REPORT_VIDEO_MAIL_TO = ['']
+
+######
+# ES #
+######
+
+ES_URL = ['http://127.0.0.1:9211/']
+
