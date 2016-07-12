@@ -127,6 +127,40 @@ def test():
     execute(build_env)
 
 
+@task
+def preprod():
+    """Define preprod stage"""
+    env.user = 'root'
+    env.roledefs = {
+        'web': ['podcast-pprd.u-strasbg.fr'],
+        'lb': ['podcast-pprd.u-strasbg.fr'],
+    }
+    env.backends = ['127.0.0.1']
+    env.server_name = 'podcast-pprd.u-strasbg.fr'
+    env.short_server_name = 'podcast-pprd'
+    env.static_folder = '/static/'
+    env.server_ip = ''
+    env.no_shared_sessions = False
+    env.server_ssl_on = True
+    env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
+    env.path_to_cert_key = '/etc/ssl/private/wildcard.u-strasbg.fr.key'
+    env.goal = 'preprod'
+    env.socket_port = '8000'
+    env.socket_host = '127.0.0.1'
+    env.map_settings = {
+        'secret_key': "SECRET_KEY",
+        'default_db_host': "DATABASES['default']['HOST']",
+        'default_db_user': "DATABASES['default']['USER']",
+        'default_db_password': "DATABASES['default']['PASSWORD']",
+        'default_db_name': "DATABASES['default']['NAME']",
+        'cas_server_url': "CAS_SERVER_URL",
+        'auth_ldap_server_uri': "AUTH_LDAP_SERVER_URI",
+        'auth_ldap_bind_dn': "AUTH_LDAP_BIND_DN",
+        'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
+        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN"
+    }
+    execute(build_env)
+
 
 
 
