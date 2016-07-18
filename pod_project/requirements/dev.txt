@@ -2,4 +2,4 @@
 coverage==3.7.1
 tox
 chaussette
-waitress
+gevent

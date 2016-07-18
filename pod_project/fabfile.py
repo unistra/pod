@@ -59,7 +59,7 @@ env.verbose = True # verbose display for pydiploy default value = True
 # env.no_circus_web = True
 # env.circus_backend = 'gevent' # name of circus backend to use
 
-env.chaussette_backend = 'waitress' # name of chaussette backend to use. You need to add this backend in the app requirement file.
+env.chaussette_backend = 'gevent' # name of chaussette backend to use. You need to add this backend in the app requirement file.
 
 env.media_folder = '/media' # path of media folder
 env.remote_media_folder = '/srv/media/pod' # root of media files
