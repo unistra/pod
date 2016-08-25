@@ -55,7 +55,7 @@ FFPROBE = 'nice -19 /usr/local/ffmpeg/ffprobe'
 ########
 
 REPORT_VIDEO_MAIL_TO = ['']
-MAX_UPLOAD_FILE_SIZE = "3 Go"
+MAX_UPLOAD_FILE_SIZE = "4 Go"
 FILE_UPLOAD_TEMP_DIR = '/tmp'
 
 ######
