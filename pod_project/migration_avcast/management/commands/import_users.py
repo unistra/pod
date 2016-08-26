@@ -50,7 +50,7 @@ class Command(BaseCommand):
                         profile, created = UserProfile.objects.get_or_create(
                             user=user)
                         profile.auth_type = "loc." if row['type'] == "local" else "cas"
-                        profile.description = "establishment=%s,etp=%s,institute=%s" % \
+                        profile.description = "establishment=%s;etp=%s;institute=%s" % \
                             (row['establishment'] if row['establishment'] else '',
                              row['etp'] if row['etp'] else '',
                              row["institute"] if row['institute'] else '')
