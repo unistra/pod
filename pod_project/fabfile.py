@@ -122,7 +122,8 @@ def test():
         'auth_ldap_server_uri': "AUTH_LDAP_SERVER_URI",
         'auth_ldap_bind_dn': "AUTH_LDAP_BIND_DN",
         'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
-        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN"
+        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN",
+        'avcast_db_uri': "AVCAST_DB_URI"
     }
     execute(build_env)
 
@@ -157,7 +158,8 @@ def preprod():
         'auth_ldap_server_uri': "AUTH_LDAP_SERVER_URI",
         'auth_ldap_bind_dn': "AUTH_LDAP_BIND_DN",
         'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
-        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN"
+        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN",
+        'avcast_db_uri': "AVCAST_DB_URI"
     }
     execute(build_env)
 
