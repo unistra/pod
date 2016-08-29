@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Import all avcast's buildings and amphis in pod
+Import all avcast's disciplines in pod
 """
 
 from django.core.management.base import BaseCommand, CommandError

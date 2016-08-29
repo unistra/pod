@@ -250,18 +250,19 @@ ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
 
 INSTALLED_APPS += ('migration_avcast',)
 AVCAST_DB_URI = '{{ avcast_db_uri }}'
+AVCAST_COURSE_DEFAULT_USERNAME = "morgan.bohn"
 
 #######################
 # Custom cursus codes #
 #######################
 
 CURSUS_CODES = (
-    ("O0", "Autres"),
-    ("C0", "Conférence"),
-    ("31", "Licence 1ère année"),
-    ("32", "Licence 2ème année"),
-    ("33", "Licence 3ème année"),
-    ("51", "Master 1ère année"),
-    ("52", "Master 2ème année"),
-    ("6X", "Doctorat")
+    ("A", "Autres"),
+    ("C", "Conférence"),
+    ("1", "Licence 1ère année"),
+    ("2", "Licence 2ème année"),
+    ("3", "Licence 3ème année"),
+    ("4", "Master 1ère année"),
+    ("5", "Master 2ème année"),
+    ("6", "Doctorat")
 )
