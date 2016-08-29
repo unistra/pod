@@ -19,6 +19,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('begin', nargs='?', type=int)
         parser.add_argument('end', nargs='?', type=int)
+        parser.add_argument('--update_sequence', dest='update_sequence', action='store_true')
+        parser.add_argument('--no-update_sequence', dest='update_sequence', action='store_false')
+        parser.set_defaults(update_sequence=False)
 
     def pod_add_author(self, pod, row):
         """ Method to add an author in the contributors list """
@@ -113,7 +116,7 @@ class Command(BaseCommand):
                             pod.date_evt = row['recorddate']
 
                             # TODO formation
-                            
+
                             # TODO adddocname => il faut créer un document avec chemin du cours + adddocname dans path
 
                             # TODO créer encodage (mediatype ?)
@@ -129,7 +132,7 @@ class Command(BaseCommand):
                             self.pod_add_tags(conn, pod, row)
 
                 # Alter pod id sequence for postgresql
-                if last_courseid:
+                if last_courseid and options["update_sequence"]:
                     self.pod_alter_pod_sequence(conn, last_courseid)
 
 
