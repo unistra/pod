@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import psycopg2
 import psycopg2.extras
-from pods.models import Pod, Type, ContributorPods
+from pods.models import Pod, Type, ContributorPods, Discipline
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 
@@ -19,8 +19,10 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('begin', nargs='?', type=int)
         parser.add_argument('end', nargs='?', type=int)
-        parser.add_argument('--update_sequence', dest='update_sequence', action='store_true')
-        parser.add_argument('--no-update_sequence', dest='update_sequence', action='store_false')
+        parser.add_argument('--update_sequence',
+            dest='update_sequence', action='store_true')
+        parser.add_argument('--no-update_sequence',
+            dest='update_sequence', action='store_false')
         parser.set_defaults(update_sequence=False)
 
     def pod_add_author(self, pod, row):
@@ -34,6 +36,7 @@ class Command(BaseCommand):
                 ]),
                 role="author"
             )
+        return pod
 
     def pod_add_tags(self, conn, pod, row):
         """ Method to add tags to pod """
@@ -50,6 +53,7 @@ class Command(BaseCommand):
             for row_tag in curs_tags.fetchall():
                 if row_tag['tag']:
                     pod.tags.add(row_tag['tag'])
+        return pod
 
     def pod_alter_pod_sequence(self, conn, last_courseid):
         """ Method to alter pod sequence for postgresql """
@@ -60,6 +64,44 @@ class Command(BaseCommand):
                 curs_podid.execute("SELECT setval('pods_pod_id_seq', %s)" % last_courseid)
             except Exception:
                 self.stdout.write("Warning : cannot change pod id sequence (maybe you don't use postgresql ...)")
+
+    def pod_add_discipline_and_cursus(self, conn, pod, row):
+        """ Method to add discipline and cursus to pod """
+        with conn.cursor(
+            cursor_factory=psycopg2.extras.RealDictCursor
+        ) as curs_form:
+            curs_form.execute(
+                ("SELECT c.courseid, c.formation, d.codecomp, d.namecomp, l.code, l.name "
+                 "FROM course c "
+                 "LEFT JOIN discipline d "
+                 "ON c.formation like '%' || d.codecomp || '-%' "
+                 "LEFT JOIN level l "
+                 "ON c.formation like '%-' || l.code || '%' "
+                 "WHERE c.courseid = " + str(row['courseid']))
+            )
+            row_formation = curs_form.fetchone()
+            if row_formation:
+                try:
+                    # Discipline
+                    discipline = Discipline.objects.get(
+                        slug=slugify(row_formation['namecomp'])
+                    )
+                    pod.discipline = [discipline]
+                    # Cursus
+                    for cursus in settings.CURSUS_CODES:
+                        if cursus[1] == row_formation['name']:
+                            pod.cursus = cursus[0]
+                            break
+                    if not pod.cursus:
+                        # it shouldn't happen. Set CURSUS_CODES first
+                        raise CommandError("Cursus of course %s not found" % row['courseid'])
+                except:
+                    # it shouldn't happen. Import discipline first
+                    raise CommandError("Discipline of course %s not found" % row['courseid'])
+            else:
+                # it shouldn't happen
+                raise CommandError("Formation of course %s not found" % row['courseid'])
+        return pod
 
     def handle(self, *args, **options):
         self.stdout.write("Import all courses, tags, types ...")
@@ -96,7 +138,8 @@ class Command(BaseCommand):
                             raise CommandError("User %s not found" % owner)
                         else:
                             # Get or create type
-                            pod_type, pod_type_created = Type.objects.get_or_create(slug=slugify(row['type']), title_fr=row['type'], title_en=row['type'])
+                            pod_type, pod_type_created = Type.objects.get_or_create(
+                                slug=slugify(row['type']), title_fr=row['type'], title_en=row['type'])
                             # Create pod
                             pod, pod_created = Pod.objects.get_or_create(
                                 id=row['courseid'],
@@ -105,6 +148,9 @@ class Command(BaseCommand):
                                 type=pod_type,
                                 title=row['title']
                             )
+                            # set the last course id for sequence
+                            last_courseid = pod.id
+                            # modify data
                             pod.date_added = row['date']
                             pod.description = row['description'] if row['description'] else ''
                             pod.duration = row['duration']
@@ -114,8 +160,11 @@ class Command(BaseCommand):
                             pod.allow_downloading = row['download']
                             pod.is_restricted = row['restrictionuds']
                             pod.date_evt = row['recorddate']
-
-                            # TODO formation
+                            # formation
+                            pod = self.pod_add_discipline_and_cursus(conn, pod, row)
+                            # Add author and tags
+                            pod = self.pod_add_author(pod, row)
+                            pod = self.pod_add_tags(conn, pod, row)
 
                             # TODO adddocname => il faut créer un document avec chemin du cours + adddocname dans path
 
@@ -125,11 +174,6 @@ class Command(BaseCommand):
 
                             # Save all modification
                             pod.save()
-                            # set the last course id for sequence
-                            last_courseid = pod.id
-                            # Add author and tags
-                            self.pod_add_author(pod, row)
-                            self.pod_add_tags(conn, pod, row)
 
                 # Alter pod id sequence for postgresql
                 if last_courseid and options["update_sequence"]:
