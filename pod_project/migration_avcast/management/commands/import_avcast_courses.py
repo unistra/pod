@@ -20,8 +20,8 @@ class Command(BaseCommand):
     help = "Import all avcast's courses, tags, types in pod"
 
     def add_arguments(self, parser):
-        parser.add_argument('begin', nargs='?', type=int)
-        parser.add_argument('end', nargs='?', type=int)
+        parser.add_argument('begin', nargs='?', type=int, default=1)
+        parser.add_argument('end', nargs='?', type=int, default=2147483647)
         parser.add_argument('--update_sequence',
             dest='update_sequence', action='store_true')
         parser.add_argument('--no-update_sequence',
@@ -227,8 +227,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("Import all courses, tags, types ...")
-        begin = options['begin'] if 'begin' in options and options['begin'] else 1
-        end = options['end'] if 'end' in options and options['end'] else 2147483647
+        begin = options['begin']
+        end = options['end']
         conn = None
         last_courseid=None
         try:
