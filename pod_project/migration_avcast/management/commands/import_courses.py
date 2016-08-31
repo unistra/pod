@@ -8,10 +8,12 @@ from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import psycopg2
 import psycopg2.extras
-from pods.models import Pod, Type, ContributorPods, Discipline, EncodingPods
+from pods.models import Pod, Type, ContributorPods, Discipline, EncodingPods, DocPods
 from core.models import EncodingType, get_storage_path
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
+from filer.models.filemodels import File
+from filer.models.foldermodels import Folder
 
 
 class Command(BaseCommand):
@@ -188,6 +190,41 @@ class Command(BaseCommand):
 
         return pod
 
+    def pod_create_and_get_filer(self, pod, owner):
+        """ create and get filer """
+        # FILER !
+        # créer le dossier du user dans django filer
+        filerfolderuser, filerfolderuser_created = Folder.objects.get_or_create(
+            name=owner.username,
+            owner=owner
+        )
+        # dossier du cours
+        filerfoldercourse, filerfoldercourse_created = Folder.objects.get_or_create(
+            name="%04d-%s" % (pod.id, slugify(pod.title)),
+            owner=owner,
+            parent=filerfolderuser
+        )
+        return filerfoldercourse
+
+    def pod_create_add_doc(self, pod, owner, course_folder, mediatype, adddocname):
+        """ create add doc """
+        is_adddoc_present = 64 & mediatype > 0
+
+        if is_adddoc_present and adddocname:
+            dpfile, dpfile_created = File.objects.get_or_create(
+                original_filename=adddocname,
+                owner=owner,
+                folder=course_folder,
+                file=get_storage_path(
+                    pod, "%s/%s/%s" % (pod.id, "additional_docs", adddocname))
+            )
+            docpods, docpods_created = DocPods.objects.get_or_create(
+                video=pod,
+                document=dpfile
+            )
+
+        return pod
+
     def handle(self, *args, **options):
         self.stdout.write("Import all courses, tags, types ...")
         begin = options['begin'] if 'begin' in options and options['begin'] else 1
@@ -258,11 +295,13 @@ class Command(BaseCommand):
                             pod = self.pod_add_encodingpods(
                                 pod, row['type'], mediatype)
 
+                            # base filer folder
+                            course_folder = self.pod_create_and_get_filer(pod, owner)
 
-                            # TODO adddocname => il faut créer un document avec chemin du cours + adddocname dans path
-                            is_addoc_present = 64 & mediatype > 0
+                            # add document
+                            pod = self.pod_create_add_doc(pod, owner, course_folder, mediatype, row['adddocname'])
 
-                            # TODO piste sous titres ? Avcast utilise le format TTML, pod le format WEBVTT
+                            # TODO piste sous titres ? Avcast utilise le format TTML, pod le format WEBVTT cheminducours/additional_docs/ 44_captions.xml
                             is_subtitles_present = 512 & mediatype > 0
 
                             # Save all modification
@@ -273,7 +312,7 @@ class Command(BaseCommand):
                     self.pod_alter_pod_sequence(conn, last_courseid)
 
 
-                # TODO export CSV (id avcast, mediatype avcast, id pod, login owner)
+                # TODO export CSV (id avcast, mediatype avcast, id pod, login owner) => peut-être par nécessaire, requêter pod devrait suffire
 
         except psycopg2.DatabaseError as e:
             raise CommandError("Cannot access to the database ")
