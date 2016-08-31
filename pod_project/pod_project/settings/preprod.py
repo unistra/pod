@@ -251,6 +251,7 @@ ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
 INSTALLED_APPS += ('migration_avcast',)
 AVCAST_DB_URI = '{{ avcast_db_uri }}'
 AVCAST_COURSE_DEFAULT_USERNAME = "morgan.bohn"
+AVCAST_VOLUME_PATH = "/audiovideocours/cours/1"
 
 #######################
 # Custom cursus codes #

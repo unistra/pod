@@ -226,6 +226,12 @@ class Command(BaseCommand):
         return pod
 
     def handle(self, *args, **options):
+        # Check settings
+        if not hasattr(settings, 'AVCAST_DB_URI') or not settings.AVCAST_DB_URI:
+            raise CommandError("AVCAST_DB_URI must be setted")
+        if not hasattr(settings, 'AVCAST_COURSE_DEFAULT_USERNAME') or not settings.AVCAST_COURSE_DEFAULT_USERNAME:
+            raise CommandError("AVCAST_COURSE_DEFAULT_USERNAME must be setted")
+        # Run import
         self.stdout.write("Import all courses, tags, types ...")
         begin = options['begin']
         end = options['end']

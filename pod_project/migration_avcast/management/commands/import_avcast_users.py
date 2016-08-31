@@ -16,6 +16,9 @@ class Command(BaseCommand):
     help = "Import all avcast's users in pod"
 
     def handle(self, *args, **options):
+        # Check settings
+        if not hasattr(settings, 'AVCAST_DB_URI') or not settings.AVCAST_DB_URI:
+            raise CommandError("AVCAST_DB_URI must be setted")
         self.stdout.write("Import all users ...")
         conn = None
         try:

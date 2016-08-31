@@ -225,6 +225,7 @@ ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
 INSTALLED_APPS += ('migration_avcast',)
 AVCAST_DB_URI = environ.get("AVCAST_DB_URI", "host=localhost port=5432 dbname=univrav user=sqluser password=S3CR3T")
 AVCAST_COURSE_DEFAULT_USERNAME = "morgan.bohn"
+AVCAST_VOLUME_PATH = "/audiovideocours/cours/1"
 
 #######################
 # Custom cursus codes #
