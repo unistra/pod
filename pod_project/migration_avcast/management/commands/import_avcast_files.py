@@ -8,6 +8,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from pods.models import Pod
 import os
+import shutil
+import filecmp
 
 
 class Command(BaseCommand):
@@ -33,7 +35,7 @@ class Command(BaseCommand):
         # Check settings
         if not hasattr(settings, 'AVCAST_VOLUME_PATH') or not settings.AVCAST_VOLUME_PATH:
             raise CommandError("AVCAST_VOLUME_PATH must be setted")
-        if not hasattr(settings, 'AVCAST_FAKE_FILES_COPY') or not settings.AVCAST_FAKE_FILES_COPY:
+        if not hasattr(settings, 'AVCAST_FAKE_FILES_COPY'):
             raise CommandError("AVCAST_FAKE_FILES_COPY must be setted")
 
         try:
@@ -61,16 +63,19 @@ class Command(BaseCommand):
                         continue
                     else:
                         if settings.AVCAST_FAKE_FILES_COPY:
-                            self.stdout.write("Fake : Copy %s to %s".format(origin, destination))
+                            self.stdout.write("Fake : Copy %s to %s" % (origin, destination))
                         else:
-                            # TODO create destination folder
-                            # TODO copy the file
-                            pass
+                            # create destination folder
+                            if not os.path.exists(os.path.dirname(destination)):
+                                os.makedirs(os.path.dirname(destination))
+                            # copy the file if he doesn't exist or if he's different
+                            if not os.path.isfile(destination) or not filecmp.cmp(origin, destination):
+                                self.stdout.write("Copy %s to %s" % (origin, destination))
+                                shutil.copy2(origin, destination)
 
             # TODO mv files from DocPods
-            # TODO mv files from TrackPods ???
 
-        except:
-            raise CommandError("An error occurs")
+        except Exception as e:
+            raise CommandError("An error occurs", e)
         finally:
             self.stdout.write("Done !")

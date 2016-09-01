@@ -158,7 +158,7 @@ class Command(BaseCommand):
                 file_path = get_storage_path(
                     pod, "%s/additional_video/addvideo_%s.mp4" % (pod.id, pod.id))
                 ep, ep_created = EncodingPods.objects.get_or_create(
-                    video=pod,
+                    video=pod, # TODO peut-être à modifier pour éviter les pbs de réencodage
                     encodingType=EncodingType.objects.get(name="720"),
                     encodingFile=file_path,
                     encodingFormat="video/mp4"
@@ -317,8 +317,6 @@ class Command(BaseCommand):
                 if last_courseid and options["update_sequence"]:
                     self.pod_alter_pod_sequence(conn, last_courseid)
 
-
-                # TODO export CSV (id avcast, mediatype avcast, id pod, login owner) => peut-être par nécessaire, requêter pod devrait suffire
 
         except psycopg2.DatabaseError as e:
             raise CommandError("Cannot access to the database ")
