@@ -35,31 +35,41 @@ class Command(BaseCommand):
                 pod.id, settings.AVCAST_VOLUME_PATH)
             origin = os.path.join(mediafolder, filename)
             destination = encodingpod.encodingFile.path
-            self.stdout.write("Check : From %s to %s" % (origin, destination))
+            self.stdout.write("---- Check encoding pod : From %s to %s" % (origin, destination))
+            self.pod_copy_file(origin, destination)
 
+    def pod_processing_docpods(self, pod):
+        for docpod in pod.docpods_set.all():
+            filename = os.path.basename(docpod.document.file.name)
+            mediafolder = self.avcast_get_media_folder(
+                pod.id, settings.AVCAST_VOLUME_PATH)
+            origin = os.path.join(mediafolder, "additional_docs", filename)
+            destination = docpod.document.file.path
+            self.stdout.write("---- Check doc pod : From %s to %s" % (origin, destination))
+            self.pod_copy_file(origin, destination)
+
+    def pod_copy_file(self, origin, destination):
             # on affiche un warning si le fichier origin n'existe pas et on continue la boucle
             if not os.path.isfile(origin):
-                self.stdout.write("Warning : The file %s doesn't exist !" % origin)
-                continue
+                self.stdout.write("------ Warning : The file %s doesn't exist !" % origin)
             else:
                 # create destination folder
                 pod_folder = os.path.dirname(destination)
                 if not os.path.exists(pod_folder):
                     if settings.AVCAST_FAKE_FILES_COPY:
-                        self.stdout.write("Fake : Create folder %s" % pod_folder)
+                        self.stdout.write("------ Fake : Create folder %s" % pod_folder)
                     else:
-                        self.stdout.write("Create folder %s" % pod_folder)
+                        self.stdout.write("------ Create folder %s" % pod_folder)
                         os.makedirs(pod_folder)
                 # copy the file if he doesn't exist or if he's different
                 if not os.path.isfile(destination) or not filecmp.cmp(origin, destination):
                     if settings.AVCAST_FAKE_FILES_COPY:
-                        self.stdout.write("Fake : Copy %s to %s" % (origin, destination))
+                        self.stdout.write("------ Fake : Copy %s to %s" % (origin, destination))
                     else:
-                        self.stdout.write("Copy %s to %s" % (origin, destination))
+                        self.stdout.write("------ Copy %s to %s" % (origin, destination))
                         shutil.copy2(origin, destination)
 
     def handle(self, *args, **options):
-        # TODO work in progress
         begin = options['begin']
         end = options['end']
         # Check settings
@@ -76,12 +86,10 @@ class Command(BaseCommand):
                 id__gte=begin,
                 id__lte=end)
 
-            # TODO mv files from EncodingPods
             for pod in list_pods:
-                self.stdout.write("Processing %s" % pod)
+                self.stdout.write("-- Processing %s" % pod)
                 self.pod_processing_encodingpods(pod)
-                # TODO mv files from DocPods
-
+                self.pod_processing_docpods(pod)
 
         except Exception as e:
             raise CommandError("An error occurs", e)
