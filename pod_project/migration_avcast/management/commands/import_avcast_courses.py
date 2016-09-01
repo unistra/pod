@@ -175,16 +175,16 @@ class Command(BaseCommand):
                 )
                 pod.video = file_path
             # mp3 if nothing (MUV or CV or CSC)
-            elif is_mp3_present:
-                file_path = get_storage_path(
-                    pod, "%s/%s.mp3" % (pod.id, pod.id))
-                ep, ep_created = EncodingPods.objects.get_or_create(
-                    video=pod,
-                    encodingType=EncodingType.objects.get(name="audio"),
-                    encodingFile=file_path,
-                    encodingFormat="audio/mp3"
-                )
-                pod.video = file_path
+#            elif is_mp3_present:
+#                file_path = get_storage_path(
+#                    pod, "%s/%s.mp3" % (pod.id, pod.id))
+#                ep, ep_created = EncodingPods.objects.get_or_create(
+#                    video=pod,
+#                    encodingType=EncodingType.objects.get(name="audio"),
+#                    encodingFile=file_path,
+#                    encodingFormat="audio/mp3"
+#                )
+#                pod.video = file_path
             else:
                 raise CommandError("No media for %s" % pod.id)
 
@@ -307,8 +307,8 @@ class Command(BaseCommand):
                             # add document
                             pod = self.pod_create_add_doc(pod, owner, course_folder, mediatype, row['adddocname'])
 
-                            # TODO piste sous titres ? Avcast utilise le format TTML, pod le format WEBVTT cheminducours/additional_docs/ 44_captions.xml
-                            is_subtitles_present = 512 & mediatype > 0
+                            # On ignore les sous-titres. Avcast utilise le format TTML et SRT, pod le format WEBVTT cheminducours/additional_docs/ 44_captions.xml
+                            # is_subtitles_present = 512 & mediatype > 0
 
                             # Save all modification
                             pod.save()

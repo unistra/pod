@@ -30,9 +30,11 @@ class Command(BaseCommand):
         # TODO work in progress
         begin = options['begin']
         end = options['end']
-
+        # Check settings
         if not hasattr(settings, 'AVCAST_VOLUME_PATH') or not settings.AVCAST_VOLUME_PATH:
             raise CommandError("AVCAST_VOLUME_PATH must be setted")
+        if not hasattr(settings, 'AVCAST_FAKE_FILES_COPY') or not settings.AVCAST_FAKE_FILES_COPY:
+            raise CommandError("AVCAST_FAKE_FILES_COPY must be setted")
 
         try:
             self.stdout.write("Import all files ...")
@@ -52,6 +54,18 @@ class Command(BaseCommand):
                     origin = os.path.join(mediafolder, filename)
                     destination = encodingpod.encodingFile.path
                     self.stdout.write("From %s to %s" % (origin, destination))
+
+                    # on affiche un warning si le fichier origin n'existe pas et on continue la boucle
+                    if not os.path.isfile(origin):
+                        self.stdout.write("Warning ! The file %s doesn't exist !" % origin)
+                        continue
+                    else:
+                        if settings.AVCAST_FAKE_FILES_COPY:
+                            self.stdout.write("Fake : Copy %s to %s".format(origin, destination))
+                        else:
+                            # TODO create destination folder
+                            # TODO copy the file
+                            pass
 
             # TODO mv files from DocPods
             # TODO mv files from TrackPods ???
