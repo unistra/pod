@@ -59,6 +59,7 @@ class Command(BaseCommand):
                              row["institute"] if row['institute'] else '')
                         profile.affiliation = row['profile'] if row['profile'] else "member"
                         profile.save()
+                        self.stdout.write(self.style.SQL_FIELD('User "%s" saved !' % user.username))
         except psycopg2.DatabaseError:
             raise CommandError("Cannot access to the database ")
         finally:

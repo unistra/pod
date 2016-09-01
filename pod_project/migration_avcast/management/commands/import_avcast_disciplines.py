@@ -43,6 +43,7 @@ class Command(BaseCommand):
                             row['namedom']
                         )
                         discipline.save()
+                        self.stdout.write(self.style.SQL_FIELD('Discipline "%s" saved !' % discipline.title.decode('utf-8')))
         except psycopg2.DatabaseError as e:
             raise e
             raise CommandError("Cannot access to the database ")

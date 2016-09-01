@@ -49,6 +49,7 @@ class Command(BaseCommand):
                         recorder.gmapurl = row['gmapurl']
                         recorder.is_restricted = row['restrictionuds']
                         recorder.save()
+                        self.stdout.write(self.style.SQL_FIELD('Building "%s" and amphi "%s" saved !' % (building.name, recorder.name)))
 
         except psycopg2.DatabaseError as e:
             raise e

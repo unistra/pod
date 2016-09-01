@@ -51,23 +51,23 @@ class Command(BaseCommand):
     def pod_copy_file(self, origin, destination):
             # on affiche un warning si le fichier origin n'existe pas et on continue la boucle
             if not os.path.isfile(origin):
-                self.stdout.write("------ Warning : The file %s doesn't exist !" % origin)
+                self.stdout.write(self.style.WARNING("------ Warning : The file %s doesn't exist !" % origin))
             else:
                 # create destination folder
                 pod_folder = os.path.dirname(destination)
                 if not os.path.exists(pod_folder):
                     if settings.AVCAST_FAKE_FILES_COPY:
-                        self.stdout.write("------ Fake : Create folder %s" % pod_folder)
+                        self.stdout.write(self.style.SQL_FIELD("------ Fake : Folder %s created" % pod_folder))
                     else:
-                        self.stdout.write("------ Create folder %s" % pod_folder)
                         os.makedirs(pod_folder)
+                        self.stdout.write(self.style.SQL_FIELD("------ Folder %s created" % pod_folder))
                 # copy the file if he doesn't exist or if he's different
                 if not os.path.isfile(destination) or not filecmp.cmp(origin, destination):
                     if settings.AVCAST_FAKE_FILES_COPY:
-                        self.stdout.write("------ Fake : Copy %s to %s" % (origin, destination))
+                        self.stdout.write(self.style.SQL_FIELD("------ Fake : File %s copied to %s" % (origin, destination)))
                     else:
-                        self.stdout.write("------ Copy %s to %s" % (origin, destination))
                         shutil.copy2(origin, destination)
+                        self.stdout.write(self.style.SQL_FIELD("------ File %s copied to %s" % (origin, destination)))
 
     def handle(self, *args, **options):
         begin = options['begin']

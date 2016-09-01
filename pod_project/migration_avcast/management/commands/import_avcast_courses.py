@@ -66,7 +66,7 @@ class Command(BaseCommand):
             try:
                 curs_podid.execute("SELECT setval('pods_pod_id_seq', %s)" % last_courseid)
             except Exception:
-                self.stdout.write("Warning : cannot change pod id sequence (maybe you don't use postgresql ...)")
+                self.stdout.write(self.style.WARNING("Warning : cannot change pod id sequence (maybe you don't use postgresql ...)"))
 
     def pod_add_discipline_and_cursus(self, conn, pod, row):
         """ Method to add discipline and cursus to pod """
@@ -312,6 +312,7 @@ class Command(BaseCommand):
 
                             # Save all modification
                             pod.save()
+                            self.stdout.write(self.style.SQL_FIELD('Pod "%s" saved !' % pod.title.decode('utf-8')))
 
                 # Alter pod id sequence for postgresql
                 if last_courseid and options["update_sequence"]:
