@@ -102,8 +102,8 @@ FMS_ROOT_URL = ''
 # Video #
 #########
 
-FFMPEG = 'nice -19 /usr/local/ffmpeg/ffmpeg'
-FFPROBE = 'nice -19 /usr/local/ffmpeg/ffprobe'
+FFMPEG = 'nice -19 ffmpeg'
+FFPROBE = 'nice -19 ffprobe'
 VIDEO_EXT_ACCEPT = (
     '.3gp',
     '.avi',
