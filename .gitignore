@@ -70,3 +70,5 @@ assets/
 *.crt
 *.key
 
+eg/docker/dev/data
+eg/docker/dev/log*
