@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 MAINTAINER mobo
 
 ENV DEBIAN_FRONTEND noninteractive
