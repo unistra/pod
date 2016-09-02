@@ -30,6 +30,9 @@ class Command(BaseCommand):
 
     def pod_add_author(self, pod, row):
         """ Method to add an author in the contributors list """
+        # clear contributors : uncomment if you need to delete all before
+        # pod.contributorpods_set.all().delete()
+        # add contributor
         if row['name'] or row['firstname']:
             ContributorPods.objects.get_or_create(
                 video=pod,
@@ -43,8 +46,9 @@ class Command(BaseCommand):
 
     def pod_add_tags(self, conn, pod, row):
         """ Method to add tags to pod """
-        # add tags
+        # clear tags
         pod.tags.clear()
+        # add tags
         with conn.cursor(
             cursor_factory=psycopg2.extras.RealDictCursor
         ) as curs_tags:
@@ -108,6 +112,9 @@ class Command(BaseCommand):
 
     def pod_add_encodingpods(self, pod, avc_type, mediatype):
         """ Add EncodingPods """
+        # clear encoding : uncomment if you need to delete all before
+        # pod.encodingpods_set.all().delete()
+        # add encoding
         is_videoslide_present = 32 & mediatype > 0
         is_mp3_present = 2 & mediatype > 0
         is_videomp4_present = 128 & mediatype > 0
@@ -158,7 +165,7 @@ class Command(BaseCommand):
                 file_path = get_storage_path(
                     pod, "%s/additional_video/addvideo_%s.mp4" % (pod.id, pod.id))
                 ep, ep_created = EncodingPods.objects.get_or_create(
-                    video=pod, # TODO peut-être à modifier pour éviter les pbs de réencodage
+                    video=pod, # le nom du fichier ne doit pas commencer par video_ ou audio_ (nomenclature encodage pod)
                     encodingType=EncodingType.objects.get(name="720"),
                     encodingFile=file_path,
                     encodingFormat="video/mp4"
@@ -174,17 +181,6 @@ class Command(BaseCommand):
                     encodingFormat="video/mp4"
                 )
                 pod.video = file_path
-            # mp3 if nothing (MUV or CV or CSC)
-#            elif is_mp3_present:
-#                file_path = get_storage_path(
-#                    pod, "%s/%s.mp3" % (pod.id, pod.id))
-#                ep, ep_created = EncodingPods.objects.get_or_create(
-#                    video=pod,
-#                    encodingType=EncodingType.objects.get(name="audio"),
-#                    encodingFile=file_path,
-#                    encodingFormat="audio/mp3"
-#                )
-#                pod.video = file_path
             else:
                 raise CommandError("No media for %s" % pod.id)
 
@@ -208,8 +204,10 @@ class Command(BaseCommand):
 
     def pod_create_add_doc(self, pod, owner, course_folder, mediatype, adddocname):
         """ create add doc """
+        # clear add doc : uncomment if you need to delete all before
+        # pod.docpods_set.all().delete()
+        # add doc pods
         is_adddoc_present = 64 & mediatype > 0
-
         if is_adddoc_present and adddocname:
             dpfile, dpfile_created = File.objects.get_or_create(
                 original_filename=adddocname,
