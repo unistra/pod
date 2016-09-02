@@ -3,6 +3,7 @@
 from os import environ
 from os.path import join, normpath, dirname, abspath, basename
 from .base import *
+from distutils.util import strtobool
 
 ######################
 # Path configuration #
@@ -226,7 +227,7 @@ INSTALLED_APPS += ('migration_avcast',)
 AVCAST_DB_URI = environ.get("AVCAST_DB_URI", "host=localhost port=5432 dbname=univrav user=sqluser password=S3CR3T")
 AVCAST_COURSE_DEFAULT_USERNAME = environ.get("AVCAST_COURSE_DEFAULT_USERNAME", "morgan.bohn")
 AVCAST_VOLUME_PATH = environ.get("AVCAST_VOLUME_PATH", "/audiovideocours/cours/1")
-AVCAST_FAKE_FILES_COPY = environ.get("AVCAST_FAKE_FILES_COPY", True)
+AVCAST_FAKE_FILES_COPY = strtobool(environ.get("AVCAST_FAKE_FILES_COPY", "True"))
 
 #######################
 # Custom cursus codes #
