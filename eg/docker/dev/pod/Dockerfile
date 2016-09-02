@@ -24,10 +24,14 @@ RUN ln -s /usr/local/ffmpeg/ffserver /usr/local/bin/ffserver
 RUN ln -s /usr/local/ffmpeg/qt-faststart /usr/local/bin/qt-faststart
 
 # Install python packages
+RUN  mkdir -p /usr/local/src
 WORKDIR /usr/local/src
-ADD requirements.txt /usr/local/src
+ADD requirements.txt /usr/local/src/requirements.txt
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Add code folder
+# # Add code folder
+# ADD code /code
 WORKDIR /code
+# RUN pip install --upgrade pip
+# RUN pip install -r requirements/dev.txt
