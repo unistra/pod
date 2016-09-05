@@ -2,7 +2,9 @@ version: '2'
 services:
     elasticsearch:
         build: elasticsearch
-        ports: [ 9200, 9300 ]
+        ports:
+            - 9200:9200
+            - 9300:9300
         volumes:
             - ./data:/usr/share/elasticsearch/data
             - ./logs:/usr/share/elasticsearch/logs
@@ -21,7 +23,8 @@ services:
         volumes:
             - ./code:/code
             - ./pod:/srv/media/pod
-        ports: [ 8010 ]
+        ports:
+            - 8010:8010
         links: [ elasticsearch ]
         # networks: { localnet: { ipv4_address: 172.16.238.3 } }
 # networks:
