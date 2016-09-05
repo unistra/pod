@@ -64,10 +64,6 @@ env.chaussette_backend = 'gevent' # name of chaussette backend to use. You need 
 env.media_folder = '/media' # path of media folder
 env.remote_media_folder = '/srv/media/pod' # root of media files
 
-env.nginx_location_extra_directives = [
-    'client_max_body_size 4G', 'client_body_temp_path /tmp', 'proxy_connect_timeout 600',
-    'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
-] # add directive(s) to nginx config file in location part
 # env.nginx_start_confirmation = True # if True when nginx is not started
 # needs confirmation to start it.
 
@@ -86,6 +82,10 @@ def dev():
     env.server_ip = ''
     env.no_shared_sessions = False
     env.server_ssl_on = False
+    env.nginx_location_extra_directives = [
+        'client_max_body_size 4G', 'client_body_temp_path /tmp', 'proxy_connect_timeout 600',
+        'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
+    ]
     env.goal = 'dev'
     env.socket_port = '8000'
     env.socket_host = '127.0.0.1'
@@ -107,6 +107,10 @@ def test():
     env.server_ip = ''
     env.no_shared_sessions = False
     env.server_ssl_on = True
+    env.nginx_location_extra_directives = [
+        'client_max_body_size 4G', 'client_body_temp_path /tmp', 'proxy_connect_timeout 600',
+        'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
+    ]
     env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
     env.path_to_cert_key = '/etc/ssl/private/wildcard.u-strasbg.fr.key'
     env.goal = 'test'
@@ -132,8 +136,8 @@ def preprod():
     """Define preprod stage"""
     env.user = 'root'
     env.roledefs = {
-        'web': ['podcast-pprd.u-strasbg.fr'],
-        'lb': ['podcast-pprd.u-strasbg.fr'],
+        'web': ['podcast-w1-pprd.di.unistra.fr', 'podcast-w2-pprd.di.unistra.fr'],
+        'lb': ['podcast-w1-pprd.di.unistra.fr', 'podcast-w2-pprd.di.unistra.fr'],
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-pprd.u-strasbg.fr'
@@ -142,6 +146,10 @@ def preprod():
     env.server_ip = ''
     env.no_shared_sessions = False
     env.server_ssl_on = True
+    env.nginx_location_extra_directives = [
+        'client_max_body_size 4G', 'client_body_temp_path /nfs/tmp/nginx', 'proxy_connect_timeout 600',
+        'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
+    ]
     env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
     env.path_to_cert_key = '/etc/ssl/private/wildcard.u-strasbg.fr.key'
     env.goal = 'preprod'

@@ -157,7 +157,7 @@ VIDEO_EXT_ACCEPT = (
 
 REPORT_VIDEO_MAIL_TO = ['morgan.bohn@unistra.fr']
 MAX_UPLOAD_FILE_SIZE = "4 Go"
-FILE_UPLOAD_TEMP_DIR = '/tmp'
+FILE_UPLOAD_TEMP_DIR = '/nfs/tmp/django'
 
 ##########
 # Logger #
@@ -243,3 +243,10 @@ ENCODE_MP4_CMD = "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fm
 ENCODE_WEBM_CMD = "%(ffmpeg)s -i %(src)s -codec:v libvpx -quality realtime -cpu-used 3 -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -qmin 10 -qmax 42 -codec:a libvorbis -y %(out)s"
 ENCODE_MP3_CMD = "%(ffmpeg)s -i %(src)s -vn -ar %(ar)s -ab %(ab)s -f mp3 -y %(out)s"
 ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
+
+#################
+# Elasticsearch #
+#################
+
+#URL FOR ELASTICSEARCH ['host1', 'host2', ...]
+ES_URL = ['http://podcast-es-pprd.unistra.fr:9200/']
