@@ -5,7 +5,7 @@
 
 from fabric.api import (env, roles, execute, task)
 from os.path import join
-
+import fabtools
 import pydiploy
 
 # edit config here !
@@ -74,6 +74,7 @@ def dev():
     env.roledefs = {
         'web': ['192.168.1.2'],
         'lb': ['192.168.1.2'],
+        'encoding': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-dev.u-strasbg.fr'
@@ -99,6 +100,7 @@ def test():
     env.roledefs = {
         'web': ['podcast-test.u-strasbg.fr'],
         'lb': ['podcast-test.u-strasbg.fr'],
+        'encoding': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-test.u-strasbg.fr'
@@ -138,6 +140,7 @@ def preprod():
     env.roledefs = {
         'web': ['podcast-w1-pprd.di.unistra.fr', 'podcast-w2-pprd.di.unistra.fr'],
         'lb': ['podcast-w1-pprd.di.unistra.fr', 'podcast-w2-pprd.di.unistra.fr'],
+        'encoding': ['podcast-enc1-pprd.di.unistra.fr ', 'podcast-enc2-pprd.di.unistra.fr']
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-pprd.u-strasbg.fr'
@@ -191,6 +194,18 @@ def pre_install():
     """Pre install of backend & frontend"""
     execute(pre_install_backend)
     execute(pre_install_frontend)
+    execute(pre_install_encoding)
+
+
+@roles('encoding')
+@task
+def pre_install_encoding():
+    """ Setup encoding server """
+    execute(pydiploy.require.system.add_user, commands=None)
+    execute(pydiploy.require.system.set_locale)
+    execute(pydiploy.require.system.set_timezone)
+    execute(pydiploy.require.system.update_pkg_index)
+    fabtools.require.deb.packages(['ffmpeg'], update=False)
 
 
 @roles('web')
