@@ -71,4 +71,5 @@ assets/
 *.key
 
 eg/docker/dev/data
+eg/docker/dev/code
 eg/docker/dev/log*

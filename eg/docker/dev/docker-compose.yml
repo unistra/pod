@@ -6,10 +6,11 @@ services:
         volumes:
             - ./data:/usr/share/elasticsearch/data
             - ./logs:/usr/share/elasticsearch/logs
-        networks: { localnet: { ipv4_address: 172.16.238.2 } }
+        # networks: { localnet: { ipv4_address: 172.16.238.2 } }
     pod:
         build: ./pod
         environment:
+            ES_URL: http://elasticsearch:9200
             DJANGO_SETTINGS_MODULE: pod_project.settings.dev
             CAS_SERVER_URL: http://cas.unistra.fr/cas/
             AUTH_LDAP_SERVER_URI: ldap://ldapuds.u-strasbg.fr:389
@@ -20,11 +21,11 @@ services:
         volumes:
             - /home/mc/src/unistra/pod/pod_project:/code
             - ./pod:/srv/media/pod
-        #ports: [ '8010:8010' ]
+        ports: [ 8010 ]
         links: [ elasticsearch ]
-        networks: { localnet: { ipv4_address: 172.16.238.3 } }
-networks:
-    localnet:
-        driver: bridge
-        ipam:
-            config: [ { subnet: '172.16.238.0/24' } ]
+        # networks: { localnet: { ipv4_address: 172.16.238.3 } }
+# networks:
+#     localnet:
+#         driver: bridge
+#         ipam:
+#             config: [ { subnet: '172.16.238.0/24' } ]
