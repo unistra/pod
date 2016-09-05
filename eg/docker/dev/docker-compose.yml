@@ -19,7 +19,7 @@ services:
             AUTH_LDAP_BASE_DN: ou=uds,ou=people,o=annuaire
         command: python manage.py runserver 0.0.0.0:8010
         volumes:
-            - /home/mc/src/unistra/pod/pod_project:/code
+            - ./code:/code
             - ./pod:/srv/media/pod
         ports: [ 8010 ]
         links: [ elasticsearch ]
