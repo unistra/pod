@@ -226,7 +226,7 @@ STATIC_URL = '/static/'
 # Media files configuration #
 ##############################
 
-MEDIA_ROOT = "/srv/media/pod"
+MEDIA_ROOT = "/nfs/media/pod"
 MEDIA_URL = '/media/'
 
 ########################
