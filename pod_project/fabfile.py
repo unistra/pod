@@ -31,14 +31,14 @@ env.timezone = 'Europe/Paris'  # timezone for remote
 env.keep_releases = 2  # number of old releases to keep before cleaning
 env.extra_goals = ['preprod']  # add extra goal(s) to defaults (test,dev,prod)
 env.dipstrap_version = 'latest'
-env.verbose_output = False # True for verbose output
+env.verbose_output = True # True for verbose output
 
 # optional parameters
 
 # env.dest_path = '' # if not set using env_local_tmp_dir
 # env.excluded_files = ['pron.jpg'] # file(s) that rsync should exclude when deploying app
 # env.extra_ppa_to_install = ['ppa:vincent-c/ponysay'] # extra ppa source(s) to use
-env.extra_pkg_to_install = ['g++', 'libmysqlclient-dev','graphviz','libgraphviz-dev', 'pkg-config', 'libldap2-dev', 'libsasl2-dev',
+env.extra_pkg_to_install = ['gcc', 'g++', 'libmysqlclient-dev','graphviz','libgraphviz-dev', 'pkg-config', 'libldap2-dev', 'libsasl2-dev',
         'libssl-dev', 'libjpeg-dev', 'python-imaging', 'libfreetype6-dev', 'python-chardet', 'python-fpconst', 'python-apt', 'python-debian',
         'python-debianbts', 'python-reportbug', ' python-soappy','memcached', 'gettext'] # extra debian/ubuntu package(s) to install on remote
 # env.cfg_shared_files = ['config','/app/path/to/config/config_file'] # config files to be placed in shared config dir
@@ -149,13 +149,13 @@ def preprod():
     env.static_folder = '/static/'
     env.server_ip = ''
     env.no_shared_sessions = False
-    env.server_ssl_on = False
+    env.server_ssl_on = True
     env.nginx_location_extra_directives = [
         'client_max_body_size 4G', 'client_body_temp_path /nfs/tmp/nginx', 'proxy_connect_timeout 600',
         'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
     ]
-    # env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
-    # env.path_to_cert_key = '/etc/ssl/private/wildcard.u-strasbg.fr.key'
+    env.path_to_cert = '/local/ssl/unistra.fr.pem'
+    env.path_to_cert_key = '/local/ssl/unistra.fr.key'
     env.goal = 'preprod'
     env.socket_port = '8000'
     env.socket_host = '127.0.0.1'
