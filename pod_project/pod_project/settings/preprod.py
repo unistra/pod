@@ -252,3 +252,18 @@ ENCODE_WAV_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i %(src)s -ar %(ar)s 
 
 #URL FOR ELASTICSEARCH ['host1', 'host2', ...]
 ES_URL = ['http://podcast-es-pprd.unistra.fr:9200/']
+
+#######################
+# Custom cursus codes #
+#######################
+
+CURSUS_CODES = (
+    ("A", "Autres"),
+    ("C", "Conférence"),
+    ("1", "Licence 1ère année"),
+    ("2", "Licence 2ème année"),
+    ("3", "Licence 3ème année"),
+    ("4", "Master 1ère année"),
+    ("5", "Master 2ème année"),
+    ("6", "Doctorat")
+)
