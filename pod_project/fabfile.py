@@ -40,7 +40,7 @@ env.verbose_output = True # True for verbose output
 # env.extra_ppa_to_install = ['ppa:vincent-c/ponysay'] # extra ppa source(s) to use
 env.extra_pkg_to_install = ['gcc', 'g++', 'libmysqlclient-dev','graphviz','libgraphviz-dev', 'pkg-config', 'libldap2-dev', 'libsasl2-dev',
         'libssl-dev', 'libjpeg-dev', 'python-imaging', 'libfreetype6-dev', 'python-chardet', 'python-fpconst', 'python-apt', 'python-debian',
-        'python-debianbts', 'python-reportbug', ' python-soappy','memcached', 'gettext'] # extra debian/ubuntu package(s) to install on remote
+        'python-debianbts', 'python-reportbug', ' python-soappy','memcached', 'gettext', 'libldap2-dev', 'libsasl2-dev', 'libssl-dev', 'libpq-dev'] # extra debian/ubuntu package(s) to install on remote
 # env.cfg_shared_files = ['config','/app/path/to/config/config_file'] # config files to be placed in shared config dir
 # env.extra_symlink_dirs = ['mydir','/app/mydir'] # dirs to be symlinked in shared directory
 env.verbose = True # verbose display for pydiploy default value = True
