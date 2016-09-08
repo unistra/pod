@@ -35,7 +35,9 @@ SECRET_KEY = '{{ secret_key }}'
 ALLOWED_HOSTS = [
     '.u-strasbg.fr',
     '.unistra.fr',
-    '127.0.0.1'
+    '127.0.0.1',
+    '130.79.200.84',
+    '130.79.200.85'
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'ssl')
