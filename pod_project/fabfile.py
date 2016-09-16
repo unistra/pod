@@ -5,7 +5,7 @@
 
 from fabric.api import (env, roles, execute, task)
 from os.path import join
-
+import fabtools
 import pydiploy
 
 # edit config here !
@@ -31,16 +31,16 @@ env.timezone = 'Europe/Paris'  # timezone for remote
 env.keep_releases = 2  # number of old releases to keep before cleaning
 env.extra_goals = ['preprod']  # add extra goal(s) to defaults (test,dev,prod)
 env.dipstrap_version = 'latest'
-env.verbose_output = False # True for verbose output
+env.verbose_output = True # True for verbose output
 
 # optional parameters
 
 # env.dest_path = '' # if not set using env_local_tmp_dir
 # env.excluded_files = ['pron.jpg'] # file(s) that rsync should exclude when deploying app
 # env.extra_ppa_to_install = ['ppa:vincent-c/ponysay'] # extra ppa source(s) to use
-env.extra_pkg_to_install = ['g++', 'libmysqlclient-dev','graphviz','libgraphviz-dev', 'pkg-config', 'libldap2-dev', 'libsasl2-dev',
+env.extra_pkg_to_install = ['gcc', 'g++', 'libmysqlclient-dev','graphviz','libgraphviz-dev', 'pkg-config', 'libldap2-dev', 'libsasl2-dev',
         'libssl-dev', 'libjpeg-dev', 'python-imaging', 'libfreetype6-dev', 'python-chardet', 'python-fpconst', 'python-apt', 'python-debian',
-        'python-debianbts', 'python-reportbug', ' python-soappy','memcached', 'gettext'] # extra debian/ubuntu package(s) to install on remote
+        'python-debianbts', 'python-reportbug', ' python-soappy','memcached', 'gettext', 'libldap2-dev', 'libsasl2-dev', 'libssl-dev', 'libpq-dev'] # extra debian/ubuntu package(s) to install on remote
 # env.cfg_shared_files = ['config','/app/path/to/config/config_file'] # config files to be placed in shared config dir
 # env.extra_symlink_dirs = ['mydir','/app/mydir'] # dirs to be symlinked in shared directory
 env.verbose = True # verbose display for pydiploy default value = True
@@ -64,10 +64,6 @@ env.chaussette_backend = 'gevent' # name of chaussette backend to use. You need 
 env.media_folder = '/media' # path of media folder
 env.remote_media_folder = '/srv/media/pod' # root of media files
 
-env.nginx_location_extra_directives = [
-    'client_max_body_size 4G', 'client_body_temp_path /tmp', 'proxy_connect_timeout 600',
-    'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
-] # add directive(s) to nginx config file in location part
 # env.nginx_start_confirmation = True # if True when nginx is not started
 # needs confirmation to start it.
 
@@ -78,6 +74,7 @@ def dev():
     env.roledefs = {
         'web': ['192.168.1.2'],
         'lb': ['192.168.1.2'],
+        'encoding': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-dev.u-strasbg.fr'
@@ -86,6 +83,10 @@ def dev():
     env.server_ip = ''
     env.no_shared_sessions = False
     env.server_ssl_on = False
+    env.nginx_location_extra_directives = [
+        'client_max_body_size 4G', 'client_body_temp_path /tmp', 'proxy_connect_timeout 600',
+        'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
+    ]
     env.goal = 'dev'
     env.socket_port = '8000'
     env.socket_host = '127.0.0.1'
@@ -99,6 +100,7 @@ def test():
     env.roledefs = {
         'web': ['podcast-test.u-strasbg.fr'],
         'lb': ['podcast-test.u-strasbg.fr'],
+        'encoding': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-test.u-strasbg.fr'
@@ -107,6 +109,10 @@ def test():
     env.server_ip = ''
     env.no_shared_sessions = False
     env.server_ssl_on = True
+    env.nginx_location_extra_directives = [
+        'client_max_body_size 4G', 'client_body_temp_path /tmp', 'proxy_connect_timeout 600',
+        'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
+    ]
     env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
     env.path_to_cert_key = '/etc/ssl/private/wildcard.u-strasbg.fr.key'
     env.goal = 'test'
@@ -133,18 +139,24 @@ def preprod():
     """Define preprod stage"""
     env.user = 'root'
     env.roledefs = {
-        'web': ['podcast-pprd.u-strasbg.fr'],
-        'lb': ['podcast-pprd.u-strasbg.fr'],
+        'web': ['podcast-w1-pprd.di.unistra.fr', 'podcast-w2-pprd.di.unistra.fr'],
+        'lb': ['podcast-w1-pprd.di.unistra.fr', 'podcast-w2-pprd.di.unistra.fr'],
+        'encoding': ['podcast-enc1-pprd.di.unistra.fr ', 'podcast-enc2-pprd.di.unistra.fr']
     }
     env.backends = ['127.0.0.1']
-    env.server_name = 'podcast-pprd.u-strasbg.fr'
+    env.server_name = 'podcast-pprd.unistra.fr'
+    env.remote_media_folder = '/nfs/media/pod' # root of media files
     env.short_server_name = 'podcast-pprd'
     env.static_folder = '/static/'
     env.server_ip = ''
     env.no_shared_sessions = False
     env.server_ssl_on = True
-    env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
-    env.path_to_cert_key = '/etc/ssl/private/wildcard.u-strasbg.fr.key'
+    env.nginx_location_extra_directives = [
+        'client_max_body_size 4G', 'client_body_temp_path /nfs/tmp/nginx', 'proxy_connect_timeout 600',
+        'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
+    ]
+    env.path_to_cert = '/local/ssl/unistra.fr.pem'
+    env.path_to_cert_key = '/local/ssl/unistra.fr.key'
     env.goal = 'preprod'
     env.socket_port = '8000'
     env.socket_host = '127.0.0.1'
@@ -185,6 +197,18 @@ def pre_install():
     """Pre install of backend & frontend"""
     execute(pre_install_backend)
     execute(pre_install_frontend)
+    execute(pre_install_encoding)
+
+
+@roles('encoding')
+@task
+def pre_install_encoding():
+    """ Setup encoding server """
+    execute(pydiploy.require.system.add_user, commands=None)
+    execute(pydiploy.require.system.set_locale)
+    execute(pydiploy.require.system.set_timezone)
+    execute(pydiploy.require.system.update_pkg_index)
+    fabtools.require.deb.packages(['ffmpeg'], update=False)
 
 
 @roles('web')
@@ -201,7 +225,6 @@ def pre_install_frontend():
     execute(pydiploy.django.pre_install_frontend)
 
 
-@roles('web')
 @task
 def deploy(update_pkg=False):
     """Deploy code on server"""

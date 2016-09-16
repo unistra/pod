@@ -50,6 +50,7 @@ EMAIL_SUBJECT_PREFIX = "pod"
 
 USE_CAS = True
 CAS_SERVER_URL = environ.get('CAS_SERVER_URL')
+ES_URL = [ environ.get('ES_URL','http://127.0.0.1:9200/') ]
 
 USE_LDAP_TO_POPULATE_USER = True
 AUTH_LDAP_SERVER_URI = environ.get('AUTH_LDAP_SERVER_URI')
@@ -103,8 +104,8 @@ FMS_ROOT_URL = ''
 # Video #
 #########
 
-FFMPEG = 'nice -19 /usr/local/ffmpeg/ffmpeg'
-FFPROBE = 'nice -19 /usr/local/ffmpeg/ffprobe'
+FFMPEG = 'nice -19 ffmpeg'
+FFPROBE = 'nice -19 ffprobe'
 VIDEO_EXT_ACCEPT = (
     '.3gp',
     '.avi',

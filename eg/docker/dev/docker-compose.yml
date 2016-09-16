@@ -1,25 +1,34 @@
-elasticsearch:
-    build: ./elasticsearch
-    ports:
-        - "9200:9200"
-        - "9300:9300"
-    volumes:
-        - /home/morgan/elastic_search_pod/data:/usr/share/elasticsearch/data
-        - /home/morgan/elastic_search_pod/logs:/usr/share/elasticsearch/logs
-pod:
-    build: ./pod
-    environment:
-        DJANGO_SETTINGS_MODULE: 'pod_project.settings.dev'
-        CAS_SERVER_URL: 'http://cas.unistra.fr/cas/'
-        AUTH_LDAP_SERVER_URI: 'ldap://ldapuds.u-strasbg.fr:389'
-        AUTH_LDAP_BIND_DN: 'S3CR3T'
-        AUTH_LDAP_BIND_PASSWORD: 'S3CR3T'
-        AUTH_LDAP_BASE_DN: 'ou=uds,ou=people,o=annuaire'
-    command: python manage.py runserver 0.0.0.0:8010
-    volumes:
-        - /home/morgan/dev/pod/pod_project:/code
-        - /srv/media/pod:/srv/media/pod
-    ports:
-        - "8010:8010"
-    links:
-        - elasticsearch
+version: '2'
+services:
+    elasticsearch:
+        build: elasticsearch
+        ports:
+            - 9200:9200
+            - 9300:9300
+        volumes:
+            - ./data:/usr/share/elasticsearch/data
+            - ./logs:/usr/share/elasticsearch/logs
+        # networks: { localnet: { ipv4_address: 172.16.238.2 } }
+    pod:
+        build: ./pod
+        environment:
+            ES_URL: http://elasticsearch:9200
+            DJANGO_SETTINGS_MODULE: pod_project.settings.dev
+            CAS_SERVER_URL: http://cas.unistra.fr/cas/
+            AUTH_LDAP_SERVER_URI: ldap://ldapuds.u-strasbg.fr:389
+            AUTH_LDAP_BIND_DN: S3CR3T
+            AUTH_LDAP_BIND_PASSWORD: S3CR3T
+            AUTH_LDAP_BASE_DN: ou=uds,ou=people,o=annuaire
+        command: python manage.py runserver 0.0.0.0:8010
+        volumes:
+            - ./code:/code
+            - ./pod:/srv/media/pod
+        ports:
+            - 8010:8010
+        links: [ elasticsearch ]
+        # networks: { localnet: { ipv4_address: 172.16.238.3 } }
+# networks:
+#     localnet:
+#         driver: bridge
+#         ipam:
+#             config: [ { subnet: '172.16.238.0/24' } ]
