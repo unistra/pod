@@ -257,7 +257,6 @@ class Command(BaseCommand):
                             if not row['login']:
                                 owner = User.objects.get(username=settings.AVCAST_COURSE_DEFAULT_USERNAME)
                             else:
-                                # TODO which default login ?
                                 owner = User.objects.get(username=row['login'])
                         except:
                             # it shouldn't happen
