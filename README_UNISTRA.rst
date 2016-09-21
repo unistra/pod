@@ -28,6 +28,7 @@ Les fichiers et dossiers spécifiques liés à cette version sont les suivants:
 * Le fichier **pod_project/manage.py** qui est le template de management de django pour pydiploy, librairie basée sur `fabric <http://www.fabfile.org/>`_
 * Le fichier **pod_project/requirements.txt** qui dépend du dossier **pod_project/requirements**
 * Le fichier **pod_project/fabfile.py** qui est le fichier de configuration de pydiploy
+* Le fichier **pod_project/nginx_with_load_balancer.patch** qui est une modification de la conf nginx pour la prod et la preprod (avec load balancer)  
 * Le fichier **pod_project/MANIFEST.in** qui permet d'inclure certains fichiers dans le package python
 * Le fichier **setup.py** qui permet de packager l'application, nécessaire à tox
 * Le fichier **tox.ini** qui permet d'exécuter les tests unitaires sous différents environnements
