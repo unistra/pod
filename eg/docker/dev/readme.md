@@ -2,7 +2,10 @@
 
 # installation des dépendances
 
-TODO: move to the right place
+* Installer docker-engine : https://docs.docker.com/engine/installation/
+* Installer docker compose : https://docs.docker.com/compose/install/
+
+Exemple:
 
     # installer docker
 
@@ -29,25 +32,24 @@ TODO: move to the right place
 as declared in `docker-compose.yml:/services/elasticsearch/volumes`,
 the `/code` volume is used to share the pod server in the code.
 
-        volumes:
-            - ./code:/code
+    volumes:
+        - ./code:/code
 
 data and logs are used by the vm itself. so to build the env:
 
-   ln -s $PWD/../../../pod_project(:A) code
-   mkdir -p data log
-   docker-compose build
+    ln -s $PWD/../../../pod_project(:A) code
+    mkdir -p data logs media
+    docker-compose build
 
 to run it:
 
-   docker-compose up
+    docker-compose up
 
 enter in running vms
 
-   docker-compose exec [pod|elasticsearch] a command with parameters
+    docker-compose exec [pod|elasticsearch] a command with parameters
 
 example: show django processes on the pod server
 
 now you can run install and test procedures described in
 `../../../README_UNISTRA.rst`.
-
