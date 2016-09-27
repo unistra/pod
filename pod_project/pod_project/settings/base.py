@@ -51,6 +51,8 @@ INSTALLED_APPS = (
     'djangoformsetjs',
     'captcha',
     'bootstrap3',
+    'rest_framework',
+    'rest_framework.authtoken',
     # Applications locales
     'pods',
     'core'
@@ -145,6 +147,17 @@ CACHES = {
     }
 }
 
+# WEBservices with rest API
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser',
+    )
+}
+#curl -X GET http://127.0.0.1:8000/api/example/ -H 'Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'
+
 # Login
 LOGIN_URL = '/accounts/login/'
 USE_CAS = False
@@ -199,6 +212,16 @@ WEBTV = '<a href="http://webtv.univ.fr" id="webtv" class="btn btn-info btn-sm">'
 
 
 ##
+# Dublin Core :
+#
+#   coverage        nom, ville et pays de l'établissement
+#   rights          licence CC pour les contenus publics
+#
+DC_COVERAGE = TITLE_ETB + " - Ville - Pays"
+DC_RIGHTS = "CC-By-ND-NC"
+
+
+##
 # Taille maxi fichier téléversable :
 #
 #   ce paramètre est une chaîne contenant un chiffre suivi d'une unité (Mo ou Go),
@@ -228,6 +251,7 @@ MAX_DAILY_USER_UPLOADS = 0
 #
 #
 USE_XHR_FORM_UPLOAD = 1
+
 
 ##
 # Possibilité pour les propriétaires de chaînes d'agir sur leur visibilité :
@@ -281,6 +305,8 @@ TEMPLATE_CUSTOM = 'custom'  # None
 
 # Constantes utilisables depuis les templates
 TEMPLATE_VISIBLE_SETTINGS = (
+    'DC_COVERAGE',
+    'DC_RIGHTS',
     'DEFAULT_IMG',
     'FILTER_USER_MENU',
     'FMS_LIVE_URL',
