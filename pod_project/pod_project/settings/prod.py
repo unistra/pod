@@ -259,7 +259,7 @@ AVCAST_FAKE_FILES_COPY = False
 #######################
 
 CURSUS_CODES = (
-    ("A", "Autres"),
+    ("0", "Autres"),
     ("C", "Conférence"),
     ("1", "Licence 1ère année"),
     ("2", "Licence 2ème année"),

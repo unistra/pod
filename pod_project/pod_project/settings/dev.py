@@ -235,7 +235,7 @@ AVCAST_FAKE_FILES_COPY = strtobool(environ.get("AVCAST_FAKE_FILES_COPY", "True")
 #######################
 
 CURSUS_CODES = (
-    ("A", "Autres"),
+    ("0", "Autres"),
     ("C", "Conférence"),
     ("1", "Licence 1ère année"),
     ("2", "Licence 2ème année"),
