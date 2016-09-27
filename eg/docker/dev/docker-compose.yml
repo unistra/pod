@@ -22,7 +22,7 @@ services:
         command: python manage.py runserver 0.0.0.0:8010
         volumes:
             - ./code:/code
-            - ./pod:/srv/media/pod
+            - ./media:/srv/media/pod
         ports:
             - 8010:8010
         links: [ elasticsearch ]

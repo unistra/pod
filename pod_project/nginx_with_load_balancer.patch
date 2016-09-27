@@ -1,0 +1,27 @@
+--- podcast-pprd.unistra.fr.conf.20160921	2016-09-21 15:12:34.913250216 +0200
++++ podcast-pprd.unistra.fr.conf	2016-09-21 15:12:55.597236129 +0200
+@@ -10,7 +10,13 @@
+     listen 80;
+     server_name podcast-pprd.unistra.fr podcast-pprd;
+ 
+-    rewrite             ^ https://$server_name$request_uri? permanent;
++    location /status {
++        return 200;
++    }
++
++    location / {
++        return 301 https://$server_name$request_uri;
++    }
+ }
+ 
+ 
+@@ -23,6 +29,9 @@
+     ssl_certificate      /local/ssl/unistra.fr.pem;
+     ssl_certificate_key  /local/ssl/unistra.fr.key;
+ 
++    location /status {
++        return 200;
++    }
+ 
+     location = /favicon.ico {
+       log_not_found off;
