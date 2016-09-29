@@ -14,14 +14,3 @@
 +    }
  }
  
- 
-@@ -23,6 +29,9 @@
-     ssl_certificate      /local/ssl/unistra.fr.pem;
-     ssl_certificate_key  /local/ssl/unistra.fr.key;
- 
-+    location /status {
-+        return 200;
-+    }
- 
-     location = /favicon.ico {
-       log_not_found off;
