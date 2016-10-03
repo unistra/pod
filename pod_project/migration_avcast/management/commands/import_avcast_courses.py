@@ -159,7 +159,7 @@ class Command(BaseCommand):
                     encodingFormat="video/mp4"
                 )
                 pod.video = file_path
-                # TODO Video in additional document ?
+                # Additional video or video in embed enrich pod
                 if is_addvideo_present:
                     exfile, exfile_created = File.objects.get_or_create(
                         original_filename="addvideo_%s.mp4" % pod.id,
