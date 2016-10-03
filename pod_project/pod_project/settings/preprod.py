@@ -39,7 +39,8 @@ ALLOWED_HOSTS = [
     '130.79.200.84',
     '130.79.200.85',
     '.di.unistra.fr',
-    '192.168.250.254'
+    '192.168.250.254',
+    '130.79.200.88'
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'ssl')
