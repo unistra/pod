@@ -48,6 +48,19 @@ class Command(BaseCommand):
             self.stdout.write("---- Check doc pod : From %s to %s" % (origin, destination))
             self.pod_copy_file(origin, destination)
 
+    def pod_processing_enrichpods(self, pod):
+        for enrichpod in pod.enrichpods_set.all():
+            filename = os.path.basename(enrichpod.document.file.name)
+            mediafolder = self.avcast_get_media_folder(
+                pod.id, settings.AVCAST_VOLUME_PATH)
+            if "addvideo" in filename:
+                origin = os.path.join(mediafolder, "additional_video", filename)
+            else:
+                origin = os.path.join(mediafolder, filename)
+            destination = enrichpod.document.file.path
+            self.stdout.write("---- Check enrich pod : From %s to %s" % (origin, destination))
+            self.pod_copy_file(origin, destination)
+
     def pod_copy_file(self, origin, destination):
             # on affiche un warning si le fichier origin n'existe pas et on continue la boucle
             if not os.path.isfile(origin):
@@ -90,6 +103,7 @@ class Command(BaseCommand):
                 self.stdout.write("-- Processing %s" % pod)
                 self.pod_processing_encodingpods(pod)
                 self.pod_processing_docpods(pod)
+                self.pod_processing_enrichpods(pod)
 
         except Exception as e:
             raise CommandError("An error occurs", e)
