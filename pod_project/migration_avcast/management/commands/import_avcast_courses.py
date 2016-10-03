@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import psycopg2
 import psycopg2.extras
-from pods.models import Pod, Type, ContributorPods, Discipline, EncodingPods, DocPods
+from pods.models import Pod, Type, ContributorPods, Discipline, EncodingPods, DocPods, EnrichPods
 from core.models import EncodingType, get_storage_path
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
@@ -110,14 +110,15 @@ class Command(BaseCommand):
                 raise CommandError("Formation of course %s not found" % row['courseid'])
         return pod
 
-    def pod_add_encodingpods(self, pod, avc_type, mediatype):
+    def pod_add_encodingpods(self, pod, avc_type, mediatype, owner, course_folder):
         """ Add EncodingPods """
         # clear encoding : uncomment if you need to delete all before
         # pod.encodingpods_set.all().delete()
         # add encoding
         is_videoslide_present = 32 & mediatype > 0
         is_mp3_present = 2 & mediatype > 0
-        is_videomp4_present = 128 & mediatype > 0
+        # 128 is the old HQ type, 2048 is for html5 (webm+mp4)
+        is_videomp4_present = (128 & mediatype > 0) or (2048 & mediatype > 0)
         is_addvideo_present = 1024 & mediatype > 0
         # MUA or CA
         if avc_type == "audio":
@@ -159,6 +160,48 @@ class Command(BaseCommand):
                 )
                 pod.video = file_path
                 # TODO Video in additional document ?
+                if is_addvideo_present:
+                    exfile, exfile_created = File.objects.get_or_create(
+                        original_filename="addvideo_%s.mp4" % pod.id,
+                        owner=owner,
+                        folder=course_folder,
+                        file=get_storage_path(
+                            pod, "%s/additional_video/addvideo_%s.mp4" % (pod.id, pod.id))
+                    )
+                    enrichpod, enrichpod_created = EnrichPods.objects.get_or_create(
+                        video=pod,
+                        title=exfile.original_filename,
+                        slug="0001-addvideo_%smp4" % pod.id,
+                        stop_video=False,
+                        start=0,
+                        end=pod.duration,
+                        type="embed",
+                        document=exfile,
+                        embed='<iframe src="{}" style="min-height:100%;min-width:100%"></iframe>'.format(exfile.url)
+                    )
+                elif is_videomp4_present:
+                    exfile, exfile_created = File.objects.get_or_create(
+                        original_filename="%s.mp4" % pod.id,
+                        owner=owner,
+                        folder=course_folder,
+                        file=get_storage_path(
+                            pod, "%s/%s.mp4" % (pod.id, pod.id))
+                    )
+                    enrichpod, enrichpod_created = EnrichPods.objects.get_or_create(
+                        video=pod,
+                        title=exfile.original_filename,
+                        slug="0001-%smp4" % pod.id,
+                        stop_video=False,
+                        start=0,
+                        end=pod.duration,
+                        type="embed",
+                        document=exfile,
+                        embed='<iframe src="{}" style="min-height:100%;min-width:100%"></iframe>'.format(exfile.url)
+                    )
+
+
+
+
 
             # priority to additional video (MUV or CV or CSC)
             elif is_addvideo_present:
@@ -223,6 +266,7 @@ class Command(BaseCommand):
 
         return pod
 
+
     def handle(self, *args, **options):
         # Check settings
         if not hasattr(settings, 'AVCAST_DB_URI') or not settings.AVCAST_DB_URI:
@@ -260,7 +304,7 @@ class Command(BaseCommand):
                                 owner = User.objects.get(username=row['login'])
                         except:
                             # it shouldn't happen
-                            raise CommandError("User %s not found" % owner)
+                            raise CommandError("User not found")
                         else:
                             # Get or create type
                             pod_type, pod_type_created = Type.objects.get_or_create(
@@ -294,12 +338,13 @@ class Command(BaseCommand):
 
                             # Get the mediatype
                             mediatype = row['mediatype']
-                            # Add Encoding Pods
-                            pod = self.pod_add_encodingpods(
-                                pod, row['type'], mediatype)
 
                             # base filer folder
                             course_folder = self.pod_create_and_get_filer(pod, owner)
+
+                            # Add Encoding Pods
+                            pod = self.pod_add_encodingpods(
+                                pod, row['type'], mediatype, owner, course_folder)
 
                             # add document
                             pod = self.pod_create_add_doc(pod, owner, course_folder, mediatype, row['adddocname'])
