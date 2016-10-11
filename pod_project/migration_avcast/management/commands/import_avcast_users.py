@@ -33,19 +33,22 @@ class Command(BaseCommand):
                          'ON u.userid = c.userid')
                     )
                     for row in curs.fetchall():
+                        # login is required
+                        if not row['login']:
+                            raise CommandError("A user has no login !")
                         # create or modify the user
                         user, created = User.objects.get_or_create(
                             username=row['login'])
-                        user.email = row['email']
-                        user.first_name = row['firstname']
-                        user.last_name = row['lastname']
+                        user.email = row['email'] if row['email'] else ""
+                        user.first_name = row['firstname'] if row['firstname'] else ""
+                        user.last_name = row['lastname'] if row['lastname'] else ""
                         if row['password'] and row["passwordtype"]:
                             user.password = "%s1$$%s" % (row['passwordtype'],
                                                          row['password'])
                         else:
                             user.password = "!%s" % (
                                 User.objects.make_random_password())
-                        user.is_active = row["activate"]
+                        user.is_active = row["activate"] if row["activate"] else False
                         user.is_staff = True if row['profile'] in \
                             ("employee", "faculty") else False
                         user.save()
