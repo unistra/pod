@@ -18,7 +18,7 @@ class Command(BaseCommand):
         # Check settings
         if not hasattr(settings, 'AVCAST_DB_URI') or not settings.AVCAST_DB_URI:
             raise CommandError("AVCAST_DB_URI must be setted")
-        self.stdout.write("Import all buildings and amphis ...")
+        self.stdout.write(u"Import all buildings and amphis ...")
         conn = None
         try:
             conn = psycopg2.connect(settings.AVCAST_DB_URI)
@@ -41,7 +41,7 @@ class Command(BaseCommand):
 
                         # create or modify amphi
                         recorder, created = Recorder.objects.get_or_create(
-                            name=row['aname'],
+                            name="%s (%s)" % (row['aname'], row['bname']),
                             building=building,
                             adress_ip=row['ipaddress']
                         )
@@ -49,7 +49,7 @@ class Command(BaseCommand):
                         recorder.gmapurl = row['gmapurl']
                         recorder.is_restricted = row['restrictionuds']
                         recorder.save()
-                        self.stdout.write(self.style.SQL_FIELD('Building "%s" and amphi "%s" saved !' % (building.name, recorder.name)))
+                        self.stdout.write(self.style.SQL_FIELD(u'Building "{}" and amphi "{}" saved !'.format(building.name, recorder.name)))
 
         except psycopg2.DatabaseError as e:
             raise e
@@ -57,4 +57,4 @@ class Command(BaseCommand):
         finally:
             if conn:
                 conn.close()
-                self.stdout.write("Done !")
+                self.stdout.write(u"Done !")

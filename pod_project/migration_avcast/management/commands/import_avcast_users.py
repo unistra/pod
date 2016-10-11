@@ -19,7 +19,7 @@ class Command(BaseCommand):
         # Check settings
         if not hasattr(settings, 'AVCAST_DB_URI') or not settings.AVCAST_DB_URI:
             raise CommandError("AVCAST_DB_URI must be setted")
-        self.stdout.write("Import all users ...")
+        self.stdout.write(u"Import all users ...")
         conn = None
         try:
             conn = psycopg2.connect(settings.AVCAST_DB_URI)
@@ -62,10 +62,10 @@ class Command(BaseCommand):
                              row["institute"] if row['institute'] else '')
                         profile.affiliation = row['profile'] if row['profile'] else "member"
                         profile.save()
-                        self.stdout.write(self.style.SQL_FIELD('User "%s" saved !' % user.username))
+                        self.stdout.write(self.style.SQL_FIELD(u'User "%s" saved !' % user.username))
         except psycopg2.DatabaseError:
             raise CommandError("Cannot access to the database ")
         finally:
             if conn:
                 conn.close()
-                self.stdout.write("Done !")
+                self.stdout.write(u"Done !")
