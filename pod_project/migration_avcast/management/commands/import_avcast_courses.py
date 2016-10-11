@@ -317,7 +317,7 @@ class Command(BaseCommand):
                                 to_encode=False,
                                 owner=owner,
                                 type=pod_type,
-                                title=row['title'].decode('utf-8')
+                                title=row['title'].decode('utf-8') if row['title'] else "UNKNOWN"
                             )
                             # set the last course id for sequence
                             last_courseid = pod.id
