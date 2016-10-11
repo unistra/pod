@@ -70,7 +70,7 @@ class Command(BaseCommand):
             try:
                 curs_podid.execute("SELECT setval('pods_pod_id_seq', %s)" % last_courseid)
             except Exception:
-                self.stdout.write(self.style.WARNING("Warning : cannot change pod id sequence (maybe you don't use postgresql ...)"))
+                self.stdout.write(self.style.WARNING(u"Warning : cannot change pod id sequence (maybe you don't use postgresql ...)"))
 
     def pod_add_discipline_and_cursus(self, conn, pod, row):
         """ Method to add discipline and cursus to pod """
@@ -274,7 +274,7 @@ class Command(BaseCommand):
         if not hasattr(settings, 'AVCAST_COURSE_DEFAULT_USERNAME') or not settings.AVCAST_COURSE_DEFAULT_USERNAME:
             raise CommandError("AVCAST_COURSE_DEFAULT_USERNAME must be setted")
         # Run import
-        self.stdout.write("Import all courses, tags, types ...")
+        self.stdout.write(u"Import all courses, tags, types ...")
         begin = options['begin']
         end = options['end']
         conn = None
@@ -291,11 +291,12 @@ class Command(BaseCommand):
                          'LEFT JOIN "user" u '
                          'ON u.userid = c.userid '
                          'WHERE c.courseid >= ' + str(begin) + ' '
-                         'AND c.courseid <= ' + str(end))
+                         'AND c.courseid <= ' + str(end) + ' '
+                         'ORDER BY c.courseid')
 
                     )
                     for row in curs.fetchall():
-                        self.stdout.write("Processing course %s ..." % row['courseid'])
+                        self.stdout.write(u"Processing course %s ..." % row['courseid'])
                         # Get the user. Launch the import_users script before !
                         try:
                             if not row['login']:
@@ -315,13 +316,13 @@ class Command(BaseCommand):
                                 to_encode=False,
                                 owner=owner,
                                 type=pod_type,
-                                title=row['title']
+                                title=row['title'].decode('utf-8')
                             )
                             # set the last course id for sequence
                             last_courseid = pod.id
                             # modify data
                             pod.date_added = row['date']
-                            pod.description = row['description'] if row['description'] else ''
+                            pod.description = row['description'].decode('utf-8') if row['description'] else ''
                             pod.duration = row['duration']
                             pod.password = row['genre']
                             pod.is_draft = not row['visible']
@@ -354,7 +355,7 @@ class Command(BaseCommand):
 
                             # Save all modification
                             pod.save()
-                            self.stdout.write(self.style.SQL_FIELD('Pod "%s" saved !' % pod.title.decode('utf-8')))
+                            self.stdout.write(self.style.SQL_FIELD(u'Pod "%s" saved !' % str(pod.id)))
 
                 # Alter pod id sequence for postgresql
                 if last_courseid and options["update_sequence"]:
@@ -366,4 +367,4 @@ class Command(BaseCommand):
         finally:
             if conn:
                 conn.close()
-                self.stdout.write("Done !")
+                self.stdout.write(u"Done !")

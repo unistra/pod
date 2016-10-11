@@ -35,7 +35,7 @@ class Command(BaseCommand):
                 pod.id, settings.AVCAST_VOLUME_PATH)
             origin = os.path.join(mediafolder, filename)
             destination = encodingpod.encodingFile.path
-            self.stdout.write("---- Check encoding pod : From %s to %s" % (origin, destination))
+            self.stdout.write(u"---- Check encoding pod : From %s to %s" % (origin, destination))
             self.pod_copy_file(origin, destination)
 
     def pod_processing_docpods(self, pod):
@@ -45,7 +45,7 @@ class Command(BaseCommand):
                 pod.id, settings.AVCAST_VOLUME_PATH)
             origin = os.path.join(mediafolder, "additional_docs", filename)
             destination = docpod.document.file.path
-            self.stdout.write("---- Check doc pod : From %s to %s" % (origin, destination))
+            self.stdout.write(u"---- Check doc pod : From %s to %s" % (origin, destination))
             self.pod_copy_file(origin, destination)
 
     def pod_processing_enrichpods(self, pod):
@@ -58,29 +58,29 @@ class Command(BaseCommand):
             else:
                 origin = os.path.join(mediafolder, filename)
             destination = enrichpod.document.file.path
-            self.stdout.write("---- Check enrich pod : From %s to %s" % (origin, destination))
+            self.stdout.write(u"---- Check enrich pod : From %s to %s" % (origin, destination))
             self.pod_copy_file(origin, destination)
 
     def pod_copy_file(self, origin, destination):
             # on affiche un warning si le fichier origin n'existe pas et on continue la boucle
             if not os.path.isfile(origin):
-                self.stdout.write(self.style.WARNING("------ Warning : The file %s doesn't exist !" % origin))
+                self.stdout.write(self.style.WARNING(u"------ Warning : The file %s doesn't exist !" % origin))
             else:
                 # create destination folder
                 pod_folder = os.path.dirname(destination)
                 if not os.path.exists(pod_folder):
                     if settings.AVCAST_FAKE_FILES_COPY:
-                        self.stdout.write(self.style.SQL_FIELD("------ Fake : Folder %s created" % pod_folder))
+                        self.stdout.write(self.style.SQL_FIELD(u"------ Fake : Folder %s created" % pod_folder))
                     else:
                         os.makedirs(pod_folder)
-                        self.stdout.write(self.style.SQL_FIELD("------ Folder %s created" % pod_folder))
+                        self.stdout.write(self.style.SQL_FIELD(u"------ Folder %s created" % pod_folder))
                 # copy the file if he doesn't exist or if he's different
                 if not os.path.isfile(destination) or not filecmp.cmp(origin, destination):
                     if settings.AVCAST_FAKE_FILES_COPY:
-                        self.stdout.write(self.style.SQL_FIELD("------ Fake : File %s copied to %s" % (origin, destination)))
+                        self.stdout.write(self.style.SQL_FIELD(u"------ Fake : File %s copied to %s" % (origin, destination)))
                     else:
                         shutil.copy2(origin, destination)
-                        self.stdout.write(self.style.SQL_FIELD("------ File %s copied to %s" % (origin, destination)))
+                        self.stdout.write(self.style.SQL_FIELD(u"------ File %s copied to %s" % (origin, destination)))
 
     def handle(self, *args, **options):
         begin = options['begin']
@@ -92,7 +92,7 @@ class Command(BaseCommand):
             raise CommandError("AVCAST_FAKE_FILES_COPY must be setted")
 
         try:
-            self.stdout.write("Import all files ...")
+            self.stdout.write(u"Import all files ...")
             # Get imported Pods form avcast
             list_pods = Pod.objects.filter(
                 encoding_status="AVCAST",
@@ -100,7 +100,7 @@ class Command(BaseCommand):
                 id__lte=end)
 
             for pod in list_pods:
-                self.stdout.write("-- Processing %s" % pod)
+                self.stdout.write(u"-- Processing %s" % pod)
                 self.pod_processing_encodingpods(pod)
                 self.pod_processing_docpods(pod)
                 self.pod_processing_enrichpods(pod)
@@ -108,4 +108,4 @@ class Command(BaseCommand):
         except Exception as e:
             raise CommandError("An error occurs", e)
         finally:
-            self.stdout.write("Done !")
+            self.stdout.write(u"Done !")
