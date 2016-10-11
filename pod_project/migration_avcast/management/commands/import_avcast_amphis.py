@@ -4,6 +4,7 @@
 Import all avcast's buildings and amphis in pod
 """
 
+from __future__ import unicode_literals
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import psycopg2
@@ -18,7 +19,7 @@ class Command(BaseCommand):
         # Check settings
         if not hasattr(settings, 'AVCAST_DB_URI') or not settings.AVCAST_DB_URI:
             raise CommandError("AVCAST_DB_URI must be setted")
-        self.stdout.write(u"Import all buildings and amphis ...")
+        self.stdout.write("Import all buildings and amphis ...")
         conn = None
         try:
             conn = psycopg2.connect(settings.AVCAST_DB_URI)
@@ -36,20 +37,20 @@ class Command(BaseCommand):
                     for row in curs.fetchall():
                         # create or modify building
                         building, created = Building.objects.get_or_create(
-                            name=row['bname']
+                            name=row['bname'].decode('utf-8')
                         )
 
                         # create or modify amphi
                         recorder, created = Recorder.objects.get_or_create(
-                            name="%s (%s)" % (row['aname'], row['bname']),
+                            name="%s (%s)" % (row['aname'].decode('utf-8'), row['bname'].decode('utf-8')),
                             building=building,
-                            adress_ip=row['ipaddress']
+                            adress_ip=row['ipaddress'].decode('utf-8')
                         )
                         recorder.status = row['status'],
-                        recorder.gmapurl = row['gmapurl']
+                        recorder.gmapurl = row['gmapurl'].decode('utf-8') if row['gmapurl'] else None
                         recorder.is_restricted = row['restrictionuds']
                         recorder.save()
-                        self.stdout.write(self.style.SQL_FIELD(u'Building "{}" and amphi "{}" saved !'.format(building.name, recorder.name)))
+                        self.stdout.write(self.style.SQL_FIELD('Building "{}" and amphi "{}" saved !'.format(building.name, recorder.name)))
 
         except psycopg2.DatabaseError as e:
             raise e
@@ -57,4 +58,4 @@ class Command(BaseCommand):
         finally:
             if conn:
                 conn.close()
-                self.stdout.write(u"Done !")
+                self.stdout.write("Done !")

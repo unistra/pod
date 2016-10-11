@@ -3,7 +3,7 @@
 """
 Import all avcast's users in pod
 """
-
+from __future__ import unicode_literals
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import psycopg2
@@ -19,7 +19,7 @@ class Command(BaseCommand):
         # Check settings
         if not hasattr(settings, 'AVCAST_DB_URI') or not settings.AVCAST_DB_URI:
             raise CommandError("AVCAST_DB_URI must be setted")
-        self.stdout.write(u"Import all users ...")
+        self.stdout.write("Import all users ...")
         conn = None
         try:
             conn = psycopg2.connect(settings.AVCAST_DB_URI)
@@ -38,13 +38,13 @@ class Command(BaseCommand):
                             raise CommandError("A user has no login !")
                         # create or modify the user
                         user, created = User.objects.get_or_create(
-                            username=row['login'])
-                        user.email = row['email'] if row['email'] else ""
-                        user.first_name = row['firstname'] if row['firstname'] else ""
-                        user.last_name = row['lastname'] if row['lastname'] else ""
+                            username=row['login'].decode('utf-8'))
+                        user.email = row['email'].decode('utf-8') if row['email'] else ""
+                        user.first_name = row['firstname'].decode('utf-8') if row['firstname'] else ""
+                        user.last_name = row['lastname'].decode('utf-8') if row['lastname'] else ""
                         if row['password'] and row["passwordtype"]:
-                            user.password = "%s1$$%s" % (row['passwordtype'],
-                                                         row['password'])
+                            user.password = "%s1$$%s" % (row['passwordtype'].decode('utf-8'),
+                                                         row['password'].decode('utf-8'))
                         else:
                             user.password = "!%s" % (
                                 User.objects.make_random_password())
@@ -57,15 +57,15 @@ class Command(BaseCommand):
                             user=user)
                         profile.auth_type = "loc." if row['type'] == "local" else "cas"
                         profile.description = "establishment=%s;etp=%s;institute=%s" % \
-                            (row['establishment'] if row['establishment'] else '',
-                             row['etp'] if row['etp'] else '',
-                             row["institute"] if row['institute'] else '')
-                        profile.affiliation = row['profile'] if row['profile'] else "member"
+                            (row['establishment'].decode('utf-8') if row['establishment'] else '',
+                             row['etp'].decode('utf-8') if row['etp'] else '',
+                             row["institute"].decode('utf-8') if row['institute'] else '')
+                        profile.affiliation = row['profile'].decode('utf-8') if row['profile'] else "member"
                         profile.save()
-                        self.stdout.write(self.style.SQL_FIELD(u'User "%s" saved !' % user.username))
+                        self.stdout.write(self.style.SQL_FIELD('User "%s" saved !' % user.username))
         except psycopg2.DatabaseError:
             raise CommandError("Cannot access to the database ")
         finally:
             if conn:
                 conn.close()
-                self.stdout.write(u"Done !")
+                self.stdout.write("Done !")

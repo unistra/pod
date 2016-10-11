@@ -3,7 +3,7 @@
 """
 Import all avcast's disciplines in pod
 """
-
+from __future__ import unicode_literals
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import psycopg2
@@ -19,7 +19,7 @@ class Command(BaseCommand):
         # Check settings
         if not hasattr(settings, 'AVCAST_DB_URI') or not settings.AVCAST_DB_URI:
             raise CommandError("AVCAST_DB_URI must be setted")
-        self.stdout.write(u"Import all disciplines ...")
+        self.stdout.write("Import all disciplines ...")
         conn = None
         try:
             conn = psycopg2.connect(settings.AVCAST_DB_URI)
@@ -34,20 +34,20 @@ class Command(BaseCommand):
                     for row in curs.fetchall():
                         # create or modify disciplines
                         discipline, created = Discipline.objects.get_or_create(
-                            slug=slugify(row['namecomp'])
+                            slug=slugify(row['namecomp'].decode('utf-8'))
                         )
-                        discipline.title = row['namecomp']
+                        discipline.title = row['namecomp'].decode('utf-8')
                         discipline.description = "codecomp=%s;codedom=%s;namedom=%s" % (
-                            row['codecomp'],
-                            row['codedom'],
-                            row['namedom']
+                            row['codecomp'].decode('utf-8') if row['codecomp'] else "",
+                            row['codedom'].decode('utf-8') if row['codedom'] else "",
+                            row['namedom'].decode('utf-8') if row['namedom'] else ""
                         )
                         discipline.save()
-                        self.stdout.write(self.style.SQL_FIELD(u'Discipline "%s" saved !' % discipline.title.decode('utf-8')))
+                        self.stdout.write(self.style.SQL_FIELD('Discipline "%s" saved !' % discipline.title))
         except psycopg2.DatabaseError as e:
             raise e
             raise CommandError("Cannot access to the database ")
         finally:
             if conn:
                 conn.close()
-                self.stdout.write(u"Done !")
+                self.stdout.write("Done !")

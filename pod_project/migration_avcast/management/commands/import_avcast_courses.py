@@ -4,6 +4,7 @@
 Import all avcast's courses, tags, types in pod
 """
 
+from __future__ import unicode_literals
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import psycopg2
@@ -37,8 +38,8 @@ class Command(BaseCommand):
             ContributorPods.objects.get_or_create(
                 video=pod,
                 name=" ".join([
-                    row['name'] if row['name'] else '',
-                    row['firstname'] if row['firstname'] else ''
+                    row['name'].decode('utf-8') if row['name'] else '',
+                    row['firstname'].decode('utf-8') if row['firstname'] else ''
                 ]),
                 role="author"
             )
@@ -59,7 +60,7 @@ class Command(BaseCommand):
             )
             for row_tag in curs_tags.fetchall():
                 if row_tag['tag']:
-                    pod.tags.add(row_tag['tag'])
+                    pod.tags.add(row_tag['tag'].decode('utf-8'))
         return pod
 
     def pod_alter_pod_sequence(self, conn, last_courseid):
@@ -70,7 +71,7 @@ class Command(BaseCommand):
             try:
                 curs_podid.execute("SELECT setval('pods_pod_id_seq', %s)" % last_courseid)
             except Exception:
-                self.stdout.write(self.style.WARNING(u"Warning : cannot change pod id sequence (maybe you don't use postgresql ...)"))
+                self.stdout.write(self.style.WARNING("Warning : cannot change pod id sequence (maybe you don't use postgresql ...)"))
 
     def pod_add_discipline_and_cursus(self, conn, pod, row):
         """ Method to add discipline and cursus to pod """
@@ -91,7 +92,7 @@ class Command(BaseCommand):
                 try:
                     # Discipline
                     discipline = Discipline.objects.get(
-                        slug=slugify(row_formation['namecomp'])
+                        slug=slugify(row_formation['namecomp'].decode('utf-8'))
                     )
                     pod.discipline = [discipline]
                     # Cursus
@@ -274,7 +275,7 @@ class Command(BaseCommand):
         if not hasattr(settings, 'AVCAST_COURSE_DEFAULT_USERNAME') or not settings.AVCAST_COURSE_DEFAULT_USERNAME:
             raise CommandError("AVCAST_COURSE_DEFAULT_USERNAME must be setted")
         # Run import
-        self.stdout.write(u"Import all courses, tags, types ...")
+        self.stdout.write("Import all courses, tags, types ...")
         begin = options['begin']
         end = options['end']
         conn = None
@@ -296,20 +297,20 @@ class Command(BaseCommand):
 
                     )
                     for row in curs.fetchall():
-                        self.stdout.write(u"Processing course %s ..." % row['courseid'])
+                        self.stdout.write("Processing course %s ..." % row['courseid'])
                         # Get the user. Launch the import_users script before !
                         try:
                             if not row['login']:
                                 owner = User.objects.get(username=settings.AVCAST_COURSE_DEFAULT_USERNAME)
                             else:
-                                owner = User.objects.get(username=row['login'])
+                                owner = User.objects.get(username=row['login'].decode('utf-8'))
                         except:
                             # it shouldn't happen
                             raise CommandError("User not found")
                         else:
                             # Get or create type
                             pod_type, pod_type_created = Type.objects.get_or_create(
-                                slug=slugify(row['type']), title_fr=row['type'], title_en=row['type'])
+                                slug=slugify(row['type'].decode('utf-8')), title_fr=row['type'].decode('utf-8'), title_en=row['type'].decode('utf-8'))
                             # Create pod
                             pod, pod_created = Pod.objects.get_or_create(
                                 id=row['courseid'],
@@ -324,7 +325,7 @@ class Command(BaseCommand):
                             pod.date_added = row['date']
                             pod.description = row['description'].decode('utf-8') if row['description'] else ''
                             pod.duration = row['duration']
-                            pod.password = row['genre']
+                            pod.password = row['genre'].decode('utf-8') if row['genre'] else ''
                             pod.is_draft = not row['visible']
                             pod.view_count = row['consultations']
                             pod.allow_downloading = row['download']
@@ -345,17 +346,17 @@ class Command(BaseCommand):
 
                             # Add Encoding Pods
                             pod = self.pod_add_encodingpods(
-                                pod, row['type'], mediatype, owner, course_folder)
+                                pod, row['type'].decode('utf-8'), mediatype, owner, course_folder)
 
                             # add document
-                            pod = self.pod_create_add_doc(pod, owner, course_folder, mediatype, row['adddocname'])
+                            pod = self.pod_create_add_doc(pod, owner, course_folder, mediatype, row['adddocname'].decode('utf-8') if row['adddocname'] else '')
 
                             # On ignore les sous-titres. Avcast utilise le format TTML et SRT, pod le format WEBVTT cheminducours/additional_docs/ 44_captions.xml
                             # is_subtitles_present = 512 & mediatype > 0
 
                             # Save all modification
                             pod.save()
-                            self.stdout.write(self.style.SQL_FIELD(u'Pod "%s" saved !' % str(pod.id)))
+                            self.stdout.write(self.style.SQL_FIELD('Pod "%s" saved !' % str(pod.id)))
 
                 # Alter pod id sequence for postgresql
                 if last_courseid and options["update_sequence"]:
@@ -367,4 +368,4 @@ class Command(BaseCommand):
         finally:
             if conn:
                 conn.close()
-                self.stdout.write(u"Done !")
+                self.stdout.write("Done !")
