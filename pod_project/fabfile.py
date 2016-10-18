@@ -111,7 +111,7 @@ def test():
     env.no_shared_sessions = False
     env.server_ssl_on = True
     env.nginx_location_extra_directives = [
-        'client_max_body_size 4G', 'client_body_temp_path /tmp', 'proxy_connect_timeout 600',
+        'client_max_body_size 4G', 'proxy_request_buffering off', 'proxy_connect_timeout 600',
         'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
     ]
     env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
@@ -152,7 +152,7 @@ def preprod():
     env.no_shared_sessions = False
     env.server_ssl_on = True
     env.nginx_location_extra_directives = [
-        'client_max_body_size 4G', 'client_body_temp_path /nfs/tmp/nginx', 'proxy_connect_timeout 600',
+        'client_max_body_size 4G', 'proxy_request_buffering off', 'proxy_connect_timeout 600',
         'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
     ]
     env.path_to_cert = '/local/ssl/unistra.fr.pem'
