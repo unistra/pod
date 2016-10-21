@@ -88,5 +88,5 @@ CURSUS_CODES = (
 )
 
 # Protection des médias
-MEDIA_GUARD = False
-MEDIA_GUARD_SALT = None
+MEDIA_GUARD = True
+MEDIA_GUARD_SALT = "S3CR3T"
