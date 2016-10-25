@@ -86,3 +86,7 @@ CURSUS_CODES = (
     ("5", "Master 2ème année"),
     ("6", "Doctorat")
 )
+
+# Protection des médias
+MEDIA_GUARD = True
+MEDIA_GUARD_SALT = "S3CR3T"
