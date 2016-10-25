@@ -105,7 +105,6 @@ LANGUAGES = (
     ('fr', 'Français'),
     ('en', 'English')
 )
-DEFAULT_LANGUAGE = 1
 
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
@@ -391,3 +390,7 @@ RECORDER_SALT = "abcdefgh"
 # Signalement des vidéos
 SHOW_REPORT = True
 REPORT_VIDEO_MAIL_TO = ['alert@univ.fr']
+
+# Protection des médias
+MEDIA_GUARD = True
+MEDIA_GUARD_SALT = "S3CR3T"
