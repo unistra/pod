@@ -3,6 +3,7 @@
 from os import environ
 from os.path import join, normpath, dirname, abspath, basename
 from .base import *
+from distutils.util import strtobool
 
 ######################
 # Path configuration #
@@ -218,6 +219,16 @@ ENCODE_MP4_CMD = "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fm
 ENCODE_WEBM_CMD = "%(ffmpeg)s -i %(src)s -codec:v libvpx -quality realtime -cpu-used 3 -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -qmin 10 -qmax 42 -codec:a libvorbis -y %(out)s"
 ENCODE_MP3_CMD = "%(ffmpeg)s -i %(src)s -vn -ar %(ar)s -ab %(ab)s -f mp3 -y %(out)s"
 ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
+
+####################
+# Avcast migration #
+####################
+
+INSTALLED_APPS += ('migration_avcast',)
+AVCAST_DB_URI = environ.get("AVCAST_DB_URI", "host=localhost port=5432 dbname=univrav user=sqluser password=S3CR3T")
+AVCAST_COURSE_DEFAULT_USERNAME = environ.get("AVCAST_COURSE_DEFAULT_USERNAME", "di-info-pod@unistra.fr")
+AVCAST_VOLUME_PATH = environ.get("AVCAST_VOLUME_PATH", "/audiovideocours/cours/1")
+AVCAST_FAKE_FILES_COPY = strtobool(environ.get("AVCAST_FAKE_FILES_COPY", "True"))
 
 #######################
 # Custom cursus codes #

@@ -244,6 +244,16 @@ ENCODE_WEBM_CMD = "%(ffmpeg)s -i %(src)s -codec:v libvpx -quality realtime -cpu-
 ENCODE_MP3_CMD = "%(ffmpeg)s -i %(src)s -vn -ar %(ar)s -ab %(ab)s -f mp3 -y %(out)s"
 ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
 
+####################
+# Avcast migration #
+####################
+
+INSTALLED_APPS += ('migration_avcast',)
+AVCAST_DB_URI = '{{ avcast_db_uri }}'
+AVCAST_COURSE_DEFAULT_USERNAME = "di-info-pod@unistra.fr"
+AVCAST_VOLUME_PATH = "/audiovideocours/cours/1"
+AVCAST_FAKE_FILES_COPY = False
+
 #######################
 # Custom cursus codes #
 #######################
