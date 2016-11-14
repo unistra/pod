@@ -45,6 +45,7 @@ Icon?
 #pod_project/pod_project/settings.py
 #pod_project/pod_project/urls.py
 #pod_project/pod_project/wsgi.py
+#pod_project/pod_project/settings_local.py
 *urls-lille1.py
 #*wsgi.py
 import_data/
@@ -64,8 +65,9 @@ assets/
 
 # Theme files #
 ###############
-/pod_project/core/theme
-! /pod_project/core/theme/DEFAULT
+/pod_project/core/theme/*
+!/pod_project/core/theme/DEFAULT/
+/pod_project/core/theme/DEFAULT/config.codekit
 
 # IDE Files #
 #############
