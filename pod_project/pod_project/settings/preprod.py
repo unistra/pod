@@ -244,9 +244,11 @@ ENCODE_WAV = False
 
 ENCODE_OVER_SSH_CMD = "ssh -i ~/.ssh/pod_distribution django@podcast-enc$(shuf -i 1-2 -n 1)-pprd.di.unistra.fr"
 ENCODE_VIDEO_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffprobe)s -v quiet -show_format -show_streams -print_format json -i %(src)s" + "'"
-ADD_THUMBNAILS_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i \"%(src)s\" -vf fps=\"fps=1/%(thumbnail)s,scale=%(scale)s\" -an -vsync 0 -f image2 -y %(out)s_%(num)s.png" + "'"
+#ADD_THUMBNAILS_CMD = "%(ffmpeg)s -i \"%(src)s\" -vf fps=\"fps=1/%(thumbnail)s,scale=%(scale)s\" -an -vsync 0 -f image2 -y %(out)s_%(num)s.png"
+ADD_THUMBNAILS_CMD = "ffmpegthumbnailer -i \"%(src)s\" -s 64x64 -f -t 10%% -o %(out)s_2.png && ffmpegthumbnailer -i \"%(src)s\" -s 64x64 -f -t 50%% -o %(out)s_3.png && ffmpegthumbnailer -i \"%(src)s\" -s 64x64 -f -t 75%% -o %(out)s_4.png"
 ADD_OVERVIEW_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i \"%(src)s\" -vf \"thumbnail=%(thumbnail)s,scale=%(scale)s,tile=100x1:nb_frames=100:padding=0:margin=0\" -an -vsync 0 -y %(out)s" + "'"
-ENCODE_MP4_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fmt yuv420p -preset faster -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -vf scale=%(scale)s -force_key_frames \"expr:gte(t,n_forced*1)\" -deinterlace -codec:a aac -strict -2 -ar %(ar)s -ac 2 -b:a %(ba)s -movflags faststart -y %(out)s" + "'"
+#ENCODE_MP4_CMD = "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fmt yuv420p -preset faster -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -vf scale=%(scale)s -force_key_frames \"expr:gte(t,n_forced*1)\" -deinterlace -codec:a aac -strict -2 -ar %(ar)s -ac 2 -b:a %(ba)s -movflags faststart -y %(out)s"
+ENCODE_MP4_CMD = "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fmt yuv420p -preset ultrafast -qp 27 -vf scale=%(scale)s -codec:a aac -strict -2 -ar 48000 -ac 2 -vbr 5 -movflags faststart -y %(out)s"
 ENCODE_WEBM_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i %(src)s -codec:v libvpx -quality realtime -cpu-used 3 -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -qmin 10 -qmax 42 -codec:a libvorbis -y %(out)s" + "'"
 ENCODE_MP3_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i %(src)s -vn -ar %(ar)s -ab %(ab)s -f mp3 -y %(out)s" + "'"
 ENCODE_WAV_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s" + "'"
