@@ -209,7 +209,7 @@ def pre_install_encoding():
     execute(pydiploy.require.system.set_locale)
     execute(pydiploy.require.system.set_timezone)
     execute(pydiploy.require.system.update_pkg_index)
-    fabtools.require.deb.packages(['ffmpeg', 'ffmpegthumbnailer'], update=False)
+    fabtools.require.deb.packages(['ffmpeg', 'ffmpegthumbnailer', 'imagemagick'], update=False)
 
 
 @roles('web')
