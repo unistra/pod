@@ -289,3 +289,9 @@ CURSUS_CODES = (
 # Media protection:
 MEDIA_GUARD = True
 MEDIA_GUARD_SALT = 'S3CR3T'
+
+# CELERY
+CELERY_TO_ENCODE = True
+CELERY_NAME = "pod_project"
+CELERY_BACKEND = "amqp"
+CELERY_BROKER = '{{ celery_broker }}'

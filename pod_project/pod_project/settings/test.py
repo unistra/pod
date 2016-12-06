@@ -280,4 +280,4 @@ MEDIA_GUARD_SALT = 'S3CR3T'
 CELERY_TO_ENCODE = True
 CELERY_NAME = "pod_project"
 CELERY_BACKEND = "amqp"
-CELERY_BROKER = "amqp://guest@localhost//"
+CELERY_BROKER = '{{ celery_broker }}'

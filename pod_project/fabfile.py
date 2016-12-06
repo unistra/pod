@@ -130,7 +130,8 @@ def test():
         'auth_ldap_bind_dn': "AUTH_LDAP_BIND_DN",
         'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
         'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN",
-        'avcast_db_uri': "AVCAST_DB_URI"
+        'avcast_db_uri': "AVCAST_DB_URI",
+        'celery_broker': "CELERY_BROKER"
     }
     execute(build_env)
 
@@ -172,7 +173,8 @@ def preprod():
         'auth_ldap_bind_dn': "AUTH_LDAP_BIND_DN",
         'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
         'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN",
-        'avcast_db_uri': "AVCAST_DB_URI"
+        'avcast_db_uri': "AVCAST_DB_URI",
+        'celery_broker': "CELERY_BROKER"
     }
     execute(build_env)
 
