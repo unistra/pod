@@ -43,9 +43,16 @@ if [ "$?" != 0 ]; then
     exit 2
 fi
 
+# TODO Check guest authentication : faut pas que ça plante si ça renvoie une erreur
+rabbitmqctl authenticate_user guest guest
+if [ "$?" -eq 0 ]; then
+    echo "Authentication error"
+    exit 3
+fi
+
 # Check user permissions
 rabbitmqctl list_permissions -p $4 | grep -P "^$1\t\.\*\t\.\*\t\.\*$"
 if [ "$?" != 0 ]; then
     echo "Permissions error"
-    exit 2
+    exit 4
 fi
