@@ -14,7 +14,7 @@
 
 if [ "$#" -ne 4 ]; then
     echo "Usage: ./install_rabbitmq.sh myuser S3Cr3t administrator my-vhost"
-    exit
+    exit 1
 fi
 
 # Install the package
@@ -32,5 +32,20 @@ rabbitmqctl set_permissions -p $4 $1 ".*" ".*" ".*"
 # Delete the guest user
 rabbitmqctl delete_user guest
 
-# TODO il faudrait tester la connection via l'uri suivante
+# TODO il faudrait tester plutôt la connection complète via l'uri suivante
 # amqp://$1:$2@localhost:5672:/$4
+# Mais c'est peut-être pas faisable sans un client amqp
+
+# Check user authentication
+rabbitmqctl authenticate_user $1 $2
+if [ "$?" != 0 ]; then
+    echo "Authentication error"
+    exit 2
+fi
+
+# Check user permissions
+rabbitmqctl list_permissions -p $4 | grep -P "^$1\t\.\*\t\.\*\t\.\*$"
+if [ "$?" != 0 ]; then
+    echo "Permissions error"
+    exit 2
+fi
