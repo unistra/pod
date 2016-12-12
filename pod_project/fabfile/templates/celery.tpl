@@ -1,0 +1,12 @@
+CELERYD_NODES="worker1"
+DJANGO_SETTINGS_MODULE="pod_project.settings.{{ goal }}"
+CELERY_BIN="{{ remote_virtualenv_dir }}/bin/celery"
+CELERY_APP="pod_project"
+CELERYD_CHDIR="{{ remote_current_path }}"
+CELERYD_OPTS="--time-limit=86400 --concurrency=1"
+CELERYD_LOG_FILE="/var/log/celery/%N.log"
+CELERYD_PID_FILE="/var/run/celery/%N.pid"
+CELERYD_USER="django"
+CELERYD_GROUP="di"
+CELERY_CREATE_DIRS=1
+#CELERYD_LOG_LEVEL="INFO"
