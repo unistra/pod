@@ -4,9 +4,9 @@ After=network.target
 
 [Service]
 Type=forking
-User=django
-Group=di
-EnvironmentFile=-/etc/default/celery-pod
+User={{ remote_owner }}
+Group={{ remote_group }}
+EnvironmentFile=-/etc/default/celery-{{ application_name }}
 WorkingDirectory={{ remote_current_path }}
 ExecStart=/bin/sh -c '${CELERY_BIN} multi start $CELERYD_NODES -A $CELERY_APP --logfile=${CELERYD_LOG_FILE} --pidfile=${CELERYD_PID_FILE} $CELERYD_OPTS'
 ExecStop=/bin/sh -c '${CELERY_BIN} multi stopwait $CELERYD_NODES --pidfile=${CELERYD_PID_FILE}'
