@@ -73,6 +73,7 @@ def install_celery():
         fabtools.systemd.restart(celery_filename)
 
 
+
     else:
         fabric.api.abort('Please provide parameters for Celery installation !')
 
@@ -92,3 +93,10 @@ def deploy_celery_file():
                                    chown=True,
                                    mode='644',
                                    use_jinja=True)
+
+
+@do_verbose
+def celery_restart():
+    """ Starts/Restarts celery """
+    celery_filename = 'celery-%s' % env.application_name
+    fabtools.systemd.restart(celery_filename)

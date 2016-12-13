@@ -8,7 +8,7 @@ from os.path import join
 import fabtools
 import pydiploy
 from fabric.operations import put
-from .celery import install_celery, deploy_celery_file
+from .celery import install_celery, deploy_celery_file, celery_restart
 
 
 # edit config here !
@@ -288,6 +288,7 @@ def deploy_encoding(update_pkg=False, **kwargs):
         execute(pydiploy.require.django.command.django_prepare)
         execute(pydiploy.require.system.permissions)
         execute(pydiploy.require.releases_manager.cleanup)
+        execute(celery_restart)
 
 
 @roles('web')
