@@ -8,7 +8,7 @@ from os.path import join
 import fabtools
 import pydiploy
 from fabric.operations import put
-from .celery import install_celery
+from .celery import install_celery, deploy_celery_file
 
 
 # edit config here !
@@ -246,9 +246,22 @@ def deploy(update_pkg=False):
 
 @roles('web')
 @task
-def deploy_backend(update_pkg=False):
+def deploy_backend(update_pkg=False, **kwargs):
     """Deploy code on server"""
-    execute(pydiploy.django.deploy_backend, update_pkg)
+    with pydiploy.django.wrap_deploy():
+        execute(pydiploy.require.releases_manager.setup)
+        execute(pydiploy.require.releases_manager.deploy_code)
+        execute(pydiploy.require.django.utils.deploy_manage_file)
+        execute(pydiploy.require.django.utils.deploy_wsgi_file)
+        execute(deploy_celery_file)
+        execute(
+            pydiploy.require.python.utils.application_dependencies,
+            update_pkg)
+        execute(pydiploy.require.django.utils.app_settings, **kwargs)
+        execute(pydiploy.require.django.command.django_prepare)
+        execute(pydiploy.require.system.permissions)
+        execute(pydiploy.require.circus.app_reload)
+        execute(pydiploy.require.releases_manager.cleanup)
 
 
 @roles('lb')
@@ -267,6 +280,7 @@ def deploy_encoding(update_pkg=False, **kwargs):
         execute(pydiploy.require.releases_manager.deploy_code)
         execute(pydiploy.require.django.utils.deploy_manage_file)
         execute(pydiploy.require.django.utils.deploy_wsgi_file)
+        execute(deploy_celery_file)
         execute(
             pydiploy.require.python.utils.application_dependencies,
             update_pkg)

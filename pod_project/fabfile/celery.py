@@ -75,3 +75,20 @@ def install_celery():
 
     else:
         fabric.api.abort('Please provide parameters for Celery installation !')
+
+
+@do_verbose
+def deploy_celery_file():
+    """ Uploads wsgi.py template on remote """
+    fabtools.files.upload_template('celery.py',
+                                   join(
+                                       env.remote_base_package_dir,
+                                       'celery.py'
+                                   ),
+                                   template_dir=env.local_tmp_root_app_package,
+                                   context=env,
+                                   use_sudo=True,
+                                   user=env.remote_owner,
+                                   chown=True,
+                                   mode='644',
+                                   use_jinja=True)
