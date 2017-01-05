@@ -142,6 +142,11 @@ def channel(request, slug_c, slug_t=None):
                                   {"videos": videos},
                                   context_instance=RequestContext(request))
 
+    if request.GET.get('is_iframe', None):
+        return render_to_response("videos/videos_iframe.html",
+                                  {"videos": videos},
+                                  context_instance=RequestContext(request))
+
     return render_to_response("channels/channel.html",
                               {"channel": channel, "theme": theme,
                                   "videos": videos},
@@ -334,8 +339,11 @@ def favorites_videos_list(request):
 
 def videos(request):
     videos_list = VIDEOS
+    is_iframe = request.GET.get('is_iframe', None)
+
     # type
-    type = request.GET.getlist('type') if request.GET.getlist('type') else None
+    type = request.GET.getlist(
+        'type') if request.GET.getlist('type') else None
     if type:
         videos_list = videos_list.filter(type__slug__in=type)
 
@@ -344,19 +352,22 @@ def videos(request):
         'discipline') if request.GET.getlist('discipline') else None
     if discipline:
         videos_list = videos_list.filter(discipline__slug__in=discipline)
+
     # owner
     owner = request.GET.getlist(
         'owner') if request.GET.getlist('owner') else None
     list_owner = None
     if owner:
         videos_list = videos_list.filter(owner__username__in=owner)
-        list_owner = User.objects.filter(username__in=owner)
+        if not is_iframe:
+            list_owner = User.objects.filter(username__in=owner)
 
     # tags
-    tag = request.GET.getlist('tag') if request.GET.getlist('tag') else None
+    tag = request.GET.getlist(
+        'tag') if request.GET.getlist('tag') else None
     if tag:
         videos_list = videos_list.filter(tags__slug__in=tag).distinct()
-    #Food.objects.filter(tags__name__in=["delicious", "red"]).distinct()
+    # Food.objects.filter(tags__name__in=["delicious", "red"]).distinct()
 
     order_by = request.COOKIES.get('orderby') if request.COOKIES.get(
         'orderby') else "order_by_-date_added"
@@ -364,7 +375,8 @@ def videos(request):
         "%s" % replace(order_by, "order_by_", ""))
 
     per_page = request.COOKIES.get('perpage') if request.COOKIES.get(
-        'perpage') and request.COOKIES.get('perpage').isdigit() else DEFAULT_PER_PAGE
+        'perpage') and request.COOKIES.get(
+        'perpage').isdigit() else DEFAULT_PER_PAGE
 
     paginator = Paginator(videos_list, per_page)
     page = request.GET.get('page')
@@ -374,6 +386,11 @@ def videos(request):
     if request.is_ajax():
         return render_to_response("videos/videos_list.html",
                                   {"videos": videos, "owners": list_owner},
+                                  context_instance=RequestContext(request))
+
+    if is_iframe:
+        return render_to_response("videos/videos_iframe.html",
+                                  {"videos": videos},
                                   context_instance=RequestContext(request))
 
     return render_to_response("videos/videos.html",
@@ -784,7 +801,7 @@ def video_completion_contributor(request, slug):
     if request.POST:  # Contributor CRUD Action
         # new
         if request.POST.get("action") and request.POST['action'] == 'new':
-            form_contributor = ContributorPodsForm({"video": video})
+            form_contributor = ContributorPodsForm(initial={"video": video})
             if request.is_ajax():  # if ajax
                 return render_to_response("videos/completion/contributor/form_contributor.html",
                                           {'form_contributor': form_contributor,
@@ -918,7 +935,7 @@ def video_completion_subtitle(request, slug):
     if request.POST:  # Subtitle CRUD Action
         # new
         if request.POST.get("action") and request.POST['action'] == 'new':
-            form_subtitle = TrackPodsForm({"video": video})
+            form_subtitle = TrackPodsForm(initial={"video": video})
             if request.is_ajax():  # if ajax
                 return render_to_response("videos/completion/subtitle/form_subtitle.html",
                                           {'form_subtitle': form_subtitle,
@@ -1049,7 +1066,7 @@ def video_completion_download(request, slug):
     if request.POST:  # Download CRUD Action
         # new
         if request.POST.get("action") and request.POST['action'] == 'new':
-            form_download = DocPodsForm({"video": video})
+            form_download = DocPodsForm(initial={"video": video})
             if request.is_ajax():  # if ajax
                 return render_to_response("videos/completion/download/form_download.html",
                                           {
@@ -1181,7 +1198,7 @@ def video_chapter(request, slug):
     list_chapter = video.chapterpods_set.all()
     if request.POST:  # some data sent
         if request.POST.get("action") and request.POST['action'] == 'new':
-            form_chapter = ChapterPodsForm({"video": video})
+            form_chapter = ChapterPodsForm(initial={"video": video})
             if request.is_ajax():  # if ajax
                 return render_to_response("videos/chapter/form_chapter.html",
                                           {'form_chapter': form_chapter,
@@ -1299,7 +1316,7 @@ def video_enrich(request, slug):
     if request.POST:  # some data sent
         if request.POST.get("action") and request.POST['action'] == 'new':
             form_enrich = EnrichPodsForm(
-                {"video": video, "start": 0, "end": 1})
+                initial={"video": video, "start": 0, "end": 1})
             if request.is_ajax():  # if ajax
                 return render_to_response("videos/enrich/form_enrich.html",
                                           {'form_enrich': form_enrich,
