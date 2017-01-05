@@ -453,7 +453,8 @@ class Pod(Video):
             "chapters": list(self.chapterpods_set.values('title', 'slug')),
             "enrichments": list(self.enrichpods_set.values('title', 'slug')),
             "full_url": self.get_full_url(),
-            "protected": True if self.password != "" or self.is_restricted is True else False,
+            "is_restricted": self.is_restricted,
+            "password": True if self.password != "" else False,
             "duration_in_time": self.duration_in_time(),
             "mediatype": self.get_mediatype()[0] if len(self.get_mediatype()) > 0 else "video",
             "is_richmedia": self.is_richmedia(),
@@ -560,7 +561,7 @@ class ContributorPods(models.Model):
         ("voice-over", _("voice-over"))
     )
     role = models.CharField(
-        _(u'role'), max_length=200, choices=ROLE_CHOICES, default=_("authors"))
+        _(u'role'), max_length=200, choices=ROLE_CHOICES, default="author")
     weblink = models.URLField(
         _(u'Web link'), max_length=200, null=True, blank=True)
 
@@ -650,6 +651,8 @@ class TrackPods(models.Model):
             msg.append(_('please enter a correct lang.'))
         if not self.src:
             msg.append(_('please specify a track file.'))
+        if not str(self.src).lower().endswith('.vtt'):
+            msg.append(_('only “.vtt” format is allowed.'))
         if (len(msg) > 0):
             return msg
         else:
