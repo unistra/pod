@@ -9,6 +9,7 @@ import fabtools
 import pydiploy
 from fabric.operations import put
 from .celery import install_celery, deploy_celery_file, celery_restart
+from .uwsgi import install_uwsgi, uwsgi_restart, app_uwsgi_conf
 
 
 # edit config here !
@@ -65,7 +66,7 @@ env.verbose = True # verbose display for pydiploy default value = True
 # env.no_circus_web = True
 # env.circus_backend = 'gevent' # name of circus backend to use
 
-env.chaussette_backend = 'gevent' # name of chaussette backend to use. You need to add this backend in the app requirement file.
+# env.chaussette_backend = 'gevent' # name of chaussette backend to use. You need to add this backend in the app requirement file.
 
 env.media_folder = '/media' # path of media folder
 env.remote_media_folder = '/srv/media/pod' # root of media files
@@ -221,12 +222,19 @@ def pre_install_encoding():
     execute(pydiploy.require.python.virtualenv.virtualenv)
 
 
-
 @roles('web')
 @task
-def pre_install_backend():
-    """Setup server for backend"""
-    execute(pydiploy.django.pre_install_backend, commands='/usr/bin/rsync')
+def pre_install_backend(commands='/usr/bin/rsync', update_uwsgi=False):
+    """ Installs requirements for uwsgi & virtualenv env """
+    execute(pydiploy.require.system.add_user, commands=commands)
+    execute(pydiploy.require.system.set_locale)
+    execute(pydiploy.require.system.set_timezone)
+    execute(pydiploy.require.system.update_pkg_index)
+    execute(pydiploy.django.application_packages)
+    # execute(pydiploy.require.circus.circus_pkg, update=upgrade_circus)
+    execute(pydiploy.require.python.virtualenv.virtualenv)
+    # execute(pydiploy.require.circus.upstart)
+    execute(install_uwsgi, update=update_uwsgi)
 
 
 @roles('lb')
@@ -260,7 +268,8 @@ def deploy_backend(update_pkg=False, **kwargs):
         execute(pydiploy.require.django.utils.app_settings, **kwargs)
         execute(pydiploy.require.django.command.django_prepare)
         execute(pydiploy.require.system.permissions)
-        execute(pydiploy.require.circus.app_reload)
+        # execute(pydiploy.require.circus.app_reload)
+        execute(uwsgi_restart)
         execute(pydiploy.require.releases_manager.cleanup)
 
 
@@ -294,8 +303,10 @@ def deploy_encoding(update_pkg=False, **kwargs):
 @roles('web')
 @task
 def rollback():
-    """Rollback code (current-1 release)"""
-    execute(pydiploy.django.rollback)
+    """ Rolls back django webapp """
+    execute(pydiploy.require.releases_manager.rollback_code)
+    # execute(pydiploy.require.circus.app_reload)
+    execute(uwsgi_restart)
 
 
 @task
@@ -309,8 +320,11 @@ def post_install():
 @roles('web')
 @task
 def post_install_backend():
-    """Post installation of backend"""
-    execute(pydiploy.django.post_install_backend)
+    """ Post-installation of webapp"""
+    #execute(pydiploy.require.circus.app_circus_conf)
+    execute(app_uwsgi_conf)
+    # execute(pydiploy.require.circus.app_reload)
+    execute(uwsgi_restart)
 
 
 @roles('lb')
@@ -356,7 +370,8 @@ def reload_frontend():
 @roles('web')
 @task
 def reload_backend():
-    execute(pydiploy.django.reload_backend)
+    """ Reloads backend """
+    execute(uwsgi_restart)
 
 
 @roles('lb')
