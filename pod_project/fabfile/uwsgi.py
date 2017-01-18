@@ -57,7 +57,7 @@ def app_uwsgi_conf():
     uwsgi_root = '/etc/uwsgi'
     uwsgi_available = join(uwsgi_root, 'apps-available')
     uwsgi_enabled = join(uwsgi_root, 'apps-enabled')
-    app_conf = join(uwsgi_available, '%s.conf' % env.server_name)
+    app_conf = join(uwsgi_available, '%s.ini' % env.server_name)
     fabtools.files.upload_template('uwsgi-app.ini.tpl',
                                    app_conf,
                                    context=env,
@@ -69,7 +69,7 @@ def app_uwsgi_conf():
                                    chown=True,
                                    mode='644')
 
-    if not fabtools.files.is_link('%s/%s.conf' % (uwsgi_enabled,
+    if not fabtools.files.is_link('%s/%s.ini' % (uwsgi_enabled,
                                                   env.server_name)):
         with fabric.api.cd(uwsgi_enabled):
             fabric.api.sudo('ln -s %s .' % app_conf)

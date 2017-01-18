@@ -28,13 +28,13 @@ Les fichiers et dossiers spécifiques liés à cette version sont les suivants:
 * Le fichier **pod_project/manage.py** qui est le template de management de django pour pydiploy, librairie basée sur `fabric <http://www.fabfile.org/>`_
 * Le fichier **pod_project/requirements.txt** qui dépend du dossier **pod_project/requirements**
 * Le fichier **pod_project/fabfile.py** qui est le fichier de configuration de pydiploy
-* Le fichier **pod_project/nginx_with_load_balancer.patch** qui est une modification de la conf nginx pour la prod et la preprod (avec load balancer)  
+* Le fichier **pod_project/nginx_with_load_balancer.patch** qui est une modification de la conf nginx pour la prod et la preprod (avec load balancer)
 * Le fichier **pod_project/MANIFEST.in** qui permet d'inclure certains fichiers dans le package python
 * Le fichier **setup.py** qui permet de packager l'application, nécessaire à tox
 * Le fichier **tox.ini** qui permet d'exécuter les tests unitaires sous différents environnements
 * Le fichier **pod_project/pod_project/wsgi.py** qui est un template pour pydiploy permettant l'utilisation d'un serveur wsgi
 * Le dossier **pod_project/pod_project/settings**, qui contient l'ensemble des fichiers de configuration pour les différents environnements:
-* Le dossier **pod_project/elasticsearch**, qui contient la configuration d'elasticsearch pour tox  
+* Le dossier **pod_project/elasticsearch**, qui contient la configuration d'elasticsearch pour tox
 
   * **base.py**: Contient les paramètres communs. C'est une copie exacte du fichier **settings-sample.py**
   * **dev.py**: Contient la configuration de l'environnement de développement
@@ -56,11 +56,11 @@ Dans le cas d'un pull request d'une fonctionnalité, il faudra:
 Installation
 ------------
 
-* Préparer une machine virtuelle Ubuntu 14.04
+* Préparer une machine virtuelle Ubuntu 16.04
 * Pour test, preprod et prod, créer une base de données postgresql vide. On utilise sqlite en dev.
-* Installer manuellement Elasticsearch 1.6:
+* Installer manuellement Elasticsearch 2:
 
-  * apt-get install openjdk-7-jre-headless
+  * apt-get install openjdk-8-jre-headless
   * wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
   * echo "deb https://packages.elastic.co/elasticsearch/2.x/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-2.x.list
   * sudo apt-get update && sudo apt-get install elasticsearch
@@ -75,19 +75,10 @@ Installation
         discovery.zen.ping.multicast.enabled: false
         discovery.zen.ping.unicast.hosts: ["127.0.0.1"]
 
-* Installer manuellement ffmpeg:
+* Installer ffmpeg :
 
-  * cd /usr/local/
-  * wget http://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz
-  * tar -Jxvf ffmpeg-release-64bit-static.tar.xz
-  * rm ffmpeg-release-64bit-static.tar.xz
-  * mv ffmpeg-X.X.X-64bit-static ffmpeg
-  * ln -s /usr/local/ffmpeg/ffmpeg /usr/local/bin/ffmpeg
-  * ln -s /usr/local/ffmpeg/ffmpeg-10bit /usr/local/bin/ffmpeg-10bit
-  * ln -s /usr/local/ffmpeg/ffprobe /usr/local/bin/ffprobe
-  * ln -s /usr/local/ffmpeg/ffserver /usr/local/bin/ffserver
-  * ln -s /usr/local/ffmpeg/qt-faststart /usr/local/bin/qt-faststart
-
+  * apt install ffmpeg
+  
 * Créer le répertoire des médias : mkdir -p /srv/media/pod && chown -R django:di /srv/media
 * Préparer l'environnement python via pydiploy : **fab prod pre_install**
 * Déployer le code de la branche **unistra** via pydiploy: **fab tag:unistra prod deploy --set default_db_host=X,default_db_user=X,default_db_password=X,default_db_name=X,cas_server_url=X,auth_ldap_server_uri=X,auth_ldap_bind_dn=X,auth_ldap_bind_password=X,auth_ldap_base_dn=X**
