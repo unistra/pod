@@ -47,7 +47,7 @@ def install_uwsgi(update=False):
 
     # reload systemd conf
     fabric.api.run('systemctl daemon-reload')
-    fabtools.systemd.restart("emperor.uwsgi.service")
+    fabtools.systemd.restart("emperor.uwsgi")
 
 
 @do_verbose
@@ -78,4 +78,4 @@ def app_uwsgi_conf():
 @do_verbose
 def uwsgi_restart():
     """ Starts/Restarts uwsgi """
-    fabtools.systemd.restart("emperor.uwsgi.service")
+    fabtools.systemd.restart("emperor.uwsgi")

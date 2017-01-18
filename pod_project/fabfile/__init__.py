@@ -3,7 +3,7 @@
 """
 """
 
-from fabric.api import (env, roles, execute, task, sudo)
+from fabric.api import (env, roles, execute, task, sudo, warn_only)
 from os.path import join
 import fabtools
 import pydiploy
@@ -105,9 +105,9 @@ def test():
     """Define test stage"""
     env.user = 'root'
     env.roledefs = {
-        'web': ['podcast-test.u-strasbg.fr'],
-        'lb': ['podcast-test.u-strasbg.fr'],
-        'encoding': []
+        'web': ['podcast-test.di.unistra.fr'],
+        'lb': ['podcast-test.di.unistra.fr'],
+        'encoding': ['podcast-test.di.unistra.fr']
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-test.u-strasbg.fr'
@@ -120,6 +120,7 @@ def test():
         'client_max_body_size 4G', 'proxy_request_buffering off', 'proxy_connect_timeout 600',
         'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
     ]
+    env.extra_pkg_to_install += ["rabbitmq-server"]
     env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
     env.path_to_cert_key = '/etc/ssl/private/wildcard.u-strasbg.fr.key'
     env.goal = 'test'
@@ -297,7 +298,8 @@ def deploy_encoding(update_pkg=False, **kwargs):
         execute(pydiploy.require.django.command.django_prepare)
         execute(pydiploy.require.system.permissions)
         execute(pydiploy.require.releases_manager.cleanup)
-        execute(celery_restart)
+        with warn_only():
+            execute(celery_restart)
 
 
 @roles('web')
