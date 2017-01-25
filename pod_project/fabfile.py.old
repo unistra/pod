@@ -9,6 +9,7 @@ import fabtools
 import pydiploy
 from fabric.operations import put
 
+
 # edit config here !
 
 env.remote_owner = 'django'  # remote server user
@@ -111,7 +112,7 @@ def test():
     env.no_shared_sessions = False
     env.server_ssl_on = True
     env.nginx_location_extra_directives = [
-        'client_max_body_size 4G', 'client_body_temp_path /tmp', 'proxy_connect_timeout 600',
+        'client_max_body_size 4G', 'proxy_request_buffering off', 'proxy_connect_timeout 600',
         'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
     ]
     env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
@@ -129,7 +130,9 @@ def test():
         'auth_ldap_server_uri': "AUTH_LDAP_SERVER_URI",
         'auth_ldap_bind_dn': "AUTH_LDAP_BIND_DN",
         'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
-        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN"
+        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN",
+        'avcast_db_uri': "AVCAST_DB_URI",
+        'celery_broker': "CELERY_BROKER"
     }
     execute(build_env)
 
@@ -152,7 +155,7 @@ def preprod():
     env.no_shared_sessions = False
     env.server_ssl_on = True
     env.nginx_location_extra_directives = [
-        'client_max_body_size 4G', 'client_body_temp_path /nfs/tmp/nginx', 'proxy_connect_timeout 600',
+        'client_max_body_size 4G', 'proxy_request_buffering off', 'proxy_connect_timeout 600',
         'proxy_send_timeout 600', 'proxy_read_timeout 600', 'send_timeout 600'
     ]
     env.path_to_cert = '/local/ssl/unistra.fr.pem'
@@ -170,7 +173,9 @@ def preprod():
         'auth_ldap_server_uri': "AUTH_LDAP_SERVER_URI",
         'auth_ldap_bind_dn': "AUTH_LDAP_BIND_DN",
         'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
-        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN"
+        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN",
+        'avcast_db_uri': "AVCAST_DB_URI",
+        'celery_broker': "CELERY_BROKER"
     }
     execute(build_env)
 
@@ -207,7 +212,10 @@ def pre_install_encoding():
     execute(pydiploy.require.system.set_locale)
     execute(pydiploy.require.system.set_timezone)
     execute(pydiploy.require.system.update_pkg_index)
-    fabtools.require.deb.packages(['ffmpeg'], update=False)
+    fabtools.require.deb.packages(['ffmpeg', 'ffmpegthumbnailer', 'imagemagick'], update=False)
+    execute(pydiploy.django.application_packages)
+    execute(pydiploy.require.python.virtualenv.virtualenv)
+
 
 
 @roles('web')
@@ -229,6 +237,7 @@ def deploy(update_pkg=False):
     """Deploy code on server"""
     execute(deploy_backend, update_pkg)
     execute(deploy_frontend)
+    execute(deploy_encoding, update_pkg)
 
 
 @roles('web')
@@ -245,6 +254,24 @@ def deploy_frontend():
     execute(pydiploy.django.deploy_frontend)
 
 
+@roles('encoding')
+@task
+def deploy_encoding(update_pkg=False, **kwargs):
+    """Deploy static files on load balancer"""
+    with pydiploy.django.wrap_deploy():
+        execute(pydiploy.require.releases_manager.setup)
+        execute(pydiploy.require.releases_manager.deploy_code)
+        execute(pydiploy.require.django.utils.deploy_manage_file)
+        execute(pydiploy.require.django.utils.deploy_wsgi_file)
+        execute(
+            pydiploy.require.python.utils.application_dependencies,
+            update_pkg)
+        execute(pydiploy.require.django.utils.app_settings, **kwargs)
+        execute(pydiploy.require.django.command.django_prepare)
+        execute(pydiploy.require.system.permissions)
+        execute(pydiploy.require.releases_manager.cleanup)
+
+
 @roles('web')
 @task
 def rollback():
@@ -257,6 +284,7 @@ def post_install():
     """post install for backend & frontend"""
     execute(post_install_backend)
     execute(post_install_frontend)
+    execute(post_install_encoding)
 
 
 @roles('web')
@@ -275,6 +303,15 @@ def post_install_frontend():
     put('nginx_with_load_balancer.patch', '/tmp/')
     sudo("patch /etc/nginx/sites-available/%s.conf < /tmp/nginx_with_load_balancer.patch" % env.server_name)
     execute(pydiploy.require.nginx.nginx_restart)
+
+
+@roles('encoding')
+@task
+def post_install_encoding():
+    """Post installation of encoding"""
+    # CELERY CONF
+    pass
+
 
 @roles('web')
 @task

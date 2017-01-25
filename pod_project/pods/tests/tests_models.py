@@ -38,15 +38,16 @@ import os
     test the channel
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     }
-    )
+)
 class ChannelTestCase(TestCase):
     fixtures = ['initial_data.json', ]
 
@@ -110,16 +111,17 @@ class ChannelTestCase(TestCase):
 	test the theme
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class ThemeTestCase(TestCase):
     fixtures = ['initial_data.json', ]
 
@@ -173,16 +175,17 @@ class ThemeTestCase(TestCase):
 	test the type
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class TypeTestCase(TestCase):
 
     def setUp(self):
@@ -233,16 +236,17 @@ class TypeTestCase(TestCase):
 	test the discipline
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class DisciplineTestCase(TestCase):
 
     def setUp(self):
@@ -293,16 +297,17 @@ class DisciplineTestCase(TestCase):
 	test the NextAutoIncrement
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class NextAutoIncrementTestCase(TestCase):
 
     def setUp(self):
@@ -329,26 +334,28 @@ class NextAutoIncrementTestCase(TestCase):
 	test the objet pod and Video
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class VideoTestCase(TestCase):
     fixtures = ['initial_data.json', ]
 
     def setUp(self):
         remi = User.objects.create_user("Remi")
         other_type = Type.objects.get(id=1)
+        self.media_guard_hash = get_media_guard("remi", 1)
         Pod.objects.create(
             type=other_type, title="Video1", owner=remi, video="", to_encode=False)
         Pod.objects.create(type=other_type, title="Video2", encoding_status="b", encoding_in_progress=True,
-                           date_added=datetime.today(), owner=remi, date_evt=datetime.today(), video="/media/videos/remi/test.mp4", allow_downloading=True, view_count=2, description="fl",
+                           date_added=datetime.today(), owner=remi, date_evt=datetime.today(), video=os.path.join("media", "videos", "remi", self.media_guard_hash, "test.mp4"), allow_downloading=True, view_count=2, description="fl",
                            overview="blabla.jpg", is_draft=False, duration=3, infoVideo="videotest", to_encode=False)
         print (" --->  SetUp of VideoTestCase : OK !")
 
@@ -390,7 +397,8 @@ class VideoTestCase(TestCase):
 
     def test_Video_many_attributs(self):
         pod = Pod.objects.get(id=2)
-        self.assertEqual(pod.video.name, u'/media/videos/remi/test.mp4')
+        self.assertEqual(pod.video.name, os.path.join(
+            'media', 'videos', 'remi', self.media_guard_hash, 'test.mp4'))
         self.assertEqual(pod.allow_downloading, True)
         self.assertEqual(pod.description, 'fl')
         self.assertEqual(pod.overview.name, "blabla.jpg")
@@ -462,16 +470,17 @@ class VideoTestCase(TestCase):
 	test the favorites object
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class FavoritesTestCase(TestCase):
     fixtures = ['initial_data.json', ]
 
@@ -513,16 +522,17 @@ class FavoritesTestCase(TestCase):
 	test the objet Notes
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class NotesTestCase(TestCase):
     fixtures = ['initial_data.json', ]
 
@@ -571,16 +581,17 @@ class NotesTestCase(TestCase):
 	test the MediaCourses
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class MediaCoursesTestCase(TestCase):
     fixtures = ['initial_data.json', ]
 
@@ -636,16 +647,17 @@ class MediaCoursesTestCase(TestCase):
 	test building object
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class BuildingTestCase(TestCase):
 
     def setUp(self):
@@ -679,16 +691,17 @@ class BuildingTestCase(TestCase):
 	test recorder object
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class RecoderTestCase(TestCase):
     fixtures = ['initial_data.json', ]
 
@@ -738,16 +751,17 @@ class RecoderTestCase(TestCase):
     test reportVideo object
 """
 
+
 @override_settings(
-    MEDIA_ROOT = os.path.join(settings.BASE_DIR, 'media'),
-    DATABASES = {
+    MEDIA_ROOT=os.path.join(settings.BASE_DIR, 'media'),
+    DATABASES={
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'db.sqlite',
         }
     },
-    LANGUAGE_CODE = 'en'
-    )
+    LANGUAGE_CODE='en'
+)
 class ReportVideoTestCase(TestCase):
     fixtures = ['initial_data.json', ]
 
@@ -760,8 +774,8 @@ class ReportVideoTestCase(TestCase):
 
         ReportVideo.objects.create(video=pod, user=remi)
 
-        ReportVideo.objects.create(video=pod, user=nicolas, comment="violation des droits", answer="accepte")
-
+        ReportVideo.objects.create(
+            video=pod, user=nicolas, comment="violation des droits", answer="accepte")
 
         print (" --->  SetUp of ReportVideoTestCase : OK !")
 
@@ -782,8 +796,8 @@ class ReportVideoTestCase(TestCase):
         self.assertEqual(reportVideo.comment, None)
         self.assertEqual(reportVideo.answer, None)
         yesterday = datetime.today() - timedelta(1)
-        reportVideo.date= yesterday
-        self.assertFalse(reportVideo.date_added.day ==  yesterday.day)
+        reportVideo.date = yesterday
+        self.assertFalse(reportVideo.date_added.day == yesterday.day)
 
         print (
             "   --->  test_attributs_with_not_comment of ReportVideoTestCase : OK !")
@@ -791,6 +805,7 @@ class ReportVideoTestCase(TestCase):
     """
         test_attributs_with_comment
     """
+
     def test_attributs_with_comment(self):
         reportVideo = ReportVideo.objects.get(id=2)
         self.assertEqual(reportVideo.video.id, 1)
@@ -803,7 +818,8 @@ class ReportVideoTestCase(TestCase):
         self.assertEqual(reportVideo.date_added.day, date.day)
         self.assertEqual(reportVideo.comment, "violation des droits")
         self.assertEqual(reportVideo.answer, "accepte")
-        self.assertEqual(reportVideo.get_iframe_url_to_video(), reportVideo.video.get_iframe_admin_integration())
+        self.assertEqual(reportVideo.get_iframe_url_to_video(),
+                         reportVideo.video.get_iframe_admin_integration())
 
         print (
             "   --->  test_attributs_with_comment of ReportVideoTestCase : OK !")

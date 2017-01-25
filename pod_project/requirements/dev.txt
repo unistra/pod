@@ -1,5 +1,4 @@
 -r common.txt
 coverage==3.7.1
 tox
-chaussette
-gevent
+psycopg2

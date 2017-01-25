@@ -104,7 +104,7 @@ TITLE_SITE = 'Pod'
 TITLE_ETB = 'Université'
 DEFAULT_IMG = 'images/default.png'
 FILTER_USER_MENU = ('[a-d]', '[e-h]', '[i-l]', '[m-p]', '[q-t]', '[u-z]')
-TEMPLATE_THEME = 'LILLE1'
+TEMPLATE_THEME = 'DEFAULT'
 
 LOGO_SITE = 'images/logo_compact.png'
 LOGO_COMPACT_SITE = 'images/logo_black_compact.png'
@@ -128,8 +128,8 @@ FMS_ROOT_URL = ''
 # Video #
 #########
 
-FFMPEG = 'nice -19 /usr/local/ffmpeg/ffmpeg'
-FFPROBE = 'nice -19 /usr/local/ffmpeg/ffprobe'
+FFMPEG = 'nice -n 19 /usr/local/ffmpeg/ffmpeg'
+FFPROBE = 'nice -n 19 /usr/local/ffmpeg/ffprobe'
 VIDEO_EXT_ACCEPT = (
     '.3gp',
     '.avi',
@@ -243,6 +243,16 @@ ENCODE_MP4_CMD = "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fm
 ENCODE_WEBM_CMD = "%(ffmpeg)s -i %(src)s -codec:v libvpx -quality realtime -cpu-used 3 -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -qmin 10 -qmax 42 -codec:a libvorbis -y %(out)s"
 ENCODE_MP3_CMD = "%(ffmpeg)s -i %(src)s -vn -ar %(ar)s -ab %(ab)s -f mp3 -y %(out)s"
 ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
+
+####################
+# Avcast migration #
+####################
+
+INSTALLED_APPS += ('migration_avcast',)
+AVCAST_DB_URI = '{{ avcast_db_uri }}'
+AVCAST_COURSE_DEFAULT_USERNAME = "di-info-pod@unistra.fr"
+AVCAST_VOLUME_PATH = "/audiovideocours/cours/1"
+AVCAST_FAKE_FILES_COPY = False
 
 #######################
 # Custom cursus codes #

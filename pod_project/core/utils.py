@@ -31,7 +31,7 @@ import logging
 import traceback
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from core.models import EncodingType
+from core.models import EncodingType, get_media_guard
 from pods.models import EncodingPods
 from pods.models import Pod
 
@@ -46,16 +46,22 @@ DEFAULT_THUMBNAIL_OUT_SIZE_HEIGHT = 480
 VIDEOS_DIR = getattr(settings, 'VIDEOS_DIR', 'videos')
 DEFAULT_OVERVIEW_OUT_SIZE_HEIGHT = 64
 DEBUG = getattr(settings, 'DEBUG', True)
-ENCODE_WEBM=getattr(settings, 'ENCODE_WEBM', True)
-ENCODE_WAV=getattr(settings, 'ENCODE_WAV', True)
+ENCODE_WEBM = getattr(settings, 'ENCODE_WEBM', True)
+ENCODE_WAV = getattr(settings, 'ENCODE_WAV', True)
 
-ENCODE_VIDEO_CMD=getattr(settings, 'ENCODE_VIDEO_CMD', "%(ffprobe)s -v quiet -show_format -show_streams -print_format json -i %(src)s")
-ADD_THUMBNAILS_CMD=getattr(settings, 'ADD_THUMBNAILS_CMD', "%(ffmpeg)s -i \"%(src)s\" -vf fps=\"fps=1/%(thumbnail)s,scale=%(scale)s\" -an -vsync 0 -threads 0 -f image2 -y %(out)s_%(num)s.png")
-ADD_OVERVIEW_CMD=getattr(settings, 'ADD_OVERVIEW_CMD', "%(ffmpeg)s -i \"%(src)s\" -vf \"thumbnail=%(thumbnail)s,scale=%(scale)s,tile=100x1:nb_frames=100:padding=0:margin=0\" -an -vsync 0 -threads 0 -y %(out)s")
-ENCODE_MP4_CMD=getattr(settings, 'ENCODE_MP4_CMD', "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fmt yuv420p -preset faster -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -vf scale=%(scale)s -force_key_frames \"expr:gte(t,n_forced*1)\" -deinterlace -threads 0 -codec:a aac -strict -2 -ar %(ar)s -ac 2 -b:a %(ba)s -movflags faststart -y %(out)s")
-ENCODE_WEBM_CMD=getattr(settings, 'ENCODE_WEBM_CMD', "%(ffmpeg)s -i %(src)s -codec:v libvpx -quality realtime -cpu-used 3 -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -qmin 10 -qmax 42 -threads 4 -codec:a libvorbis -y %(out)s")
-ENCODE_MP3_CMD=getattr(settings, 'ENCODE_MP3_CMD', "%(ffmpeg)s -i %(src)s -vn -ar %(ar)s -ab %(ab)s -f mp3 -threads 0 -y %(out)s")
-ENCODE_WAV_CMD=getattr(settings, 'ENCODE_WAV_CMD', "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -threads 0 -y %(out)s")
+ENCODE_VIDEO_CMD = getattr(settings, 'ENCODE_VIDEO_CMD',
+                           "%(ffprobe)s -v quiet -show_format -show_streams -print_format json -i %(src)s")
+ADD_THUMBNAILS_CMD = getattr(settings, 'ADD_THUMBNAILS_CMD',
+                             "%(ffmpeg)s -i \"%(src)s\" -vf fps=\"fps=1/%(thumbnail)s,scale=%(scale)s\" -an -vsync 0 -threads 0 -f image2 -y %(out)s_%(num)s.png")
+ADD_OVERVIEW_CMD = getattr(settings, 'ADD_OVERVIEW_CMD',
+                           "%(ffmpeg)s -i \"%(src)s\" -vf \"thumbnail=%(thumbnail)s,scale=%(scale)s,tile=100x1:nb_frames=100:padding=0:margin=0\" -an -vsync 0 -threads 0 -y %(out)s")
+ENCODE_MP4_CMD = getattr(settings, 'ENCODE_MP4_CMD', "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fmt yuv420p -preset faster -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -vf scale=%(scale)s -force_key_frames \"expr:gte(t,n_forced*1)\" -deinterlace -threads 0 -codec:a aac -strict -2 -ar %(ar)s -ac 2 -b:a %(ba)s -movflags faststart -y %(out)s")
+ENCODE_WEBM_CMD = getattr(settings, 'ENCODE_WEBM_CMD',
+                          "%(ffmpeg)s -i %(src)s -codec:v libvpx -quality realtime -cpu-used 3 -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -qmin 10 -qmax 42 -threads 4 -codec:a libvorbis -y %(out)s")
+ENCODE_MP3_CMD = getattr(settings, 'ENCODE_MP3_CMD',
+                         "%(ffmpeg)s -i %(src)s -vn -ar %(ar)s -ab %(ab)s -f mp3 -threads 0 -y %(out)s")
+ENCODE_WAV_CMD = getattr(settings, 'ENCODE_WAV_CMD',
+                         "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -threads 0 -y %(out)s")
 
 log = logging.getLogger(__name__)
 
@@ -125,7 +131,8 @@ def encode_video(video_to_encode):
                     # Rotation
                     try:
                         if stream.get("side_data_list"):
-                            in_rotation = int(stream.get("side_data_list")[0]["rotation"])
+                            in_rotation = int(stream.get(
+                                "side_data_list")[0]["rotation"])
                             if in_rotation == 270:
                                 in_rotation = -90
                     except Exception:
@@ -157,7 +164,8 @@ def encode_video(video_to_encode):
                             nb_frames = int(stream.get("nb_frames"))
                         else:
                             in_frame_rate = eval(stream["r_frame_rate"])
-                            nb_frames = int(round(duration * float(in_frame_rate)))
+                            nb_frames = int(
+                                round(duration * float(in_frame_rate)))
                         addInfoVideo(
                             video_to_encode, unicode("\n Nb frames %s" % (nb_frames), errors='ignore'))
                     except Exception as e:
@@ -221,11 +229,13 @@ def encode_video(video_to_encode):
         # VIDEO/AUDIO FOLDER
         if DEBUG:
             print "VIDEO/AUDIO FOLDER"
+        media_guard_hash = get_media_guard(
+            video_to_encode.owner.username, video_to_encode.id)
         if not(
             os.access(
-                os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR, video_to_encode.owner.username, "%s" % video_to_encode.id), os.F_OK)):
+                os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR, video_to_encode.owner.username, media_guard_hash, "%s" % video_to_encode.id), os.F_OK)):
             os.makedirs(os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR,
-                                     video_to_encode.owner.username, "%s" % video_to_encode.id))
+                                     video_to_encode.owner.username, media_guard_hash, "%s" % video_to_encode.id))
         if DEBUG:
             print "END VIDEO/AUDIO FOLDER"
         # FILER FOLDER
@@ -247,7 +257,7 @@ def encode_video(video_to_encode):
                 add_overview(VIDEO_ID, in_width, in_height, nb_frames)
 
             list_encod_video = EncodingType.objects.filter(mediatype='video').order_by(
-                'output_height')#.exclude(output_height=1080).exclude(output_height=720).exclude(output_height=480)
+                'output_height')  # .exclude(output_height=1080).exclude(output_height=720).exclude(output_height=480)
             for encod_video in list_encod_video:
                 bufsize = encod_video.bitrate_video
                 try:
@@ -258,26 +268,32 @@ def encode_video(video_to_encode):
                     pass
                 if in_height >= encod_video.output_height or encod_video == list_encod_video.first():
                     video = Pod.objects.get(id=VIDEO_ID)
-                    videofilename = os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR, video.owner.username, "%s" % video.id,
+                    media_guard_hash = get_media_guard(
+                        video.owner.username, video.id)
+                    videofilename = os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR, video.owner.username, media_guard_hash, "%s" % video.id,
                                                  "video_%s_%s.mp4" % (video.id, encod_video.output_height))
-                    videourl = os.path.join(VIDEOS_DIR, video.owner.username, "%s" % video.id,
+                    videourl = os.path.join(VIDEOS_DIR, video.owner.username, media_guard_hash, "%s" % video.id,
                                             "video_%s_%s.mp4" % (video.id, encod_video.output_height))
                     encode_mp4(VIDEO_ID, in_width, in_height, bufsize,
                                in_audio_rate, encod_video, videofilename, videourl)
                     if ENCODE_WEBM and os.access(videofilename, os.F_OK):
-                        encode_webm(VIDEO_ID, videofilename, encod_video, bufsize)
+                        encode_webm(VIDEO_ID, videofilename,
+                                    encod_video, bufsize)
         else:
             list_encod_audio = EncodingType.objects.filter(mediatype='audio')
             for encod_audio in list_encod_audio:
                 video = Pod.objects.get(id=VIDEO_ID)
-                audiofilename = os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR, video.owner.username, "%s" % video.id,
+                media_guard_hash = get_media_guard(
+                    video.owner.username, video.id)
+                audiofilename = os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR, video.owner.username, media_guard_hash, "%s" % video.id,
                                              "audio_%s_%s.mp3" % (video.id, encod_audio.output_height))
-                audiourl = os.path.join(VIDEOS_DIR, video.owner.username, "%s" % video.id,
+                audiourl = os.path.join(VIDEOS_DIR, video.owner.username, media_guard_hash, "%s" % video.id,
                                         "audio_%s_%s.mp3" % (video.id, encod_audio.output_height))
                 encode_mp3(
                     VIDEO_ID, audiofilename, audiourl, encod_audio, in_audio_rate)
                 if ENCODE_WAV and os.access(audiofilename, os.F_OK):
-                    encode_wav(VIDEO_ID, audiofilename, in_audio_rate, encod_audio)
+                    encode_wav(VIDEO_ID, audiofilename,
+                               in_audio_rate, encod_audio)
         video = None
         video = Pod.objects.get(id=VIDEO_ID)
         video.encoding_status = "DONE at %s" % time.ctime()
@@ -344,7 +360,8 @@ def add_thumbnails(video_id, in_w, in_h, folder):
     video = Pod.objects.get(id=video_id)
     video.encoding_status = "ADD THUMBNAILS"
     video.save()
-    tempfile = NamedTemporaryFile()
+    tempfile = NamedTemporaryFile(dir=settings.FILE_UPLOAD_TEMP_DIR)
+    media_guard_hash = get_media_guard(video.owner.username, video.id)
     scale = get_scale(in_w, in_h, DEFAULT_THUMBNAIL_OUT_SIZE_HEIGHT)
     thumbnails = int(video.duration / 3)
     com = ADD_THUMBNAILS_CMD % {
@@ -366,7 +383,7 @@ def add_thumbnails(video_id, in_w, in_h, folder):
     output += 80 * "~"
 
     f = open(os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR,
-                          video.owner.username, "%s" % video.id, "encode.log"), 'w')
+                          video.owner.username, media_guard_hash, "%s" % video.id, "encode.log"), 'w')
     f.write(output)
     output = ""
     f.close()
@@ -409,11 +426,11 @@ def add_overview(video_id, in_w, in_h, frames):
     video = Pod.objects.get(id=video_id)
     thumbnails = int(frames / 100)
     scale = get_scale(in_w, in_h, DEFAULT_OVERVIEW_OUT_SIZE_HEIGHT)
-
+    media_guard_hash = get_media_guard(video.owner.username, video.id)
     overviewfilename = os.path.join(
-        settings.MEDIA_ROOT, VIDEOS_DIR, video.owner.username, "%s" % video.id, "overview.jpg")
+        settings.MEDIA_ROOT, VIDEOS_DIR, video.owner.username, media_guard_hash, "%s" % video.id, "overview.jpg")
     overviewurl = os.path.join(
-        VIDEOS_DIR, video.owner.username, "%s" % video.id, "overview.jpg")
+        VIDEOS_DIR, video.owner.username, media_guard_hash, "%s" % video.id, "overview.jpg")
 
     com = ADD_OVERVIEW_CMD % {
         'ffmpeg': FFMPEG,
@@ -454,7 +471,7 @@ def add_overview(video_id, in_w, in_h, frames):
             video.save()
 
     f = open(os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR,
-                          video.owner.username, "%s" % video.id, "encode.log"), 'a+b')
+                          video.owner.username, media_guard_hash, "%s" % video.id, "encode.log"), 'a+b')
     f.write(output)
     output = ""
     f.close()
@@ -489,6 +506,7 @@ def encode_mp4(video_id, in_w, in_h, bufsize, in_ar, encod_video, videofilename,
     ffmpegresult = commands.getoutput(com)
     video = None
     video = Pod.objects.get(id=video_id)
+    media_guard_hash = get_media_guard(video.owner.username, video.id)
     addInfoVideo(video, "\n END ENCOD_VIDEO MP4 %s %s" %
                  (encod_video.output_height, time.ctime()))
 
@@ -522,7 +540,7 @@ def encode_mp4(video_id, in_w, in_h, bufsize, in_ar, encod_video, videofilename,
             video.save()
 
     f = open(os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR,
-                          video.owner.username, "%s" % video.id, "encode.log"), 'a+b')
+                          video.owner.username, media_guard_hash, "%s" % video.id, "encode.log"), 'a+b')
     f.write(output)
     output = ""
     f.close()
@@ -536,9 +554,10 @@ def encode_webm(video_id, videofilename, encod_video, bufsize):
     addInfoVideo(video, "\nSTART ENCOD_VIDEO WEBM %s %s" %
                  (encod_video.output_height, time.ctime()))
     video.save()
-    webmfilename = os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR, video.owner.username, "%s" % video.id,
+    media_guard_hash = get_media_guard(video.owner.username, video.id)
+    webmfilename = os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR, video.owner.username, media_guard_hash, "%s" % video.id,
                                 "video_%s_%s.webm" % (video.id, encod_video.output_height))
-    webmurl = os.path.join(VIDEOS_DIR, video.owner.username, "%s" % video.id,
+    webmurl = os.path.join(VIDEOS_DIR, video.owner.username, media_guard_hash, "%s" % video.id,
                            "video_%s_%s.webm" % (video.id, encod_video.output_height))
 
     com = ENCODE_WEBM_CMD % {
@@ -587,7 +606,7 @@ def encode_webm(video_id, videofilename, encod_video, bufsize):
             video.save()
 
     f = open(os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR,
-                          video.owner.username, "%s" % video.id, "encode.log"), 'a+b')
+                          video.owner.username, media_guard_hash, "%s" % video.id, "encode.log"), 'a+b')
     f.write(output)
     output = ""
     f.close()
@@ -621,6 +640,7 @@ def encode_mp3(video_id, audiofilename, audiourl, encod_audio, in_ar):
     video = None
     video = Pod.objects.get(id=video_id)
     addInfoVideo(video, "\nEND ENCOD_VIDEO MP3 %s" % (time.ctime()))
+    media_guard_hash = get_media_guard(video.owner.username, video.id)
 
     if os.access(audiofilename, os.F_OK):  # outfile exists
         # There was a error cause the outfile size is zero
@@ -642,7 +662,7 @@ def encode_mp3(video_id, audiofilename, audiourl, encod_audio, in_ar):
             ep.save()
 
     f = open(os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR,
-                          video.owner.username, "%s" % video.id, "encode.log"), 'w')
+                          video.owner.username, media_guard_hash, "%s" % video.id, "encode.log"), 'w')
     f.write(output)
     output = ""
     f.close()
@@ -656,9 +676,10 @@ def encode_wav(video_id, audiofilename, in_ar, encod_audio):
     video.encoding_status = "ENCODING WAV"
     addInfoVideo(video, "\nStart ENCOD_VIDEO WAV %s" % (time.ctime()))
     video.save()
-    wavfilename = os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR, video.owner.username, "%s" % video.id,
+    media_guard_hash = get_media_guard(video.owner.username, video.id)
+    wavfilename = os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR, video.owner.username, media_guard_hash, "%s" % video.id,
                                "audio_%s_%s.wav" % (video.id, encod_audio.output_height))
-    wavurl = os.path.join(VIDEOS_DIR, video.owner.username, "%s" % video.id,
+    wavurl = os.path.join(VIDEOS_DIR, video.owner.username, media_guard_hash, "%s" % video.id,
                           "audio_%s_%s.wav" % (video.id, encod_audio.output_height))
     com = ENCODE_WAV_CMD % {
         'ffmpeg': FFMPEG,
@@ -701,7 +722,7 @@ def encode_wav(video_id, audiofilename, in_ar, encod_audio):
             ep.save()
 
     f = open(os.path.join(settings.MEDIA_ROOT, VIDEOS_DIR,
-                          video.owner.username, "%s" % video.id, "encode.log"), 'a+b')
+                          video.owner.username, media_guard_hash, "%s" % video.id, "encode.log"), 'a+b')
     f.write(output)
     output = ""
     f.close()

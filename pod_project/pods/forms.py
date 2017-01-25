@@ -35,6 +35,8 @@ from django.forms.widgets import HiddenInput
 ALLOW_VISIBILITY_SETTING_TO_CHANNEL_OWNERS = getattr(
     settings, 'ALLOW_VISIBILITY_SETTING_TO_CHANNEL_OWNERS', True)
 
+SHOW_IS_360_IN_FORM_UPLOAD = getattr(
+    settings, 'SHOW_IS_360_IN_FORM_UPLOAD', False)
 
 class ChannelForm(TranslationModelForm):
 
@@ -46,7 +48,8 @@ class ChannelForm(TranslationModelForm):
                 del self.fields['headband']
                 del self.fields['users']
             else:
-                self.fields['users'].queryset = User.objects.exclude(id=user.id)
+                self.fields['users'].queryset = User.objects.exclude(
+                    id=user.id)
                 self.fields['users'].label_from_instance = lambda obj: "%s %s (%s)" % (
                     obj.first_name, obj.last_name, obj.username)
         except:
@@ -170,7 +173,7 @@ class PodForm(ModelForm):
             del self.fields['date_added']
             del self.fields['owner']
             user_channels = (request.user.owners_channels.all(
-                ) | request.user.users_channels.all()).distinct()
+            ) | request.user.users_channels.all()).distinct()
             if user_channels:
                 self.fields["channel"].queryset = user_channels
                 list_theme = Theme.objects.filter(
@@ -191,7 +194,11 @@ class PodForm(ModelForm):
 
     class Meta:
         model = Pod
-        fields = '__all__'
+        if SHOW_IS_360_IN_FORM_UPLOAD:
+            fields = '__all__'
+        else:
+            exclude = ('is_360', )
+            
 
 
 class ContributorPodsForm(ModelForm):
@@ -253,22 +260,25 @@ class DocPodsForm(ModelForm):
 
 class ChapterPodsForm(ModelForm):
 
-
     def __init__(self, *args, **kwargs):
-      super(ChapterPodsForm, self).__init__(*args, **kwargs)
-      self.fields['video'].widget = HiddenInput()
-      self.fields['time'].widget.attrs['min'] = 0
+        super(ChapterPodsForm, self).__init__(*args, **kwargs)
+        self.fields['video'].widget = HiddenInput()
+        self.fields['time'].widget.attrs['min'] = 0
 
-      try:
-        self.fields['time'].widget.attrs['max'] = self.instance.video.duration -1
-      except:
-        self.fields['time'].widget.attrs['max'] = 36000
-      for myField in self.fields:
-          self.fields[myField].widget.attrs['placeholder'] = self.fields[myField].label
-          if self.fields[myField].required:
-              self.fields[myField].widget.attrs['class'] = 'required'
-              label_unicode = u'%s' %self.fields[myField].label
-              self.fields[myField].label = mark_safe("%s <span class=\"special_class\">*</span>" %label_unicode)
+        try:
+            self.fields['time'].widget.attrs[
+                'max'] = self.instance.video.duration - 1
+        except:
+            self.fields['time'].widget.attrs['max'] = 36000
+        for myField in self.fields:
+            self.fields[myField].widget.attrs[
+                'placeholder'] = self.fields[myField].label
+            if self.fields[myField].required:
+                self.fields[myField].widget.attrs['class'] = 'required'
+                label_unicode = u'%s' % self.fields[myField].label
+                self.fields[myField].label = mark_safe(
+                    "%s <span class=\"special_class\">*</span>" % label_unicode)
+
     class Meta:
         model = ChapterPods
         fields = '__all__'
@@ -293,7 +303,7 @@ class EnrichPodsForm(ModelForm):
         for myField in self.fields:
             self.fields[myField].widget.attrs[
                 'placeholder'] = self.fields[myField].label
-            if self.fields[myField].required or myField=="type":
+            if self.fields[myField].required or myField == "type":
                 self.fields[myField].widget.attrs['class'] = 'required'
                 label_unicode = u'%s' % self.fields[myField].label
                 self.fields[myField].label = mark_safe(
@@ -318,6 +328,7 @@ class VideoPasswordForm(Form):
                 self.fields[myField].label = mark_safe(
                     "%s <span class=\"special_class\">*</span>" % label_unicode)
 
+
 class SearchForm(Form):
     q = forms.CharField(required=False, label=_('Search'),
                         widget=forms.TextInput(attrs={'type': 'search'}))
@@ -340,6 +351,7 @@ class SearchForm(Form):
 # class formMediacours(forms.Form):
 #    titre = forms.CharField(max_length=100,widget=forms.TextInput(attrs={'size':'35', 'class':'required'}), required=True, label=(u'Titre '))
 #    mediapath = forms.CharField(required=False, widget=forms.HiddenInput())
+
 
 class MediacoursesForm(ModelForm):
     #mediapath = forms.CharField(required=True, widget=forms.HiddenInput())

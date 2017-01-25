@@ -47,8 +47,8 @@ FMS_ROOT_URL = ''
 # Video #
 #########
 
-FFMPEG = 'nice -19 /usr/local/ffmpeg/ffmpeg'
-FFPROBE = 'nice -19 /usr/local/ffmpeg/ffprobe'
+FFMPEG = 'nice -n 19 /usr/local/ffmpeg/ffmpeg'
+FFPROBE = 'nice -n 19 /usr/local/ffmpeg/ffprobe'
 
 ########
 # Misc #
@@ -86,3 +86,7 @@ CURSUS_CODES = (
     ("5", "Master 2ème année"),
     ("6", "Doctorat")
 )
+
+# Protection des médias
+MEDIA_GUARD = True
+MEDIA_GUARD_SALT = "S3CR3T"

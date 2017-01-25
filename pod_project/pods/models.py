@@ -34,7 +34,7 @@ from datetime import datetime
 from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.shortcuts import get_current_site
 from elasticsearch import Elasticsearch
 # django-taggit
 from taggit.managers import TaggableManager, _TaggableManager, TaggableRel
@@ -45,6 +45,7 @@ import logging
 logger = logging.getLogger(__name__)
 import unicodedata
 import json
+from pod_project.tasks import task_start_encode
 
 ES_URL = getattr(settings, 'ES_URL', ['http://127.0.0.1:9200/'])
 
@@ -453,7 +454,8 @@ class Pod(Video):
             "chapters": list(self.chapterpods_set.values('title', 'slug')),
             "enrichments": list(self.enrichpods_set.values('title', 'slug')),
             "full_url": self.get_full_url(),
-            "protected": True if self.password != "" or self.is_restricted is True else False,
+            "is_restricted": self.is_restricted,
+            "password": True if self.password != "" else False,
             "duration_in_time": self.duration_in_time(),
             "mediatype": self.get_mediatype()[0] if len(self.get_mediatype()) > 0 else "video",
             "is_richmedia": self.is_richmedia(),
@@ -470,7 +472,10 @@ def launch_encode(sender, instance, created, **kwargs):
         instance.to_encode = False
         instance.encoding_in_progress = True
         instance.save()
-        start_encode(instance)
+        if settings.CELERY_TO_ENCODE:
+            task_start_encode.delay(instance)
+        else:
+            start_encode(instance)
 
 
 def start_encode(video):
@@ -560,7 +565,7 @@ class ContributorPods(models.Model):
         ("voice-over", _("voice-over"))
     )
     role = models.CharField(
-        _(u'role'), max_length=200, choices=ROLE_CHOICES, default=_("authors"))
+        _(u'role'), max_length=200, choices=ROLE_CHOICES, default="author")
     weblink = models.URLField(
         _(u'Web link'), max_length=200, null=True, blank=True)
 
@@ -650,6 +655,8 @@ class TrackPods(models.Model):
             msg.append(_('please enter a correct lang.'))
         if not self.src:
             msg.append(_('please specify a track file.'))
+        if not str(self.src).lower().endswith('.vtt'):
+            msg.append(_('only “.vtt” format is allowed.'))
         if (len(msg) > 0):
             return msg
         else:
