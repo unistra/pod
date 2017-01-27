@@ -65,8 +65,8 @@ var Pod = ( function ( Pod ) {
 
                 var percentComplete = Math.round( uploadEvent.loaded * 100 / uploadEvent.total );
 
-                if ( percentComplete > 100 ) {
-                    percentComplete = 100;
+                if ( percentComplete >= 100 ) {
+                    percentComplete = 99;
                 }
 
                 progressBarDiv.setAttribute( 'style', "width: " + percentComplete + "%" );
@@ -148,5 +148,3 @@ var Pod = ( function ( Pod ) {
     return Pod;
 
 } ( Pod || { } ) );
-
-
