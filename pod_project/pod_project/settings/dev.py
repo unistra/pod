@@ -75,21 +75,60 @@ AFFILIATION_STAFF = ('employee', 'faculty', 'researcher')
 ############
 
 TITLE_SITE = 'Pod'
-TITLE_ETB = 'Université'
+TITLE_ETB = 'Université de Strasbourg'
 DEFAULT_IMG = 'images/default.png'
 FILTER_USER_MENU = ('[a-d]', '[e-h]', '[i-l]', '[m-p]', '[q-t]', '[u-z]')
-TEMPLATE_THEME = 'DEFAULT'
+TEMPLATE_THEME = 'unistra-simple'
 
-LOGO_SITE = 'images/logo_compact.png'
-LOGO_COMPACT_SITE = 'images/logo_black_compact.png'
-LOGO_ETB = 'images/lille1_top-01.png'
-LOGO_PLAYER = 'images/logo_white_compact.png'
-SERV_LOGO = 'images/semm.png'
+LOGO_SITE = 'images/logo_compact_unistra.png'
+LOGO_COMPACT_SITE = 'images/logo_black_compact_unistra.png'
+LOGO_ETB = 'images/unistra_top-01.png'
+LOGO_PLAYER = 'images/logo_white_compact_unistra.png'
+SERV_LOGO = 'images/semm_unistra.png'
 
-HELP_MAIL = 'assistance@univ.fr'
-WEBTV = '<a href="http://webtv.univ.fr" id="webtv" class="btn btn-info btn-sm">' \
-    'WEBTV<span class="glyphicon glyphicon-link"></span>' \
-    '</a>'
+HELP_MAIL = 'support@unistra.fr'
+WEBTV = ''
+
+##
+# Settings for all template engines to be used
+#
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': (
+            os.path.join(BASE_DIR, 'core', 'theme',
+                         TEMPLATE_THEME, 'templates'),
+            os.path.join(BASE_DIR, 'core', 'templates'),
+            os.path.join(BASE_DIR, 'core', 'templates', 'flatpages'),
+        ),
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': (
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
+                # Local contexts
+                'core.context_processors.pages_menu',
+                'core.context_processors.context_settings',
+                'pods.context_processors.items_menu_header',
+            ),
+            'debug': DEBUG,
+        },
+    },
+]
+
+
+##
+# Additional static files locations (theme)
+#
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'core', 'theme', TEMPLATE_THEME, 'assets'),
+)
 
 ######################
 # Flash Media Server #

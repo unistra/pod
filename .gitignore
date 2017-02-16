@@ -61,11 +61,11 @@ pod_project/pods/viewsv1.py
 *.bak
 .coverage
 .tox
-assets/
+/pod_project/assets/
 
 # Theme files #
 ###############
-/pod_project/core/theme/*
+#/pod_project/core/theme/*
 !/pod_project/core/theme/DEFAULT/
 /pod_project/core/theme/DEFAULT/config.codekit
 

@@ -1,0 +1,52 @@
+@charset "utf-8";
+/*
+Copyright (C) 2014 Yannick Bonnaz
+Ce programme est un logiciel libre : vous pouvez le redistribuer
+et/ou le modifier sous les termes de la licence GNU Public Licence
+telle que publiée par la Free Software Foundation, soit dans la version 3
+de la licence, ou (selon votre choix) toute version ultérieure.
+Ce programme est distribué avec l'espoir qu'il sera utile, mais SANS AUCUNE
+GARANTIE : sans même les garanties implicites de VALEUR MARCHANDE ou
+D'APPLICABILITÉ À UN BUT PRÉCIS. Voir la licence GNU General Public License
+pour plus de détails. Vous devriez avoir reçu une copie de la licence
+GNU General Public Licence avec ce programme. Si ce n'est pas le cas, voir
+http://www.gnu.org/licenses/
+*/
+body {
+  background-color: #222;
+  background-image: url("/static/images/binding_dark.png");
+  background-position: top center;
+  background-attachment: fixed;
+  background-repeat: repeat;
+  padding: 20px;
+}
+#header {
+  color: #333;
+  background-color: #7fafde;
+  background: -moz-linear-gradient(top, #7fafde 0%, #2a6bab 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #7fafde), color-stop(100%, #2a6bab));
+  background: -webkit-linear-gradient(top, #7fafde 0%, #2a6bab 100%);
+  background: -o-linear-gradient(top, #7fafde 0%, #2a6bab 100%);
+  background: -ms-linear-gradient(top, #7fafde 0%, #2a6bab 100%);
+  background: linear-gradient(to bottom, #7fafde 0%, #2a6bab 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#7fafde',endColorstr='#2a6bab',GradientType=0);
+}
+#branding h1 {
+  color: #111;
+}
+#container {
+  background: #fff;
+}
+.module h2,
+.module caption,
+.inline-group h2 {
+  background: #333;
+  color: #fff;
+}
+#changelist table thead th {
+  white-space: normal;
+}
+.filerFile .related-lookup {
+  display: inline;
+  background-image: none;
+}

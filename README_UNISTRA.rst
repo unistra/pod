@@ -78,7 +78,7 @@ Installation
 * Installer ffmpeg :
 
   * apt install ffmpeg
-  
+
 * Créer le répertoire des médias : mkdir -p /srv/media/pod && chown -R django:di /srv/media
 * Préparer l'environnement python via pydiploy : **fab prod pre_install**
 * Déployer le code de la branche **unistra** via pydiploy: **fab tag:unistra prod deploy --set default_db_host=X,default_db_user=X,default_db_password=X,default_db_name=X,cas_server_url=X,auth_ldap_server_uri=X,auth_ldap_bind_dn=X,auth_ldap_bind_password=X,auth_ldap_base_dn=X**
@@ -112,3 +112,49 @@ TODO
 * Automatiser l'installation d'Elasticsearch
 * Automatiser l'installation de Ffmpeg
 * Automatiser l'exécution des commandes django annexes (loaddata,makemigrations ...)
+
+
+Celery
+------
+Les 3 paramètres du fichier de configuration concernés sont donc:
+
+* Pour activer l'encodage via Celery : CELERY_TO_ENCODE = True
+* Pour définir le nom du projet (ne devrait pas changer) : CELERY_NAME = "pod_project"
+* Pour définir le type de backend (ici rabbitmq) : CELERY_BACKEND = "amqp"
+* Pour définir le broker (ici un rabbitmq local) : CELERY_BROKER = "amqp://guest@localhost//"
+
+Au niveau du backend et du broker, il est également possible d'utiliser redis par exemple.
+
+Pour exécuter Celery manuellement, il suffit d'exécuter la commande dans le répertoire du projet:
+*celery -A pod_project worker -l info*
+
+Il est également possible de démarrer celery via systemd ou init (http://docs.celeryproject.org/en/3.1/tutorials/daemonizing.html)
+
+Pour lancer l'encodage sur d'autres serveurs, il faut pour chaque serveur d'encodage
+
+Déployer le code de l'application (mais sans lancer le serveur wsgi)
+Exécuter celery via systemd ou init
+Les différents serveurs se débrouillent pour se répartir la charge via rabbitmq
+A titre informatif, voici notre fichier de configuration Celery pour la séparation de l'encodage, à adapter évidemment (/etc/default/celery)
+
+    CELERYD_NODES="worker1"
+    DJANGO_SETTINGS_MODULE="pod_project.settings.preprod"
+    CELERY_BIN="/home/django/.virtualenvs/pod/bin/celery"
+    CELERY_APP="pod_project"
+    CELERYD_CHDIR="/home/django/podcast-pprd.unistra.fr/current"
+    CELERYD_OPTS="--time-limit=86400 --concurrency=1 --maxtasksperchild=1"
+    CELERYD_LOG_FILE="/var/log/celery/%N.log"
+    CELERYD_PID_FILE="/var/run/celery/%N.pid"
+    CELERYD_USER="django"
+    CELERYD_GROUP="di"
+    CELERY_CREATE_DIRS=1
+    CELERYD_LOG_LEVEL="INFO"
+
+Les CPU des serveurs web ne sont ainsi plus surchargés par ffmpeg.
+On peut facilement rajouter des workers Celery si on a besoin de plus de machine d'encodage.
+
+Du coup, on a le fonctionnement suivant en preprod :
+
+* un serveur rabbitmq pour gérer la file d'attente des jobs
+* 2 serveurs web qui servent l'application et qui crééent les jobs dans rabbitmq via le client celery
+* 2 serveurs d'encodage qui écoutent la file d'attente via les workers celery et qui lancent les jobs
