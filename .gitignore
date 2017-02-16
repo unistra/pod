@@ -61,7 +61,7 @@ pod_project/pods/viewsv1.py
 *.bak
 .coverage
 .tox
-assets/
+/pod_project/assets/
 
 # Theme files #
 ###############

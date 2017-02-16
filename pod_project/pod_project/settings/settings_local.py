@@ -216,7 +216,7 @@ ES_URL = ['http://127.0.0.1:9200/']
 ##
 # Template settings
 #
-TEMPLATE_THEME = 'unistra-simple'
+TEMPLATE_THEME = 'DEFAULT'
 TITLE_SITE = 'Pod'
 TITLE_ETB = 'University name'
 LOGO_SITE = 'images/logo_compact.png'
