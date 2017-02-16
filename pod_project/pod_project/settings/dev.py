@@ -86,10 +86,8 @@ LOGO_ETB = 'images/unistra_top-01.png'
 LOGO_PLAYER = 'images/logo_white_compact_unistra.png'
 SERV_LOGO = 'images/semm_unistra.png'
 
-HELP_MAIL = 'assistance@univ.fr'
-WEBTV = '<a href="http://webtv.univ.fr" id="webtv" class="btn btn-info btn-sm">' \
-    'WEBTV<span class="glyphicon glyphicon-link"></span>' \
-    '</a>'
+HELP_MAIL = 'support@unistra.fr'
+WEBTV = ''
 
 ##
 # Settings for all template engines to be used
