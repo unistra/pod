@@ -65,7 +65,7 @@ assets/
 
 # Theme files #
 ###############
-/pod_project/core/theme/*
+#/pod_project/core/theme/*
 !/pod_project/core/theme/DEFAULT/
 /pod_project/core/theme/DEFAULT/config.codekit
 
