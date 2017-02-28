@@ -11,6 +11,8 @@ import psycopg2.extras
 from django.contrib.auth.models import User
 from core.models import UserProfile
 
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+
 
 class Command(BaseCommand):
     help = "Import all avcast's users in pod"
@@ -38,13 +40,13 @@ class Command(BaseCommand):
                             raise CommandError("A user has no login !")
                         # create or modify the user
                         user, created = User.objects.get_or_create(
-                            username=row['login'].decode('utf-8'))
-                        user.email = row['email'].decode('utf-8') if row['email'] else ""
-                        user.first_name = row['firstname'].decode('utf-8') if row['firstname'] else ""
-                        user.last_name = row['lastname'].decode('utf-8') if row['lastname'] else ""
+                            username=row['login'])
+                        user.email = row['email'] if row['email'] else ""
+                        user.first_name = row['firstname'] if row['firstname'] else ""
+                        user.last_name = row['lastname'] if row['lastname'] else ""
                         if row['password'] and row["passwordtype"]:
-                            user.password = "%s1$$%s" % (row['passwordtype'].decode('utf-8'),
-                                                         row['password'].decode('utf-8'))
+                            user.password = "%s1$$%s" % (row['passwordtype'],
+                                                         row['password'])
                         else:
                             user.password = "!%s" % (
                                 User.objects.make_random_password())
@@ -57,10 +59,10 @@ class Command(BaseCommand):
                             user=user)
                         profile.auth_type = "loc." if row['type'] == "local" else "cas"
                         profile.description = "establishment=%s;etp=%s;institute=%s" % \
-                            (row['establishment'].decode('utf-8') if row['establishment'] else '',
-                             row['etp'].decode('utf-8') if row['etp'] else '',
-                             row["institute"].decode('utf-8') if row['institute'] else '')
-                        profile.affiliation = row['profile'].decode('utf-8') if row['profile'] else "member"
+                            (row['establishment'] if row['establishment'] else '',
+                             row['etp'] if row['etp'] else '',
+                             row["institute"] if row['institute'] else '')
+                        profile.affiliation = row['profile'] if row['profile'] else "member"
                         profile.save()
                         self.stdout.write(self.style.SQL_FIELD('User "%s" saved !' % user.username))
         except psycopg2.DatabaseError:

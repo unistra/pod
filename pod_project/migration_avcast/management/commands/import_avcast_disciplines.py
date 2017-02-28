@@ -11,6 +11,8 @@ import psycopg2.extras
 from pods.models import Discipline
 from django.template.defaultfilters import slugify
 
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+
 
 class Command(BaseCommand):
     help = "Import all avcast's disciplines in pod"
@@ -34,13 +36,13 @@ class Command(BaseCommand):
                     for row in curs.fetchall():
                         # create or modify disciplines
                         discipline, created = Discipline.objects.get_or_create(
-                            slug=slugify(row['namecomp'].decode('utf-8'))
+                            slug=slugify(row['namecomp'])
                         )
-                        discipline.title = row['namecomp'].decode('utf-8')
+                        discipline.title = row['namecomp']
                         discipline.description = "codecomp=%s;codedom=%s;namedom=%s" % (
-                            row['codecomp'].decode('utf-8') if row['codecomp'] else "",
-                            row['codedom'].decode('utf-8') if row['codedom'] else "",
-                            row['namedom'].decode('utf-8') if row['namedom'] else ""
+                            row['codecomp'] if row['codecomp'] else "",
+                            row['codedom'] if row['codedom'] else "",
+                            row['namedom'] if row['namedom'] else ""
                         )
                         discipline.save()
                         self.stdout.write(self.style.SQL_FIELD('Discipline "%s" saved !' % discipline.title))

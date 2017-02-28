@@ -11,6 +11,8 @@ import psycopg2
 import psycopg2.extras
 from pods.models import Recorder, Building
 
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+
 
 class Command(BaseCommand):
     help = "Import all avcast's buildings and amphis in pod"
@@ -37,17 +39,17 @@ class Command(BaseCommand):
                     for row in curs.fetchall():
                         # create or modify building
                         building, created = Building.objects.get_or_create(
-                            name=row['bname'].decode('utf-8')
+                            name=row['bname']
                         )
 
                         # create or modify amphi
                         recorder, created = Recorder.objects.get_or_create(
-                            name="%s (%s)" % (row['aname'].decode('utf-8'), row['bname'].decode('utf-8')),
+                            name="%s (%s)" % (row['aname'], row['bname']),
                             building=building,
-                            adress_ip=row['ipaddress'].decode('utf-8')
+                            adress_ip=row['ipaddress']
                         )
                         recorder.status = row['status'],
-                        recorder.gmapurl = row['gmapurl'].decode('utf-8') if row['gmapurl'] else None
+                        recorder.gmapurl = row['gmapurl'] if row['gmapurl'] else None
                         recorder.is_restricted = row['restrictionuds']
                         recorder.save()
                         self.stdout.write(self.style.SQL_FIELD('Building "{}" and amphi "{}" saved !'.format(building.name, recorder.name)))
