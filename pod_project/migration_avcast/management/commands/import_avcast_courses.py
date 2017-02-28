@@ -16,6 +16,8 @@ from django.contrib.auth.models import User
 from filer.models.filemodels import File
 from filer.models.foldermodels import Folder
 
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+
 
 class Command(BaseCommand):
     help = "Import all avcast's courses, tags, types in pod"
@@ -38,8 +40,8 @@ class Command(BaseCommand):
             ContributorPods.objects.get_or_create(
                 video=pod,
                 name=" ".join([
-                    row['name'].decode('utf-8') if row['name'] else '',
-                    row['firstname'].decode('utf-8') if row['firstname'] else ''
+                    row['name'] if row['name'] else '',
+                    row['firstname'] if row['firstname'] else ''
                 ]),
                 role="author"
             )
@@ -60,7 +62,7 @@ class Command(BaseCommand):
             )
             for row_tag in curs_tags.fetchall():
                 if row_tag['tag']:
-                    pod.tags.add(row_tag['tag'].decode('utf-8'))
+                    pod.tags.add(row_tag['tag'])
         return pod
 
     def pod_alter_pod_sequence(self, conn, last_courseid):
@@ -92,7 +94,7 @@ class Command(BaseCommand):
                 try:
                     # Discipline
                     discipline = Discipline.objects.get(
-                        slug=slugify(row_formation['namecomp'].decode('utf-8'))
+                        slug=slugify(row_formation['namecomp'])
                     )
                     pod.discipline = [discipline]
                     # Cursus
@@ -303,29 +305,29 @@ class Command(BaseCommand):
                             if not row['login']:
                                 owner = User.objects.get(username=settings.AVCAST_COURSE_DEFAULT_USERNAME)
                             else:
-                                owner = User.objects.get(username=row['login'].decode('utf-8'))
+                                owner = User.objects.get(username=row['login'])
                         except:
                             # it shouldn't happen
                             raise CommandError("User not found")
                         else:
                             # Get or create type
                             pod_type, pod_type_created = Type.objects.get_or_create(
-                                slug=slugify(row['type'].decode('utf-8')), title_fr=row['type'].decode('utf-8'), title_en=row['type'].decode('utf-8'))
+                                slug=slugify(row['type']), title_fr=row['type'], title_en=row['type'])
                             # Create pod
                             pod, pod_created = Pod.objects.get_or_create(
                                 id=row['courseid'],
                                 to_encode=False,
                                 owner=owner,
                                 type=pod_type,
-                                title=row['title'].decode('utf-8') if row['title'] else "UNKNOWN"
+                                title=row['title'] if row['title'] else "UNKNOWN"
                             )
                             # set the last course id for sequence
                             last_courseid = pod.id
                             # modify data
                             pod.date_added = row['date']
-                            pod.description = row['description'].decode('utf-8') if row['description'] else ''
+                            pod.description = row['description'] if row['description'] else ''
                             pod.duration = row['duration']
-                            pod.password = row['genre'].decode('utf-8') if row['genre'] else ''
+                            pod.password = row['genre'] if row['genre'] else ''
                             pod.is_draft = not row['visible']
                             pod.view_count = row['consultations']
                             pod.allow_downloading = row['download']
@@ -346,10 +348,10 @@ class Command(BaseCommand):
 
                             # Add Encoding Pods
                             pod = self.pod_add_encodingpods(
-                                pod, row['type'].decode('utf-8'), mediatype, owner, course_folder)
+                                pod, row['type'], mediatype, owner, course_folder)
 
                             # add document
-                            pod = self.pod_create_add_doc(pod, owner, course_folder, mediatype, row['adddocname'].decode('utf-8') if row['adddocname'] else '')
+                            pod = self.pod_create_add_doc(pod, owner, course_folder, mediatype, row['adddocname'] if row['adddocname'] else '')
 
                             # On ignore les sous-titres. Avcast utilise le format TTML et SRT, pod le format WEBVTT cheminducours/additional_docs/ 44_captions.xml
                             # is_subtitles_present = 512 & mediatype > 0
