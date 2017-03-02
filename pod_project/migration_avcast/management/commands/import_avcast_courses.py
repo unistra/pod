@@ -171,17 +171,31 @@ class Command(BaseCommand):
                         file=get_storage_path(
                             pod, "%s/additional_video/addvideo_%s.mp4" % (pod.id, pod.id))
                     )
-                    enrichpod, enrichpod_created = EnrichPods.objects.get_or_create(
-                        video=pod,
-                        title=exfile.original_filename,
-                        slug="0001-addvideo_%smp4" % pod.id,
-                        stop_video=False,
-                        start=0,
-                        end=pod.duration,
-                        type="embed",
-                        document=exfile,
-                        embed='<iframe src="{}" style="min-height:100%;min-width:100%"></iframe>'.format(exfile.url)
-                    )
+                    try:
+                        enrichpod = EnrichPods.objects.get(
+                            video=pod,
+                            title=exfile.original_filename,
+                            # slug="0001-addvideo_%smp4" % pod.id,
+                            stop_video=False,
+                            start=0,
+                            end=pod.duration,
+                            type="embed",
+                            document=exfile,
+                            embed='<iframe src="{}" style="min-height:100%;min-width:100%"></iframe>'.format(exfile.url)
+                        )
+                    except EnrichPods.DoesNotExist:
+                        enrichpod = EnrichPods.objects.create(
+                            video=pod,
+                            title=exfile.original_filename,
+                            # slug="0001-addvideo_%smp4" % pod.id,
+                            stop_video=False,
+                            start=0,
+                            end=pod.duration,
+                            type="embed",
+                            document=exfile,
+                            embed='<iframe src="{}" style="min-height:100%;min-width:100%"></iframe>'.format(exfile.url)
+                        )
+
                 elif is_videomp4_present:
                     exfile, exfile_created = File.objects.get_or_create(
                         original_filename="%s.mp4" % pod.id,
@@ -190,20 +204,32 @@ class Command(BaseCommand):
                         file=get_storage_path(
                             pod, "%s/%s.mp4" % (pod.id, pod.id))
                     )
-                    enrichpod, enrichpod_created = EnrichPods.objects.get_or_create(
-                        video=pod,
-                        title=exfile.original_filename,
-                        slug="0001-%smp4" % pod.id,
-                        stop_video=False,
-                        start=0,
-                        end=pod.duration,
-                        type="embed",
-                        document=exfile,
-                        embed='<iframe src="{}" style="min-height:100%;min-width:100%"></iframe>'.format(exfile.url)
-                    )
 
-
-
+                    # bug with postgresql and get_or_create with this model
+                    try:
+                        enrichpod = EnrichPods.objects.get(
+                            video=pod,
+                            title=exfile.original_filename,
+                            # slug="0001-%smp4" % pod.id,
+                            stop_video=False,
+                            start=0,
+                            end=pod.duration,
+                            type="embed",
+                            document=exfile,
+                            embed='<iframe src="{}" style="min-height:100%;min-width:100%"></iframe>'.format(exfile.url)
+                        )
+                    except EnrichPods.DoesNotExist:
+                        enrichpod = EnrichPods.objects.create(
+                            video=pod,
+                            title=exfile.original_filename,
+                            # slug="0001-%smp4" % pod.id,
+                            stop_video=False,
+                            start=0,
+                            end=pod.duration,
+                            type="embed",
+                            document=exfile,
+                            embed='<iframe src="{}" style="min-height:100%;min-width:100%"></iframe>'.format(exfile.url)
+                        )
 
 
             # priority to additional video (MUV or CV or CSC)
