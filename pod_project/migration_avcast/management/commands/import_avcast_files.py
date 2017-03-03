@@ -33,14 +33,20 @@ class Command(BaseCommand):
             filename = os.path.basename(encodingpod.encodingFile.name)
             mediafolder = self.avcast_get_media_folder(
                 pod.id, settings.AVCAST_VOLUME_PATH)
-            origin = os.path.join(mediafolder, filename)
+            if "addvideo" in filename:
+                origin = os.path.join(mediafolder, "additional_video", filename)
+            else:
+                origin = os.path.join(mediafolder, filename)
             destination = encodingpod.encodingFile.path
             self.stdout.write("---- Check encoding pod : From %s to %s" % (origin, destination))
             self.pod_copy_file(origin, destination)
 
     def pod_processing_docpods(self, pod):
         for docpod in pod.docpods_set.all():
-            filename = os.path.basename(docpod.document.file.name)
+            if docpod.document.original_filename:
+                filename = docpod.document.original_filename
+            else:
+                filename = os.path.basename(docpod.document.file.name)
             mediafolder = self.avcast_get_media_folder(
                 pod.id, settings.AVCAST_VOLUME_PATH)
             origin = os.path.join(mediafolder, "additional_docs", filename)
@@ -64,7 +70,7 @@ class Command(BaseCommand):
     def pod_copy_file(self, origin, destination):
             # on affiche un warning si le fichier origin n'existe pas et on continue la boucle
             if not os.path.isfile(origin):
-                self.stdout.write(self.style.WARNING("------ Warning : The file %s doesn't exist !" % origin))
+                self.stderr.write(self.style.WARNING("------ Warning : The file %s doesn't exist !" % origin))
             else:
                 # create destination folder
                 pod_folder = os.path.dirname(destination)
