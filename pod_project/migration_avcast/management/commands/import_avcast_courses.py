@@ -99,7 +99,7 @@ class Command(BaseCommand):
                     pod.discipline = [discipline]
                     # Cursus
                     for cursus in settings.CURSUS_CODES:
-                        if cursus[1] == row_formation['name']:
+                        if slugify(cursus[1]) == slugify(row_formation['name']):
                             pod.cursus = cursus[0]
                             break
                     if not pod.cursus:
