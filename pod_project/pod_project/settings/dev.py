@@ -270,7 +270,8 @@ INSTALLED_APPS += ('migration_avcast',)
 AVCAST_DB_URI = environ.get("AVCAST_DB_URI", "host=localhost port=5432 dbname=univrav user=sqluser password=S3CR3T")
 AVCAST_COURSE_DEFAULT_USERNAME = environ.get("AVCAST_COURSE_DEFAULT_USERNAME", "di-info-pod@unistra.fr")
 AVCAST_VOLUME_PATH = environ.get("AVCAST_VOLUME_PATH", "/audiovideocours/cours/1")
-AVCAST_FAKE_FILES_COPY = strtobool(environ.get("AVCAST_FAKE_FILES_COPY", "True"))
+AVCAST_COPY_MODES_LIST = ["FAKE", "LINK", "COPY"]
+AVCAST_COPY_MODE = environ.get("AVCAST_COPY_MODE", AVCAST_COPY_MODES_LIST[0])
 
 #######################
 # Custom cursus codes #

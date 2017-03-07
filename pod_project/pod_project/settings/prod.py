@@ -252,7 +252,8 @@ INSTALLED_APPS += ('migration_avcast',)
 AVCAST_DB_URI = '{{ avcast_db_uri }}'
 AVCAST_COURSE_DEFAULT_USERNAME = "di-info-pod@unistra.fr"
 AVCAST_VOLUME_PATH = "/audiovideocours/cours/1"
-AVCAST_FAKE_FILES_COPY = False
+AVCAST_COPY_MODES_LIST = ["FAKE", "LINK", "COPY"]
+AVCAST_COPY_MODE = AVCAST_COPY_MODES_LIST[0]
 
 #######################
 # Custom cursus codes #
