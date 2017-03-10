@@ -75,18 +75,24 @@ class Command(BaseCommand):
                 # create destination folder
                 pod_folder = os.path.dirname(destination)
                 if not os.path.exists(pod_folder):
-                    if settings.AVCAST_FAKE_FILES_COPY:
-                        self.stdout.write(self.style.SQL_FIELD("------ Fake : Folder %s created" % pod_folder))
-                    else:
+                    if settings.AVCAST_COPY_MODE == "COPY":
                         os.makedirs(pod_folder)
                         self.stdout.write(self.style.SQL_FIELD("------ Folder %s created" % pod_folder))
+                    elif settings.AVCAST_COPY_MODE == "LINK":
+                        os.makedirs(pod_folder)
+                        self.stdout.write(self.style.SQL_FIELD("------ Folder %s created" % pod_folder))
+                    else:
+                        self.stdout.write(self.style.SQL_FIELD("------ Fake : Folder %s created" % pod_folder))
                 # copy the file if he doesn't exist or if he's different
                 if not os.path.isfile(destination) or not filecmp.cmp(origin, destination):
-                    if settings.AVCAST_FAKE_FILES_COPY:
-                        self.stdout.write(self.style.SQL_FIELD("------ Fake : File %s copied to %s" % (origin, destination)))
-                    else:
+                    if settings.AVCAST_COPY_MODE == "COPY":
                         shutil.copy2(origin, destination)
                         self.stdout.write(self.style.SQL_FIELD("------ File %s copied to %s" % (origin, destination)))
+                    elif settings.AVCAST_COPY_MODE == "LINK":
+                        os.symlink(origin, destination)
+                        self.stdout.write(self.style.SQL_FIELD("------ File %s linked to %s" % (origin, destination)))
+                    else:
+                        self.stdout.write(self.style.SQL_FIELD("------ Fake : File %s copied to %s" % (origin, destination)))
 
     def handle(self, *args, **options):
         begin = options['begin']
@@ -94,8 +100,8 @@ class Command(BaseCommand):
         # Check settings
         if not hasattr(settings, 'AVCAST_VOLUME_PATH') or not settings.AVCAST_VOLUME_PATH:
             raise CommandError("AVCAST_VOLUME_PATH must be setted")
-        if not hasattr(settings, 'AVCAST_FAKE_FILES_COPY'):
-            raise CommandError("AVCAST_FAKE_FILES_COPY must be setted")
+        if not hasattr(settings, 'AVCAST_COPY_MODE'):
+            raise CommandError("AVCAST_COPY_MODE must be setted")
 
         try:
             self.stdout.write("Import all files ...")

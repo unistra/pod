@@ -7,7 +7,8 @@ Importation des enregistrements d'audiovideocast
     AVCAST_DB_URI = "host=localhost port=5432 dbname=univrav user=myuser password=S3CR3T"
     AVCAST_COURSE_DEFAULT_USERNAME = "mydefaultuser"
     AVCAST_VOLUME_PATH = "/audiovideocours/cours/1"
-    AVCAST_FAKE_FILES_COPY = "False"
+    AVCAST_COPY_MODES_LIST = ["FAKE", "LINK", "COPY"]
+    AVCAST_COPY_MODE = environ.get("AVCAST_COPY_MODE", AVCAST_COPY_MODES_LIST[0])
 
 * Exécutez les commandes dans l'ordre suivant : ::
 
