@@ -7,6 +7,7 @@ Import all avcast's courses, tags, types in pod
 from __future__ import unicode_literals
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
+from django.db import connection
 import psycopg2
 import psycopg2.extras
 from pods.models import Pod, Type, ContributorPods, Discipline, EncodingPods, DocPods, EnrichPods
@@ -65,11 +66,9 @@ class Command(BaseCommand):
                     pod.tags.add(row_tag['tag'])
         return pod
 
-    def pod_alter_pod_sequence(self, conn, last_courseid):
+    def pod_alter_pod_sequence(self, last_courseid):
         """ Method to alter pod sequence for postgresql """
-        with conn.cursor(
-            cursor_factory=psycopg2.extras.RealDictCursor
-        ) as curs_podid:
+        with connection.cursor() as curs_podid:
             try:
                 curs_podid.execute("SELECT setval('pods_pod_id_seq', %s)" % last_courseid)
             except Exception:
@@ -388,7 +387,7 @@ class Command(BaseCommand):
 
                 # Alter pod id sequence for postgresql
                 if last_courseid and options["update_sequence"]:
-                    self.pod_alter_pod_sequence(conn, last_courseid)
+                    self.pod_alter_pod_sequence(last_courseid)
 
 
         except psycopg2.DatabaseError as e:
