@@ -90,3 +90,9 @@ CURSUS_CODES = (
 # Protection des médias
 MEDIA_GUARD = True
 MEDIA_GUARD_SALT = "S3CR3T"
+
+# CELERY
+CELERY_TO_ENCODE = False
+CELERY_NAME = "pod_project"
+CELERY_BACKEND = "amqp"
+CELERY_BROKER = "amqp://guest@localhost//"
