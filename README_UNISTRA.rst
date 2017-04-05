@@ -94,6 +94,7 @@ On peut utiliser pour l'instant pydiploy via **fab prod custom_manage_cmd:ma_com
 Concernant elasticsearch:
 
 * dans l'interfaçe d'admin de pod, il faut modifier l'url qui est dans Sites
+* dans l'interface d'admin, modifier la page statique "/" et ajouter la page statique "/unistra-mentionslegales/", en utilisant le template "default.html"
 * si l'index pod existe déjà : **curl -XDELETE 'http://localhost:9200/pod/'**
 * **python manage.py create_pod_index**
 * si des vidéos sont déjà présentes : **python manage.py index_videos __ALL__**
