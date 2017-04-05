@@ -13,6 +13,10 @@ DJANGO_ROOT = dirname(dirname(abspath(__file__)))
 SITE_ROOT = dirname(DJANGO_ROOT)
 SITE_NAME = basename(DJANGO_ROOT)
 
+ALLOWED_HOSTS = [
+    '127.0.0.1'
+]
+
 #######################
 # Debug configuration #
 #######################
