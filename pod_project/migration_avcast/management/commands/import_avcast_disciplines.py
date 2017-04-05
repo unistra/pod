@@ -53,9 +53,6 @@ class Command(BaseCommand):
                         )
                         channel.title = row['namedom']
                         channel.visible = True
-                        channel.description = "codedom=%s" % (
-                            row['codedom'] if row['codedom'] else "",
-                        )
                         channel.save()
                         self.stdout.write(self.style.SQL_FIELD('Channel "%s" saved !' % channel.title))
                         # create or modify theme
@@ -64,9 +61,6 @@ class Command(BaseCommand):
                             channel=channel
                         )
                         theme.title = row['namecomp']
-                        theme.description = "codecomp=%s" % (
-                            row['codecomp'] if row['codecomp'] else "",
-                        )
                         theme.save()
                         self.stdout.write(self.style.SQL_FIELD('Theme "%s" saved !' % channel.title))
         except psycopg2.DatabaseError as e:
