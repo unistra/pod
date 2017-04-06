@@ -10,7 +10,7 @@ from django.conf import settings
 from django.db import connection
 import psycopg2
 import psycopg2.extras
-from pods.models import Pod, Type, ContributorPods, Discipline, EncodingPods, DocPods, EnrichPods
+from pods.models import Pod, Type, ContributorPods, Discipline, EncodingPods, DocPods, EnrichPods, Channel, Theme
 from core.models import EncodingType, get_storage_path
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
@@ -80,7 +80,7 @@ class Command(BaseCommand):
             cursor_factory=psycopg2.extras.RealDictCursor
         ) as curs_form:
             curs_form.execute(
-                ("SELECT c.courseid, c.formation, d.codecomp, d.namecomp, l.code, l.name "
+                ("SELECT c.courseid, c.formation, d.codecomp, d.namecomp, d.namedom, l.code, l.name "
                  "FROM course c "
                  "LEFT JOIN discipline d "
                  "ON c.formation like '%' || d.codecomp || '-%' "
@@ -91,11 +91,22 @@ class Command(BaseCommand):
             row_formation = curs_form.fetchone()
             if row_formation:
                 try:
-                    # Discipline
-                    discipline = Discipline.objects.get(
+                    # # Discipline
+                    # discipline = Discipline.objects.get(
+                    #     slug=slugify(row_formation['namecomp'])
+                    # )
+                    # pod.discipline = [discipline]
+
+                    # Channel
+                    channel = Channel.objects.get(
+                        slug=slugify(row_formation['namedom'])
+                    )
+                    pod.channel = [channel]
+                    # Theme
+                    theme = Theme.objects.get(
                         slug=slugify(row_formation['namecomp'])
                     )
-                    pod.discipline = [discipline]
+                    pod.theme = [theme]
                     # Cursus
                     for cursus in settings.CURSUS_CODES:
                         if slugify(cursus[1]) == slugify(row_formation['name']):
