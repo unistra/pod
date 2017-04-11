@@ -102,6 +102,7 @@ class Command(BaseCommand):
                         slug=slugify(row_formation['namedom'])
                     )
                     pod.channel = [channel]
+                    channel.users.add(pod.owner)
                     # Theme
                     theme = Theme.objects.get(
                         slug=slugify(row_formation['namecomp'])
