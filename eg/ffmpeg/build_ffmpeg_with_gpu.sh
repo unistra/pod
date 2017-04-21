@@ -126,3 +126,6 @@ rm /usr/local/bin/ffmpeg && ln -s "$WORK_FOLDER/ffmpeg_build/bin/ffmpeg" /usr/lo
 ##############
 
 /usr/local/ffmpeg -h
+
+# Usage example
+# ffmpeg -hwaccel cuvid -c:v h264_cuvid -i input.mp4 -vf scale_npp=1280:720 -c:v h264_nvenc -profile:v main -pixel_format yuv444p -preset default -b:v 1024k -c:a libfdk_aac -ar 48000 -ac 2 -ab 192k -movflags faststart -y output.mp4
