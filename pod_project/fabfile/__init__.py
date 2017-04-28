@@ -33,7 +33,7 @@ env.remote_static_root = '/var/www/static/'  # root of static files
 env.locale = 'fr_FR.UTF-8'  # locale to use on remote
 env.timezone = 'Europe/Paris'  # timezone for remote
 env.keep_releases = 2  # number of old releases to keep before cleaning
-env.extra_goals = ['preprod']  # add extra goal(s) to defaults (test,dev,prod)
+env.extra_goals = ['preprod', 'utvtest']  # add extra goal(s) to defaults (test,dev,prod)
 env.dipstrap_version = 'latest'
 env.verbose_output = True # True for verbose output
 
@@ -183,7 +183,7 @@ def utvtest():
         'avcast_db_uri': "AVCAST_DB_URI",
         'celery_broker': "CELERY_BROKER"
     }
-
+    execute(build_env)
         
 @task
 def preprod():
