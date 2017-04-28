@@ -164,8 +164,8 @@ def utvtest():
         'proxy_send_timeout 1800', 'proxy_read_timeout 1800', 'send_timeout 1800'
     ]
     env.extra_pkg_to_install += ["rabbitmq-server"]
-    env.path_to_cert = '/etc/ssl/certs/wildcard.u-strasbg.fr.pem'
-    env.path_to_cert_key = '/etc/ssl/private/wildcard.u-strasbg.fr.key'
+    env.path_to_cert = '/etc/ssl/certs/unistra.fr.pem'
+    env.path_to_cert_key = '/etc/ssl/private/unistra.fr.key'
     env.goal = 'utvtest'
     env.socket_port = '8000'
     env.socket_host = '127.0.0.1'
