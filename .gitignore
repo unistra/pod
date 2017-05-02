@@ -53,7 +53,7 @@ pod_project/media/
 *pods/fixtures/
 ## Lang files
 #locale/
-*.mo
+#*.mo
 ## Others
 jwplayer/
 pod_project/static/

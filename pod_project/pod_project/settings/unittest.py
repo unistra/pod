@@ -8,6 +8,8 @@ from .base import *
 
 ADMINS = ()
 
+SECRET_KEY = 'S3CR3T'
+
 ##########################
 # Database configuration #
 ##########################

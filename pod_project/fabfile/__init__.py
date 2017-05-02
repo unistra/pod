@@ -33,7 +33,7 @@ env.remote_static_root = '/var/www/static/'  # root of static files
 env.locale = 'fr_FR.UTF-8'  # locale to use on remote
 env.timezone = 'Europe/Paris'  # timezone for remote
 env.keep_releases = 2  # number of old releases to keep before cleaning
-env.extra_goals = ['preprod']  # add extra goal(s) to defaults (test,dev,prod)
+env.extra_goals = ['preprod', 'utvtest']  # add extra goal(s) to defaults (test,dev,prod)
 env.dipstrap_version = 'latest'
 env.verbose_output = True # True for verbose output
 
@@ -143,6 +143,48 @@ def test():
     execute(build_env)
 
 
+@task
+def utvtest():
+    """Define utv test stage"""
+    env.user = 'root'
+    env.roledefs = {
+        'web': ['pod-utv-test.di.unistra.fr'],
+        'lb': ['pod-utv-test.di.unistra.fr'],
+        'encoding': ['pod-utv-test.di.unistra.fr']
+    }
+    env.backends = ['127.0.0.1']
+    env.server_name = 'pod-utv-test.di.unistra.fr'
+    env.short_server_name = 'pod-utv-test'
+    env.static_folder = '/static/'
+    env.server_ip = ''
+    env.no_shared_sessions = False
+    env.server_ssl_on = True
+    env.nginx_location_extra_directives = [
+        'client_max_body_size 4G', 'proxy_request_buffering off', 'proxy_connect_timeout 1800',
+        'proxy_send_timeout 1800', 'proxy_read_timeout 1800', 'send_timeout 1800'
+    ]
+    env.extra_pkg_to_install += ["rabbitmq-server"]
+    env.path_to_cert = '/etc/ssl/certs/wildcard.di.unistra.fr-cert-chained.pem'
+    env.path_to_cert_key = '/etc/ssl/private/wildcard.di.unistra.fr.key'
+    env.goal = 'utvtest'
+    env.socket_port = '8000'
+    env.socket_host = '127.0.0.1'
+    env.map_settings = {
+        'secret_key': "SECRET_KEY",
+        'default_db_host': "DATABASES['default']['HOST']",
+        'default_db_user': "DATABASES['default']['USER']",
+        'default_db_password': "DATABASES['default']['PASSWORD']",
+        'default_db_name': "DATABASES['default']['NAME']",
+        'cas_server_url': "CAS_SERVER_URL",
+        'auth_ldap_server_uri': "AUTH_LDAP_SERVER_URI",
+        'auth_ldap_bind_dn': "AUTH_LDAP_BIND_DN",
+        'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
+        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN",
+        'avcast_db_uri': "AVCAST_DB_URI",
+        'celery_broker': "CELERY_BROKER"
+    }
+    execute(build_env)
+        
 @task
 def preprod():
     """Define preprod stage"""
