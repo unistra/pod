@@ -35,6 +35,12 @@ SECRET_KEY = '{{ secret_key }}'
 ALLOWED_HOSTS = [
     '.u-strasbg.fr',
     '.unistra.fr',
+    '127.0.0.1',
+    '130.79.200.84',
+    '130.79.200.85',
+    '.di.unistra.fr',
+    '192.168.250.254',
+    '130.79.200.88'
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'ssl')
@@ -101,21 +107,60 @@ AFFILIATION_STAFF = ('employee', 'faculty', 'researcher')
 ############
 
 TITLE_SITE = 'Pod'
-TITLE_ETB = 'Université'
+TITLE_ETB = 'Université de Strasbourg'
 DEFAULT_IMG = 'images/default.png'
 FILTER_USER_MENU = ('[a-d]', '[e-h]', '[i-l]', '[m-p]', '[q-t]', '[u-z]')
-TEMPLATE_THEME = 'DEFAULT'
+TEMPLATE_THEME = 'unistra-simple'
 
-LOGO_SITE = 'images/logo_compact.png'
-LOGO_COMPACT_SITE = 'images/logo_black_compact.png'
-LOGO_ETB = 'images/lille1_top-01.png'
-LOGO_PLAYER = 'images/logo_white_compact.png'
-SERV_LOGO = 'images/semm.png'
+LOGO_SITE = 'images/logo_compact_unistra.png'
+LOGO_COMPACT_SITE = 'images/logo_black_compact_unistra.png'
+LOGO_ETB = 'images/unistra_top-01.png'
+LOGO_PLAYER = 'images/logo_white_compact_unistra.png'
+SERV_LOGO = 'images/semm_unistra.png'
 
-HELP_MAIL = 'assistance@univ.fr'
-WEBTV = '<a href="http://webtv.univ.fr" id="webtv" class="btn btn-info btn-sm">' \
-    'WEBTV<span class="glyphicon glyphicon-link"></span>' \
-    '</a>'
+HELP_MAIL = 'support@unistra.fr'
+WEBTV = ''
+
+##
+# Settings for all template engines to be used
+#
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': (
+            os.path.join(BASE_DIR, 'core', 'theme',
+                         TEMPLATE_THEME, 'templates'),
+            os.path.join(BASE_DIR, 'core', 'templates'),
+            os.path.join(BASE_DIR, 'core', 'templates', 'flatpages'),
+        ),
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': (
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
+                # Local contexts
+                'core.context_processors.pages_menu',
+                'core.context_processors.context_settings',
+                'pods.context_processors.items_menu_header',
+            ),
+            'debug': DEBUG,
+        },
+    },
+]
+
+
+##
+# Additional static files locations (theme)
+#
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'core', 'theme', TEMPLATE_THEME, 'assets'),
+)
 
 ######################
 # Flash Media Server #
@@ -128,8 +173,8 @@ FMS_ROOT_URL = ''
 # Video #
 #########
 
-FFMPEG = 'nice -n 19 /usr/local/ffmpeg/ffmpeg'
-FFPROBE = 'nice -n 19 /usr/local/ffmpeg/ffprobe'
+FFMPEG = 'nice -n 19 ffmpeg'
+FFPROBE = 'nice -n 19 ffprobe'
 VIDEO_EXT_ACCEPT = (
     '.3gp',
     '.avi',
@@ -157,7 +202,7 @@ VIDEO_EXT_ACCEPT = (
 
 REPORT_VIDEO_MAIL_TO = ['morgan.bohn@unistra.fr']
 MAX_UPLOAD_FILE_SIZE = "4 Go"
-FILE_UPLOAD_TEMP_DIR = '/tmp'
+FILE_UPLOAD_TEMP_DIR = '/nfs/tmp/django'
 
 ##########
 # Logger #
@@ -226,7 +271,7 @@ STATIC_URL = '/static/'
 # Media files configuration #
 ##############################
 
-MEDIA_ROOT = "/srv/media/pod"
+MEDIA_ROOT = "/nfs/media/pod"
 MEDIA_URL = '/media/'
 
 ########################
@@ -236,10 +281,25 @@ MEDIA_URL = '/media/'
 ENCODE_WEBM = False
 ENCODE_WAV = False
 
+# ENCODE_OVER_SSH_CMD = "ssh -i ~/.ssh/pod_distribution django@podcast-enc$(shuf -i 1-2 -n 1)-pprd.di.unistra.fr"
+# ENCODE_VIDEO_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffprobe)s -v quiet -show_format -show_streams -print_format json -i %(src)s" + "'"
+# #ADD_THUMBNAILS_CMD = "%(ffmpeg)s -i \"%(src)s\" -vf fps=\"fps=1/%(thumbnail)s,scale=%(scale)s\" -an -vsync 0 -f image2 -y %(out)s_%(num)s.png"
+# ADD_THUMBNAILS_CMD = ENCODE_OVER_SSH_CMD + " '" + "nice -n 19 ffmpegthumbnailer -i \"%(src)s\" -s 256x256 -f -t 10%% -o %(out)s_2.png && nice -n 19 ffmpegthumbnailer -i \"%(src)s\" -s 256x256 -f -t 50%% -o %(out)s_3.png && nice -n 19 ffmpegthumbnailer -i \"%(src)s\" -s 256x256 -f -t 75%% -o %(out)s_4.png" + "'"
+# #ADD_OVERVIEW_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i \"%(src)s\" -vf \"thumbnail=%(thumbnail)s,scale=%(scale)s,tile=100x1:nb_frames=100:padding=0:margin=0\" -an -vsync 0 -y %(out)s" + "'"
+# ADD_OVERVIEW_CMD = ENCODE_OVER_SSH_CMD + " '" + "for i in $(seq 0 99); do nice -n 19 ffmpegthumbnailer -t $i%% -s %(scale)s -c jpeg -i \"%(src)s\" -o %(out)s_strip$i.jpg; nice -n 19 montage -geometry +0+0 %(out)s %(out)s_strip$i.jpg %(out)s; done; rm %(out)s_strip*.jpg" + "'"
+# #ENCODE_MP4_CMD = "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fmt yuv420p -preset faster -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -vf scale=%(scale)s -force_key_frames \"expr:gte(t,n_forced*1)\" -deinterlace -codec:a aac -strict -2 -ar %(ar)s -ac 2 -b:a %(ba)s -movflags faststart -y %(out)s"
+# ENCODE_MP4_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fmt yuv420p -preset faster -qp 27 -vf scale=%(scale)s -codec:a aac -strict -2 -ar 48000 -ac 2 -vbr 5 -movflags faststart -y %(out)s" + "'"
+# ENCODE_WEBM_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i %(src)s -codec:v libvpx -quality realtime -cpu-used 3 -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -qmin 10 -qmax 42 -codec:a libvorbis -y %(out)s" + "'"
+# ENCODE_MP3_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i %(src)s -vn -ar %(ar)s -ab %(ab)s -f mp3 -y %(out)s" + "'"
+# ENCODE_WAV_CMD = ENCODE_OVER_SSH_CMD + " '" + "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s" + "'"
+
 ENCODE_VIDEO_CMD = "%(ffprobe)s -v quiet -show_format -show_streams -print_format json -i %(src)s"
-ADD_THUMBNAILS_CMD = "%(ffmpeg)s -i \"%(src)s\" -vf fps=\"fps=1/%(thumbnail)s,scale=%(scale)s\" -an -vsync 0 -f image2 -y %(out)s_%(num)s.png"
-ADD_OVERVIEW_CMD = "%(ffmpeg)s -i \"%(src)s\" -vf \"thumbnail=%(thumbnail)s,scale=%(scale)s,tile=100x1:nb_frames=100:padding=0:margin=0\" -an -vsync 0 -y %(out)s"
-ENCODE_MP4_CMD = "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fmt yuv420p -preset faster -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -vf scale=%(scale)s -force_key_frames \"expr:gte(t,n_forced*1)\" -deinterlace -codec:a aac -strict -2 -ar %(ar)s -ac 2 -b:a %(ba)s -movflags faststart -y %(out)s"
+#ADD_THUMBNAILS_CMD = "%(ffmpeg)s -i \"%(src)s\" -vf fps=\"fps=1/%(thumbnail)s,scale=%(scale)s\" -an -vsync 0 -f image2 -y %(out)s_%(num)s.png"
+ADD_THUMBNAILS_CMD = "nice -n 19 ffmpegthumbnailer -i \"%(src)s\" -s 256x256 -f -t 10%% -o %(out)s_2.png && nice -n 19 ffmpegthumbnailer -i \"%(src)s\" -s 256x256 -f -t 50%% -o %(out)s_3.png && nice -n 19 ffmpegthumbnailer -i \"%(src)s\" -s 256x256 -f -t 75%% -o %(out)s_4.png"
+#ADD_OVERVIEW_CMD = "%(ffmpeg)s -i \"%(src)s\" -vf \"thumbnail=%(thumbnail)s,scale=%(scale)s,tile=100x1:nb_frames=100:padding=0:margin=0\" -an -vsync 0 -y %(out)s"
+ADD_OVERVIEW_CMD = "for i in $(seq 0 99); do nice -n 19 ffmpegthumbnailer -t $i%% -s %(scale)s -c jpeg -i \"%(src)s\" -o %(out)s_strip$i.jpg; nice -n 19 montage -geometry +0+0 %(out)s %(out)s_strip$i.jpg %(out)s; done; rm %(out)s_strip*.jpg"
+#ENCODE_MP4_CMD = "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fmt yuv420p -preset faster -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -vf scale=%(scale)s -force_key_frames \"expr:gte(t,n_forced*1)\" -deinterlace -codec:a aac -strict -2 -ar %(ar)s -ac 2 -b:a %(ba)s -movflags faststart -y %(out)s"
+ENCODE_MP4_CMD = "%(ffmpeg)s -i %(src)s -codec:v libx264 -profile:v high -pix_fmt yuv420p -preset faster -qp 27 -vf scale=%(scale)s -codec:a aac -strict -2 -ar 48000 -ac 2 -vbr 5 -movflags faststart -y %(out)s"
 ENCODE_WEBM_CMD = "%(ffmpeg)s -i %(src)s -codec:v libvpx -quality realtime -cpu-used 3 -b:v %(bv)s -maxrate %(bv)s -bufsize %(bufsize)s -qmin 10 -qmax 42 -codec:a libvorbis -y %(out)s"
 ENCODE_MP3_CMD = "%(ffmpeg)s -i %(src)s -vn -ar %(ar)s -ab %(ab)s -f mp3 -y %(out)s"
 ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
@@ -255,6 +315,13 @@ AVCAST_VOLUME_PATH = "/audiovideocours/cours/1"
 AVCAST_COPY_MODES_LIST = ["FAKE", "LINK", "COPY"]
 AVCAST_COPY_MODE = AVCAST_COPY_MODES_LIST[0]
 
+#################
+# Elasticsearch #
+#################
+
+#URL FOR ELASTICSEARCH ['host1', 'host2', ...]
+ES_URL = ['http://podcast-es-pprd.unistra.fr:9200/']
+
 #######################
 # Custom cursus codes #
 #######################
@@ -269,3 +336,13 @@ CURSUS_CODES = (
     ("5", "Master 2ème année"),
     ("6", "Doctorat")
 )
+
+# Media protection:
+MEDIA_GUARD = True
+MEDIA_GUARD_SALT = 'S3CR3T'
+
+# CELERY
+CELERY_TO_ENCODE = True
+CELERY_NAME = "pod_project"
+CELERY_BACKEND = "amqp"
+CELERY_BROKER = '{{ celery_broker }}'

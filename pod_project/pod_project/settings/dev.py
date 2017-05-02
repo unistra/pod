@@ -25,6 +25,8 @@ ADMINS = (
     ('morgan.bohn', 'morgan.bohn@unistra.fr'),
 )
 
+SECRET_KEY = 'S3CR3T'
+
 ##########################
 # Database configuration #
 ##########################
