@@ -321,3 +321,13 @@ CELERY_TO_ENCODE = True
 CELERY_NAME = "pod_project"
 CELERY_BACKEND = "amqp"
 CELERY_BROKER = '{{ celery_broker }}'
+
+##
+# Enable RSS feed and ATOM feed on channels and search results
+#
+#   - True : button to suscribe to feed appears in navigation toolbar
+#   
+#
+RSS_ENABLED = True
+ATOM_HD_ENABLED = True
+ATOM_SD_ENABLED = True
