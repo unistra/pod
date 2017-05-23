@@ -112,7 +112,7 @@ LOGO_ETB = 'images/unistra_top-01.png'
 LOGO_PLAYER = 'images/logo_white_compact_unistra.png'
 SERV_LOGO = 'images/semm_unistra.png'
 
-HELP_MAIL = 'support@unistra.fr'
+HELP_MAIL = 'di-info-pod@unistra.fr'
 WEBTV = ''
 
 ##
