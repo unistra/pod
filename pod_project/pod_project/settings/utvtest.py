@@ -194,7 +194,7 @@ VIDEO_EXT_ACCEPT = (
 # Misc #
 ########
 
-REPORT_VIDEO_MAIL_TO = ['morgan.bohn@unistra.fr']
+REPORT_VIDEO_MAIL_TO = ['di-info-pod@unistra.fr']
 MAX_UPLOAD_FILE_SIZE = "4 Go"
 FILE_UPLOAD_TEMP_DIR = '/tmp'
 
