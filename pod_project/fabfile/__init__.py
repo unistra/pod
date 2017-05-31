@@ -228,6 +228,50 @@ def preprod():
     execute(build_env)
 
 
+@task
+def prod():
+    """Define prod stage"""
+    env.user = 'root'
+    env.roledefs = {
+        'web': ['podcast-w1.di.unistra.fr', 'podcast-w2.di.unistra.fr', 'podcast-w3.di.unistra.fr', 'podcast-w4.di.unistra.fr'],
+        'lb': ['podcast-w1.di.unistra.fr', 'podcast-w2.di.unistra.fr', 'podcast-w3.di.unistra.fr', 'podcast-w4.di.unistra.fr'],
+        'encoding': ['podcast-enc1.di.unistra.fr', 'podcast-enc2.di.unistra.fr', 'podcast-enc3.di.unistra.fr', 'podcast-enc4.di.unistra.fr']
+    }
+    env.backends = ['127.0.0.1']
+    env.server_name = 'pod.unistra.fr'
+    env.remote_media_folder = '/nfs/media/pod' # root of media files
+    env.short_server_name = 'pod'
+    env.static_folder = '/static/'
+    env.server_ip = ''
+    env.no_shared_sessions = False
+    env.server_ssl_on = True
+    env.nginx_location_extra_directives = [
+        'client_max_body_size 4G', 'proxy_request_buffering off', 'proxy_connect_timeout 1800',
+        'proxy_send_timeout 1800', 'proxy_read_timeout 1800', 'send_timeout 1800'
+    ]
+    env.path_to_cert = '/local/ssl/unistra.fr.pem'
+    env.path_to_cert_key = '/local/ssl/unistra.fr.key'
+    env.goal = 'prod'
+    env.socket_port = '8000'
+    env.socket_host = '127.0.0.1'
+    env.map_settings = {
+        'secret_key': "SECRET_KEY",
+        'default_db_host': "DATABASES['default']['HOST']",
+        'default_db_user': "DATABASES['default']['USER']",
+        'default_db_password': "DATABASES['default']['PASSWORD']",
+        'default_db_name': "DATABASES['default']['NAME']",
+        'cas_server_url': "CAS_SERVER_URL",
+        'auth_ldap_server_uri': "AUTH_LDAP_SERVER_URI",
+        'auth_ldap_bind_dn': "AUTH_LDAP_BIND_DN",
+        'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
+        'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN",
+        'avcast_db_uri': "AVCAST_DB_URI",
+        'celery_broker': "CELERY_BROKER",
+        'media_guard_salt': "MEDIA_GUARD_SALT"
+    }
+    execute(build_env)
+
+
 
 
 # dont touch after that point if you don't know what you are doing !
