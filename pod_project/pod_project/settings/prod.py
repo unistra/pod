@@ -306,7 +306,7 @@ AVCAST_COPY_MODE = AVCAST_COPY_MODES_LIST[0]
 #################
 
 #URL FOR ELASTICSEARCH ['host1', 'host2', ...]
-ES_URL = ['http://podcast-es-mon.unistra.fr:9200/']
+ES_URL = ['192.168.250.3:9200/', '192.168.250.8:9200/']
 
 #######################
 # Custom cursus codes #
