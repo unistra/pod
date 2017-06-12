@@ -34,7 +34,7 @@ from django.contrib.auth.models import User
 from datetime import datetime
 from django.conf import settings
 from django.dispatch import receiver
-from django.db.models.signals import post_save, pre_save, post_delete
+from django.db.models.signals import post_save, pre_save, pre_delete, post_delete
 from django.contrib.sites.shortcuts import get_current_site
 from elasticsearch import Elasticsearch
 # django-taggit
@@ -50,7 +50,8 @@ import json
 from pod_project.tasks import task_start_encode
 
 ES_URL = getattr(settings, 'ES_URL', ['http://127.0.0.1:9200/'])
-REMOVE_VIDEO_FILE_SOURCE_ON_DELETE = getattr(settings, 'REMOVE_VIDEO_FILE_SOURCE_ON_DELETE', True)
+REMOVE_VIDEO_FILE_SOURCE_ON_DELETE = getattr(
+    settings, 'REMOVE_VIDEO_FILE_SOURCE_ON_DELETE', True)
 
 
 # gloabl function to remove accent, use in tags
@@ -305,6 +306,13 @@ class Pod(Video):
         help_text=_(
             u'Viewing this video will not be possible without this password.'),
         max_length=50, blank=True, null=True)
+    hash_id = models.CharField(
+        _('hash_id'),
+        help_text=_(
+            u'Hashcode to retrieve the video'),
+        max_length=100, blank=True, null=True, default=None)
+
+    _encoding_user_email_data = None
 
     class Meta:
         verbose_name = _("Video")
@@ -347,6 +355,15 @@ class Pod(Video):
         else:
             newid = self.id
         newid = '%04d' % newid
+        if not self.hash_id:
+            # on encode id+title pour avoir un id unique et plus dur à
+            # retrouver
+            idToEncode = ''.join([str(newid), self.title])
+            encodedId = base64.b64encode(idToEncode.encode('utf-8'))
+            self.hash_id = slugify(encodedId)
+        else:
+            tmp_slug = slugify(self.hash_id)
+            self.hash_id = tmp_slug
         self.slug = "%s-%s" % (newid, slugify(self.title))
         super(Pod, self).save(*args, **kwargs)
 
@@ -388,19 +405,6 @@ class Pod(Video):
         # self.encodingpods_set.values_list("encodingType__mediatype",
         # flat=True).distinct())
         return self.encodingpods_set.values_list("encodingType__mediatype", flat=True).distinct()
-
-    def delete(self):
-        if self.overview:
-            self.overview.delete()
-        # on supprime les encoding pods
-        for encoding in self.encodingpods_set.all():
-            if encoding.encodingFile:
-                encoding.encodingFile.delete()
-
-        # on supprime le fichier source
-        if REMOVE_VIDEO_FILE_SOURCE_ON_DELETE:
-            self.video.delete()
-        super(Pod, self).delete()
 
     def is_richmedia(self):
         return True if self.enrichpods_set.exclude(type=None) else False
@@ -463,6 +467,16 @@ class Pod(Video):
 
         return json.dumps(data_to_dump)
 
+    def set_encoding_user_email_data(self, user_email, curr_lang, root_url):
+        self._encoding_user_email_data = {
+            'user_email': user_email,
+            'curr_lang': curr_lang,
+            'root_url': root_url
+        }
+
+    def get_encoding_user_email_data(self):
+        return self._encoding_user_email_data
+
 
 @receiver(post_save, sender=Pod)
 def launch_encode(sender, instance, created, **kwargs):
@@ -503,9 +517,26 @@ def update_video_index(sender, instance=None, created=False, **kwargs):
             delete = es.delete(
                 index="pod", doc_type='pod', id=pod.id, refresh=True, ignore=[400, 404])
 
+
+@receiver(pre_delete, sender=Pod, dispatch_uid='pre_delete-pod_files_removal')
+def pod_files_removal(sender, instance, using, **kwargs):
+
+    if instance.overview:
+        # Overview removal
+        instance.overview.delete()
+
+    for encoding in instance.encodingpods_set.all():
+        # Encoded files removal
+        if encoding.encodingFile:
+            encoding.encodingFile.delete()
+
+    if REMOVE_VIDEO_FILE_SOURCE_ON_DELETE:
+        # Original file removal
+        instance.video.delete()
+
+
 @receiver(post_delete)  # instead of @receiver(post_save, sender=Rebel)
 def update_es_index(sender, instance=None, created=False, **kwargs):
-    print "POST DELETE"
     list_of_models = ('ChapterPods', 'EnrichPods', 'ContributorPods', 'Pod')
     if sender.__name__ in list_of_models:  # this is the dynamic part you want
         pod = None
@@ -1125,6 +1156,7 @@ class ReportVideo(models.Model):
         verbose_name_plural = _("Reports")
         unique_together = ('video', 'user',)
 
+
 @python_2_unicode_compatible
 class Rssfeed(models.Model):
     AUDIO = 'A'
@@ -1133,16 +1165,18 @@ class Rssfeed(models.Model):
         (AUDIO, 'Audio'),
         (VIDEO, 'Vidéo'),
     )
-    title = models.CharField(max_length=200, blank=False, unique_for_year='date_update')
+    title = models.CharField(max_length=200, blank=False,
+                             unique_for_year='date_update')
     description = models.TextField(blank=False)
     link_rss = models.URLField(max_length=200, blank=False)
     type_rss = models.CharField(max_length=1,
-                           choices=TYPE_CHOICES,
-                           default=AUDIO)
+                                choices=TYPE_CHOICES,
+                                default=AUDIO)
     year = models.PositiveSmallIntegerField(default=2017)
     date_update = models.DateTimeField(auto_now=True)
     # récupérer le user à la création
-    owner = models.ForeignKey(User, blank=False, null=False, on_delete=models.PROTECT, default=1)
+    owner = models.ForeignKey(
+        User, blank=False, null=False, on_delete=models.PROTECT, default=1)
     filters = models.TextField(blank=True)
     fil_type_pod = models.ForeignKey(Type, verbose_name=_('Type'))
     fil_discipline = models.ManyToManyField(
@@ -1152,17 +1186,16 @@ class Rssfeed(models.Model):
     fil_theme = models.ManyToManyField(
         Theme, verbose_name=_('Themes'), blank=True)
     limit = models.SmallIntegerField(verbose_name=_('Count items'),
-                                     help_text=_(u'Keep 0 to mean all items'),default=0)
+                                     help_text=_(u'Keep 0 to mean all items'), default=0)
     is_up = models.BooleanField(verbose_name=_('Visible'),
-        help_text=_(
-            u'If this box is checked, the video will be visible and accessible by anyone.'),
+                                help_text=_(
+        u'If this box is checked, the video will be visible and accessible by anyone.'),
         default=True)
-    
+
     class Meta:
         verbose_name = _("RSS")
         verbose_name_plural = _("RSS")
-        
-        
+
     def __unicode__(self):
         return self.title
 
