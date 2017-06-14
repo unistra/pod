@@ -7,8 +7,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pods', '0015_hash_id'),
-        ('pods', '0015_merge'),
+        ('pods', '0014_merge'),
+        ('pods', '0015_auto_20170613_1640'),
     ]
 
     operations = [
