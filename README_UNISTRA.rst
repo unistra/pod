@@ -24,10 +24,9 @@ Les fichiers et dossiers spécifiques liés à cette version sont les suivants:
   * **preprod.txt**: Contient en plus les packages spécifiques à l'environnement de pre-production (psycopg2, chaussette, waitress)
   * **prod.txt**: Contient en plus les packages spécifiques à l'environnement de prod (psycopg2, chaussette, waitress)
 
-* Le dossier **pod_project/locale** qui contient les locales FR inspiré du dossier racine **traduction**
 * Le fichier **pod_project/manage.py** qui est le template de management de django pour pydiploy, librairie basée sur `fabric <http://www.fabfile.org/>`_
 * Le fichier **pod_project/requirements.txt** qui dépend du dossier **pod_project/requirements**
-* Le fichier **pod_project/fabfile.py** qui est le fichier de configuration de pydiploy
+* Le dossier **pod_project/fabfile** qui est le fichier de configuration de pydiploy
 * Le fichier **pod_project/nginx_with_load_balancer.patch** qui est une modification de la conf nginx pour la prod et la preprod (avec load balancer)
 * Le fichier **pod_project/MANIFEST.in** qui permet d'inclure certains fichiers dans le package python
 * Le fichier **setup.py** qui permet de packager l'application, nécessaire à tox
@@ -35,6 +34,7 @@ Les fichiers et dossiers spécifiques liés à cette version sont les suivants:
 * Le fichier **pod_project/pod_project/wsgi.py** qui est un template pour pydiploy permettant l'utilisation d'un serveur wsgi
 * Le dossier **pod_project/pod_project/settings**, qui contient l'ensemble des fichiers de configuration pour les différents environnements:
 * Le dossier **pod_project/elasticsearch**, qui contient la configuration d'elasticsearch pour tox
+* Le fichier **pod_project/pod_project/urls.py**, qui contient la configuration d'elasticsearch pour tox
 
   * **base.py**: Contient les paramètres communs. C'est une copie exacte du fichier **settings-sample.py**
   * **dev.py**: Contient la configuration de l'environnement de développement
@@ -53,11 +53,17 @@ Dans le cas d'un pull request d'une fonctionnalité, il faudra:
 * Utiliser git cherry pick pour n'appliquer que le commit de la fonctionnalité dans cette branche
 * Faire le pull request de cette branche
 
-Installation
-------------
+Développement
+-------------
+
+* Utiliser docker-compose dans eg/docker
+* On utilise sqlite en dev.
+
+Installation en prod
+--------------------
 
 * Préparer une machine virtuelle Ubuntu 16.04
-* Pour test, preprod et prod, créer une base de données postgresql vide. On utilise sqlite en dev.
+* Pour test, preprod et prod, créer une base de données postgresql vide.
 * Installer manuellement Elasticsearch 2:
 
   * apt-get install openjdk-8-jre-headless
@@ -75,12 +81,14 @@ Installation
         discovery.zen.ping.multicast.enabled: false
         discovery.zen.ping.unicast.hosts: ["127.0.0.1"]
 
-* Installer ffmpeg :
+* Configurer rabbitmq à l'aide du script dans eg/rabbitmq
 
-  * apt install ffmpeg
-
-* Créer le répertoire des médias : mkdir -p /srv/media/pod && chown -R django:di /srv/media
 * Préparer l'environnement python via pydiploy : **fab prod pre_install**
+
+* Créer le répertoire des médias : mkdir -p /nfs/media/pod && chown -R django:di /nfs/media
+* Créer le répertoire temporaire pour l'upload nginx : mkdir -p /nfs/tmp/django && chown -R django:di /nfs/tmp
+* Créer le répertoire temporaire pour l'upload django : mkdir -p /nfs/tmp/nginx && chown -R django:di /nfs/tmp
+
 * Déployer le code de la branche **unistra** via pydiploy: **fab tag:unistra prod deploy --set default_db_host=X,default_db_user=X,default_db_password=X,default_db_name=X,cas_server_url=X,auth_ldap_server_uri=X,auth_ldap_bind_dn=X,auth_ldap_bind_password=X,auth_ldap_base_dn=X**
 * Finir la configuration via pydiploy: **fab prod post_install**
 
@@ -104,6 +112,10 @@ Pour lancer les tests unitaires :
 * Il faut installer **docker** au préalable pour utiliser un elasticsearch dans
   les tests
 * Puis, exécuter la commande **tox**
+
+Astuces : 
+
+* Si vous utilisez des "username" supérieurs à 30 caractères, n'hésitez pas à augmenter la limite de la table auth_user en base.
 
 TODO
 ----
