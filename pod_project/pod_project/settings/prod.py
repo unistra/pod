@@ -75,7 +75,7 @@ DATABASES['default']['NAME'] = '{{ default_db_name }}'
 #######################
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'localhost'
+EMAIL_HOST = 'mailhost.u-strasbg.fr'
 SERVER_EMAIL = 'root@{{ server_name }}'
 EMAIL_SUBJECT_PREFIX = '[{{ application_name }}]'
 
