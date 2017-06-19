@@ -249,8 +249,8 @@ def prod():
         'client_max_body_size 4G', 'proxy_request_buffering off', 'proxy_connect_timeout 1800',
         'proxy_send_timeout 1800', 'proxy_read_timeout 1800', 'send_timeout 1800'
     ]
-    env.path_to_cert = '/local/ssl/unistra.fr.pem'
-    env.path_to_cert_key = '/local/ssl/unistra.fr.key'
+    env.path_to_cert = '/etc/ssl/private/unistra.fr.pem'
+    env.path_to_cert_key = '/etc/ssl/private/unistra.fr.key'
     env.goal = 'prod'
     env.socket_port = '8000'
     env.socket_host = '127.0.0.1'

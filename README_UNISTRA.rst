@@ -113,6 +113,10 @@ Pour lancer les tests unitaires :
   les tests
 * Puis, exécuter la commande **tox**
 
+Astuces : 
+
+* Si vous utilisez des "username" supérieurs à 30 caractères, n'hésitez pas à augmenter la limite de la table auth_user en base.
+
 TODO
 ----
 
