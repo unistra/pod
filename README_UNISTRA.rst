@@ -89,7 +89,10 @@ Installation en prod
 * Créer le répertoire temporaire pour l'upload nginx : mkdir -p /nfs/tmp/django && chown -R django:di /nfs/tmp
 * Créer le répertoire temporaire pour l'upload django : mkdir -p /nfs/tmp/nginx && chown -R django:di /nfs/tmp
 
-* Déployer le code de la branche **unistra** via pydiploy: **fab tag:unistra prod deploy --set default_db_host=X,default_db_user=X,default_db_password=X,default_db_name=X,cas_server_url=X,auth_ldap_server_uri=X,auth_ldap_bind_dn=X,auth_ldap_bind_password=X,auth_ldap_base_dn=X**
+* Déployer le code de la branche **unistra** via pydiploy: **fab tag:unistra prod deploy --set default_db_host=X,default_db_user=X,
+  default_db_password=X,default_db_name=X,cas_server_url=X,auth_ldap_server_uri=X,auth_ldap_bind_dn=X,auth_ldap_bind_password=X,
+  auth_ldap_base_dn=X,avcast_db_uri=X,celery_broker=X**
+* Pour les déploiements suivant, un **fab tag:unistra prod deploy** suffira
 * Finir la configuration via pydiploy: **fab prod post_install**
 
 Il reste encore du paramétrage manuel à faire. A voir pour l'automatiser plus tard.
