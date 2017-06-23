@@ -302,7 +302,7 @@ MEDIA_GUARD_SALT = 'S3CR3T'
 CELERY_TO_ENCODE = True
 CELERY_NAME = "pod_project"
 CELERY_BACKEND = "amqp"
-CELERY_BROKER = "amqp://guest@localhost//"
+CELERY_BROKER = environ.get('CELERY_BROKER','amqp://guest@localhost//')
 
 ##
 # Enable RSS feed and ATOM feed on channels and search results

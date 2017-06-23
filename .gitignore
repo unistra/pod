@@ -80,4 +80,5 @@ pod_project/pods/viewsv1.py
 
 eg/docker/dev/data
 eg/docker/dev/code
+eg/docker/dev/media
 eg/docker/dev/log*
