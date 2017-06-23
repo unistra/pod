@@ -45,11 +45,11 @@ to run it:
 
     docker-compose up
 
-enter in running vms
+enter in running vms :
 
     docker-compose exec [pod|elasticsearch] a command with parameters
 
-example: prepare the db and the es
+prepare the db and the es:
 
     docker-compose exec python manage.py makemigrations
     docker-compose exec python manage.py migrate
@@ -57,5 +57,13 @@ example: prepare the db and the es
     docker-compose exec python manage.py createsuperuser --username mylogincas
     docker-compose exec python manage.py index_videos __ALL__
 
-now you can run install and test procedures described in
+execute celery with the following command:
+
+    docker-compose exec pod celery -A pod_project worker -l info
+
+the application is available here:
+
+    http://127.0.0.1:8010/
+
+you can read the following file for more information :
 `../../../README_UNISTRA.rst`.

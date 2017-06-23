@@ -1,5 +1,9 @@
 version: '2'
 services:
+    rabbitmq:
+        build: rabbitmq
+        ports: 
+            - "5672:5672"
     elasticsearch:
         build: elasticsearch
         ports:
@@ -12,6 +16,8 @@ services:
     pod:
         build: ./pod
         environment:
+            C_FORCE_ROOT: "yes"
+            CELERY_BROKER: amqp://guest@rabbitmq//
             ES_URL: http://elasticsearch:9200
             DJANGO_SETTINGS_MODULE: pod_project.settings.dev
             CAS_SERVER_URL: http://cas.unistra.fr/cas/
@@ -25,7 +31,7 @@ services:
             - ./media:/srv/media/pod
         ports:
             - 8010:8010
-        links: [ elasticsearch ]
+        links: [ elasticsearch, rabbitmq ]
         # networks: { localnet: { ipv4_address: 172.16.238.3 } }
 # networks:
 #     localnet:
