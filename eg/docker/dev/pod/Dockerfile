@@ -9,7 +9,7 @@ RUN apt-get install -y python python-dev python-pip wget g++ libmysqlclient-dev 
     graphviz libgraphviz-dev pkg-config libldap2-dev libsasl2-dev \
     libssl-dev libjpeg-dev python-imaging libfreetype6-dev python-chardet \
     python-fpconst python-apt python-debian python-debianbts python-reportbug \
-    python-soappy memcached gettext ffmpeg
+    python-soappy memcached gettext ffmpeg git
 
 # Install python packages
 RUN  mkdir -p /usr/local/src
