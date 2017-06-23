@@ -49,7 +49,13 @@ enter in running vms
 
     docker-compose exec [pod|elasticsearch] a command with parameters
 
-example: show django processes on the pod server
+example: prepare the db and the es
+
+    docker-compose exec python manage.py makemigrations
+    docker-compose exec python manage.py migrate
+    docker-compose exec python manage.py loaddata core/fixtures/initial_data.json
+    docker-compose exec python manage.py createsuperuser --username mylogincas
+    docker-compose exec python manage.py index_videos __ALL__
 
 now you can run install and test procedures described in
 `../../../README_UNISTRA.rst`.
