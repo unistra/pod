@@ -33,7 +33,7 @@ chardet==2.3.0
 fpconst==0.7.2
 SOAPpy==0.12.22
 celery==3.1.24
--e git+git://github.com/drclockwork/H5PP@0.1.55#egg=H5PP
+-e git+git://github.com/drclockwork/H5PP@0.1.7#egg=H5PP
 coverage==3.7.1
 tox
 chaussette

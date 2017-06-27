@@ -79,5 +79,6 @@ pod_project/pods/viewsv1.py
 *.key
 
 eg/docker/dev/data
+eg/docker/dev/media
 eg/docker/dev/code
 eg/docker/dev/log*
