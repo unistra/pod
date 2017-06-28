@@ -55,6 +55,7 @@ prepare the db and the es:
     docker-compose exec python manage.py migrate
     docker-compose exec python manage.py loaddata core/fixtures/initial_data.json
     docker-compose exec python manage.py createsuperuser --username mylogincas
+    docker-compose exec python manage.py create_pod_index
     docker-compose exec python manage.py index_videos __ALL__
 
 execute celery with the following command:
