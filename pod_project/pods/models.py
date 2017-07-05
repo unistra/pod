@@ -47,7 +47,6 @@ from django.forms.formsets import ORDERING_FIELD_NAME
 logger = logging.getLogger(__name__)
 import unicodedata
 import json
-from pod_project.tasks import task_start_encode
 
 ES_URL = getattr(settings, 'ES_URL', ['http://127.0.0.1:9200/'])
 REMOVE_VIDEO_FILE_SOURCE_ON_DELETE = getattr(settings, 'REMOVE_VIDEO_FILE_SOURCE_ON_DELETE', True)
@@ -471,9 +470,11 @@ def launch_encode(sender, instance, created, **kwargs):
         instance.encoding_in_progress = True
         instance.save()
         if settings.CELERY_TO_ENCODE:
-            task_start_encode.delay(instance)
-        else:
-            start_encode(instance)
+            logger.error('CELERY_TO_ENCODE setting is now deprecated in flavor of ENCODE_VIDEO')
+        (getattr(
+            settings,
+            'ENCODE_VIDEO',
+            start_encode))(instance)
 
 
 def start_encode(video):

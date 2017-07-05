@@ -129,12 +129,30 @@ TODO
 * Automatiser l'installation de Ffmpeg
 * Automatiser l'exécution des commandes django annexes (loaddata,makemigrations ...)
 
+ENCODE_VIDEO
+------------
+
+dans les settings, creer une clef ENCODE_VIDEO qui référence la fonction a appeller. exemple
+dans settings/devhpc.py.
 
 Celery
 ------
 Les 3 paramètres du fichier de configuration concernés sont donc:
 
-* Pour activer l'encodage via Celery : CELERY_TO_ENCODE = True
+* Pour activer l'encodage via Celery dans settings
+
+    from pod_project.tasks import task_start_encode
+
+    def encode_video(video):
+            task_start_encode.delay(instance)
+    
+    ENCODE_VIDEO = encode_video
+
+ M pod_project/pods/models.py
+?? pod_project/pod_project/settings/devhpc.py
+
+
+
 * Pour définir le nom du projet (ne devrait pas changer) : CELERY_NAME = "pod_project"
 * Pour définir le type de backend (ici rabbitmq) : CELERY_BACKEND = "amqp"
 * Pour définir le broker (ici un rabbitmq local) : CELERY_BROKER = "amqp://guest@localhost//"

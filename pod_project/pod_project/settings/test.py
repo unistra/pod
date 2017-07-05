@@ -3,6 +3,21 @@
 from .base import *
 from os.path import join, normpath, dirname, abspath, basename
 
+import commands
+import logging
+
+def external_command(command):
+    (status,out) = commands.getstatusoutput(command)
+    logging.getLogger(__name__).info(
+        'command %s exited with %s outputed %s' %
+        ( command, status, out )
+    )
+
+def encode_video(video):
+    external_command( 'ssh hpc process %s' % video.id )
+
+ENCODE_VIDEO = encode_video
+
 ######################
 # Path configuration #
 ######################
