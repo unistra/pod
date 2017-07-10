@@ -23,6 +23,7 @@ from django.core.files import File
 from core.models import *
 from django.conf import settings
 from django.test import TestCase, override_settings
+from django.utils import timezone
 from pods.models import *
 from django.core.files.temp import NamedTemporaryFile
 from django.template.defaultfilters import slugify
@@ -63,7 +64,8 @@ class ChannelTestCase(TestCase):
 	"""
 
     def test_Channel_null_attribut(self):
-        channel = Channel.objects.annotate(video_count=Count("pod", distinct=True)).get(title="ChannelTest1")
+        channel = Channel.objects.annotate(video_count=Count(
+            "pod", distinct=True)).get(title="ChannelTest1")
         self.assertEqual(channel.visible, False)
         self.assertFalse(channel.slug == slugify("blabla"))
         self.assertEqual(channel.color, None)
@@ -82,7 +84,8 @@ class ChannelTestCase(TestCase):
 	"""
 
     def test_Channel_with_attributs(self):
-        channel = Channel.objects.annotate(video_count=Count("pod", distinct=True)).get(title="ChannelTest2")
+        channel = Channel.objects.annotate(video_count=Count(
+            "pod", distinct=True)).get(title="ChannelTest2")
         self.assertEqual(channel.visible, True)
         channel.color = "Blue"
         self.assertEqual(channel.color, "Blue")
@@ -138,7 +141,8 @@ class ThemeTestCase(TestCase):
 	"""
 
     def test_Theme_null_attribut(self):
-        theme = Theme.objects.annotate(video_count=Count("pod", distinct=True)).get(title="Theme1")
+        theme = Theme.objects.annotate(video_count=Count(
+            "pod", distinct=True)).get(title="Theme1")
         self.assertFalse(theme.slug == slugify("blabla"))
         self.assertEqual(theme.headband, None)
         self.assertEqual(theme.__unicode__(), "ChannelTest1: Theme1")
@@ -199,7 +203,8 @@ class TypeTestCase(TestCase):
 	"""
 
     def test_Type_null_attribut(self):
-        type1 = Type.objects.annotate(video_count=Count("pod", distinct=True)).get(title="Type1")
+        type1 = Type.objects.annotate(video_count=Count(
+            "pod", distinct=True)).get(title="Type1")
         self.assertFalse(type1.slug == slugify("blabla"))
         self.assertEqual(type1.headband, None)
         self.assertEqual(type1.__unicode__(), "Type1")
@@ -260,7 +265,8 @@ class DisciplineTestCase(TestCase):
 	"""
 
     def test_Discipline_null_attribut(self):
-        discipline = Discipline.objects.annotate(video_count=Count("pod", distinct=True)).get(title="Discipline1")
+        discipline = Discipline.objects.annotate(
+            video_count=Count("pod", distinct=True)).get(title="Discipline1")
         self.assertFalse(discipline.slug == slugify("blabla"))
         self.assertEqual(discipline.headband, None)
         self.assertEqual(discipline.__unicode__(), "Discipline1")
@@ -599,7 +605,7 @@ class MediaCoursesTestCase(TestCase):
     def setUp(self):
         remi = User.objects.create_user("Remi")
         remi2 = User.objects.create_user("Remi2")
-        Mediacourses.objects.create(user=remi, title="media1", date_added=datetime.today(
+        Mediacourses.objects.create(user=remi, title="media1", date_added=timezone.now(
         ), mediapath="blabla", started=True, error="error1")
         #Mediacourses.objects.get_or_create(user=remi2, title="media2")
         Mediacourses.objects.create(user=remi2, title="media2", started=True)

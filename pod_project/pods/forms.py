@@ -38,6 +38,7 @@ ALLOW_VISIBILITY_SETTING_TO_CHANNEL_OWNERS = getattr(
 SHOW_IS_360_IN_FORM_UPLOAD = getattr(
     settings, 'SHOW_IS_360_IN_FORM_UPLOAD', False)
 
+
 class ChannelForm(TranslationModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -198,7 +199,6 @@ class PodForm(ModelForm):
             fields = '__all__'
         else:
             exclude = ('is_360', )
-            
 
 
 class ContributorPodsForm(ModelForm):
@@ -333,9 +333,9 @@ class SearchForm(Form):
     q = forms.CharField(required=False, label=_('Search'),
                         widget=forms.TextInput(attrs={'type': 'search'}))
     start_date = forms.DateField(
-        required=False, label=u'Date de début', widget=widgets.AdminDateWidget)
+        required=False, label=u'Start date', widget=widgets.AdminDateWidget)
     end_date = forms.DateField(
-        required=False, label=u'Date de fin', widget=widgets.AdminDateWidget)
+        required=False, label=u'End date', widget=widgets.AdminDateWidget)
 
     def __init__(self, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)

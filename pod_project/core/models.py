@@ -206,14 +206,12 @@ class Video(models.Model):
     duration = models.IntegerField(
         _('Duration'), default=0, editable=False, blank=True)
     infoVideo = models.TextField(null=True, blank=True, editable=False)
-    
-    
 
     class Meta:
         ordering = ['-date_added', '-id']
         get_latest_by = 'date_added'
         verbose_name = _("video")
-        verbose_name_plural = _("video")
+        verbose_name_plural = _("videos")
         abstract = True
 
     def __unicode__(self):
