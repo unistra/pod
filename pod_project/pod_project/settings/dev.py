@@ -298,8 +298,13 @@ CURSUS_CODES = (
 MEDIA_GUARD = True
 MEDIA_GUARD_SALT = 'S3CR3T'
 
+
 # CELERY
-CELERY_TO_ENCODE = True
+from pod_project.tasks import task_start_encode
+def encode_video(video):
+    task_start_encode.delay(video)
+
+ENCODE_VIDEO = encode_video
 CELERY_NAME = "pod_project"
 CELERY_BACKEND = "amqp"
 CELERY_BROKER = environ.get('CELERY_BROKER','amqp://guest@localhost//')
