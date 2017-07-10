@@ -325,3 +325,7 @@ ENCODE_VIDEO = encode_video
 CELERY_NAME = "pod_project"
 CELERY_BACKEND = "amqp"
 CELERY_BROKER = '{{ celery_broker }}'
+
+##
+# Video in draft mode can be shared
+USE_PRIVATE_VIDEO = True

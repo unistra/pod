@@ -97,3 +97,7 @@ MEDIA_GUARD_SALT = "S3CR3T"
 CELERY_NAME = "pod_project"
 CELERY_BACKEND = "amqp"
 CELERY_BROKER = "amqp://guest@localhost//"
+
+##
+# Video in draft mode can be shared
+USE_PRIVATE_VIDEO = True

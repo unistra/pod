@@ -329,3 +329,7 @@ H5P_SAVE = 30                                           # How often current cont
 H5P_EXPORT = '/exports/'                                # Location of exports (packages .h5p)
 H5P_LANGUAGE = 'fr'                                     # Language of the module H5P.
 BASE_URL = 'http://127.0.0.1:8000'                      # Hostname of your django app
+
+##
+# Video in draft mode can be shared
+USE_PRIVATE_VIDEO = True
