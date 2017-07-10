@@ -138,7 +138,8 @@ def test():
         'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
         'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN",
         'avcast_db_uri': "AVCAST_DB_URI",
-        'celery_broker': "CELERY_BROKER"
+        'celery_broker': "CELERY_BROKER",
+        'encode_command': "ENCODE_COMMAND"
     }
     execute(build_env)
 
