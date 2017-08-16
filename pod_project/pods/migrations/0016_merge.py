@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('pods', '0014_merge'),
-        ('pods', '0014_rssfeed'),
+        ('pods', '0015_auto_20170613_1640'),
     ]
 
     operations = [

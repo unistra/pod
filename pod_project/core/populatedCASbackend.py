@@ -30,6 +30,10 @@ from django.utils.translation import ugettext as _
 import sys
 import logging
 logger = logging.getLogger(__name__)
+#FORMAT = '%(asctime)-15s %(clientip)s %(user)-8s %(message)s'
+#logging.basicConfig(format=FORMAT)
+#d = {'clientip': '192.168.0.1', 'user': 'fbloggs'}
+#logger = logging.getLogger(__name__)
 
 
 class PopulatedCASBackend(CASBackend):
@@ -82,7 +86,8 @@ class PopulatedCASBackend(CASBackend):
                                     user.is_staff = True
 
                             except:
-                                print u'\n*****Unexpected error link :%s - %s' % (sys.exc_info()[0], sys.exc_info()[1])
+                                # print u'\n*****Unexpected error link :%s -
+                                # %s' % (sys.exc_info()[0], sys.exc_info()[1])
                                 msg = u'\n*****Unexpected error link :%s - %s' % (
                                     sys.exc_info()[0], sys.exc_info()[1])
                                 logger.error(msg)

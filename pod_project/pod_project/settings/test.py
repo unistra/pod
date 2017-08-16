@@ -2,6 +2,8 @@
 
 from .base import *
 from os.path import join, normpath, dirname, abspath, basename
+import commands
+import logging
 
 ######################
 # Path configuration #
@@ -317,7 +319,19 @@ MEDIA_GUARD = True
 MEDIA_GUARD_SALT = 'S3CR3T'
 
 # CELERY
-CELERY_TO_ENCODE = True
+ENCODE_COMMAND = '{{ encode_command }}'
+
+def external_command(command):
+    (status,out) = commands.getstatusoutput(command)
+    logging.getLogger(__name__).info(
+        'command %s exited with %s outputed %s' %
+        ( command, status, out ))
+
+def encode_video(video):
+    # external_command( 'ssh hpc process %s' % video.id )
+    external_command(ENCODE_COMMAND % video.id)
+
+ENCODE_VIDEO = encode_video
 CELERY_NAME = "pod_project"
 CELERY_BACKEND = "amqp"
 CELERY_BROKER = '{{ celery_broker }}'
@@ -342,3 +356,7 @@ H5P_SAVE = 30                                           # How often current cont
 H5P_EXPORT = '/exports/'                                # Location of exports (packages .h5p)
 H5P_LANGUAGE = 'fr'                                     # Language of the module H5P.
 BASE_URL = 'https://podcast-test.u-strasbg.fr'         # Hostname of your django app
+
+##
+# Video in draft mode can be shared
+USE_PRIVATE_VIDEO = True

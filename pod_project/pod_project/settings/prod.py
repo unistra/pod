@@ -42,7 +42,7 @@ ALLOWED_HOSTS = [
     '130.79.200.197',
     '130.79.200.204',
     '130.79.200.162',
-
+    '130.79.200.208'
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'ssl')
@@ -322,7 +322,7 @@ AVCAST_COPY_MODE = AVCAST_COPY_MODES_LIST[0]
 #################
 
 #URL FOR ELASTICSEARCH ['host1', 'host2', ...]
-ES_URL = ['192.168.250.3:9200/', '192.168.250.8:9200/']
+ES_URL = ['podcast-es1.di.unistra.fr:9200/', 'podcast-es2.di.unistra.fr:9200/']
 
 #######################
 # Custom cursus codes #
@@ -344,7 +344,15 @@ MEDIA_GUARD = True
 MEDIA_GUARD_SALT = '{{ media_guard_salt }}'
 
 # CELERY
-CELERY_TO_ENCODE = True
+from pod_project.tasks import task_start_encode
+def encode_video(video):
+    task_start_encode.delay(video)
+
+ENCODE_VIDEO = encode_video
 CELERY_NAME = "pod_project"
 CELERY_BACKEND = "amqp"
 CELERY_BROKER = '{{ celery_broker }}'
+
+##
+# Video in draft mode can be shared
+USE_PRIVATE_VIDEO = True

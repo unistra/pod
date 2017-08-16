@@ -298,8 +298,13 @@ CURSUS_CODES = (
 MEDIA_GUARD = True
 MEDIA_GUARD_SALT = 'S3CR3T'
 
+
 # CELERY
-CELERY_TO_ENCODE = True
+from pod_project.tasks import task_start_encode
+def encode_video(video):
+    task_start_encode.delay(video)
+
+ENCODE_VIDEO = encode_video
 CELERY_NAME = "pod_project"
 CELERY_BACKEND = "amqp"
 CELERY_BROKER = environ.get('CELERY_BROKER','amqp://guest@localhost//')
@@ -324,3 +329,7 @@ H5P_SAVE = 30                                           # How often current cont
 H5P_EXPORT = '/exports/'                                # Location of exports (packages .h5p)
 H5P_LANGUAGE = 'fr'                                     # Language of the module H5P.
 BASE_URL = 'http://127.0.0.1:8000'                      # Hostname of your django app
+
+##
+# Video in draft mode can be shared
+USE_PRIVATE_VIDEO = True
