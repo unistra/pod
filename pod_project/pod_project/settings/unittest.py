@@ -81,6 +81,7 @@ ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
 CURSUS_CODES = (
     ("0", "Autres"),
     ("C", "Conférence"),
+    ("D","Diplôme universitaire"),
     ("1", "Licence 1ère année"),
     ("2", "Licence 2ème année"),
     ("3", "Licence 3ème année"),

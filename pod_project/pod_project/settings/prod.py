@@ -331,6 +331,7 @@ ES_URL = ['podcast-es1.di.unistra.fr:9200/', 'podcast-es2.di.unistra.fr:9200/']
 CURSUS_CODES = (
     ("0", "Autres"),
     ("C", "Conférence"),
+    ("D","Diplôme universitaire"),
     ("1", "Licence 1ère année"),
     ("2", "Licence 2ème année"),
     ("3", "Licence 3ème année"),

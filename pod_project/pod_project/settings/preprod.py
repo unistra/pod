@@ -329,6 +329,7 @@ ES_URL = ['http://podcast-es-pprd.unistra.fr:9200/']
 CURSUS_CODES = (
     ("0", "Autres"),
     ("C", "Conférence"),
+    ("D","Diplôme universitaire"),
     ("1", "Licence 1ère année"),
     ("2", "Licence 2ème année"),
     ("3", "Licence 3ème année"),

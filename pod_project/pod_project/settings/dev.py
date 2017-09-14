@@ -286,6 +286,7 @@ AVCAST_COPY_MODE = environ.get("AVCAST_COPY_MODE", AVCAST_COPY_MODES_LIST[0])
 CURSUS_CODES = (
     ("0", "Autres"),
     ("C", "Conférence"),
+    ("D","Diplôme universitaire"),
     ("1", "Licence 1ère année"),
     ("2", "Licence 2ème année"),
     ("3", "Licence 3ème année"),
