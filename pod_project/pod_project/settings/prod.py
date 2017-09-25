@@ -90,10 +90,10 @@ USE_LDAP_TO_POPULATE_USER = True
 AUTH_LDAP_SERVER_URI = '{{ auth_ldap_server_uri }}'
 AUTH_LDAP_BIND_DN = '{{ auth_ldap_bind_dn }}'
 AUTH_LDAP_BIND_PASSWORD = '{{ auth_ldap_bind_password }}'
-AUTH_LDAP_SCOPE = 'ONELEVEL'
+AUTH_LDAP_SCOPE = 'SUBTREE'
 
 AUTH_LDAP_BASE_DN = '{{ auth_ldap_base_dn }}'
-AUTH_LDAP_USER_SEARCH = (AUTH_LDAP_BASE_DN, "(uid=%(uid)s)")
+AUTH_LDAP_USER_SEARCH = (AUTH_LDAP_BASE_DN, "(&(uid=%(uid)s)(|(ou:dn:=uds)(ou:dn:=engees)))")
 AUTH_LDAP_UID_TEST = ""
 
 AUTH_USER_ATTR_MAP = {
@@ -331,6 +331,7 @@ ES_URL = ['podcast-es1.di.unistra.fr:9200/', 'podcast-es2.di.unistra.fr:9200/']
 CURSUS_CODES = (
     ("0", "Autres"),
     ("C", "Conférence"),
+    ("D","Diplôme universitaire"),
     ("1", "Licence 1ère année"),
     ("2", "Licence 2ème année"),
     ("3", "Licence 3ème année"),
