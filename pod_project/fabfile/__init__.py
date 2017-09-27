@@ -10,7 +10,7 @@ import pydiploy
 from fabric.operations import put
 from .celery import install_celery, deploy_celery_file, celery_restart
 from .uwsgi import install_uwsgi, uwsgi_restart, app_uwsgi_conf
-
+import os
 
 # edit config here !
 
@@ -26,7 +26,7 @@ env.remote_virtualenv_root = join(env.remote_home, '.virtualenvs')  # venv root
 env.remote_virtualenv_dir = join(env.remote_virtualenv_root,
                                  env.application_name)  # venv for webapp dir
 # git repository url
-env.remote_repo_url = '../.' # Relative git local folder because github doesn't support git archive
+env.remote_repo_url = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Relative git local folder because github doesn't support git archive
 env.remote_repo_specific_folder = 'pod_project' # specify a subfolder for the remote repository
 env.local_tmp_dir = '/tmp'  # tmp dir
 env.remote_static_root = '/var/www/static/'  # root of static files
