@@ -290,7 +290,7 @@ ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
 # Avcast migration #
 ####################
 
-INSTALLED_APPS += ('migration_avcast', 'django_extensions')
+INSTALLED_APPS += ('migration_avcast', 'django_extensions','navigator')
 AVCAST_DB_URI = '{{ avcast_db_uri }}'
 AVCAST_COURSE_DEFAULT_USERNAME = "di-info-pod@unistra.fr"
 AVCAST_VOLUME_PATH = "/audiovideocours/cours/1"
