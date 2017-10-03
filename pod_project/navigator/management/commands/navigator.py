@@ -129,6 +129,27 @@ class Command(BaseCommand):
         video.save()
         print(root_for(place))
 
+    def add_mp3_for(self,video,filename):
+
+        video = V(video)
+
+        place = os.path.join\
+            ( path_for_items_of_video(video)
+            , os.path.basename(filename) )
+
+        etype = EncodingType.objects.filter( mediatype='audio' )[0]
+
+        epod, DEVNULL = EncodingPods.objects.get_or_create\
+            ( video=video
+            , encodingType=etype )
+
+        epod.encodingFile   = place
+        epod.encodingFormat = "audio/mp3"
+        epod.save()
+        video.save()
+
+        print(root_for(place))
+
     def add_encoding_for(self,video,height,filename):
 
         video = V(video)
