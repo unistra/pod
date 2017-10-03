@@ -120,57 +120,44 @@ class Command(BaseCommand):
 
     def get_video_path(self,video): print(V(video).video.path)
 
-    def add_overview_for(self,video,filename):
+    def get_place(video,filename):
+        video = V(video)
         place = os.path.join\
             ( path_for_items_of_video(video)
             , os.path.basename(filename) )
-        video = V(video)
+        return [video, place]
+
+    def add_overview_for(self,video,filename):
+        video, place = get_place(video,filename)
         video.overview = place
         video.save()
         print(root_for(place))
 
     def add_mp3_for(self,video,filename):
-
-        video = V(video)
-
-        place = os.path.join\
-            ( path_for_items_of_video(video)
-            , os.path.basename(filename) )
-
-        etype = EncodingType.objects.filter( mediatype='audio' )[0]
-
+        place, video  = get_place(video,filename)
+        etype         = EncodingType.objects.filter( mediatype='audio' )[0]
         epod, DEVNULL = EncodingPods.objects.get_or_create\
             ( video=video
             , encodingType=etype )
 
-        epod.encodingFile   = place
         epod.encodingFormat = "audio/mp3"
+        epod.encodingFile   = place
         epod.save()
         video.save()
-
         print(root_for(place))
 
     def add_encoding_for(self,video,height,filename):
-
-        video = V(video)
-
-        place = os.path.join\
-            ( path_for_items_of_video(video)
-            , os.path.basename(filename) )
-
+        place, video  = get_place(video,filename)
         etype = EncodingType.objects.filter\
             ( mediatype='video'
             , output_height=height )[0]
-
         epod, DEVNULL = EncodingPods.objects.get_or_create\
             ( video=video
             , encodingType=etype
             , encodingFormat="video/mp4")
-
         epod.encodingFile = place
         epod.save()
         video.save()
-
         print(root_for(place))
 
     def handle(self, *args, **options): getattr(self,args[0])(*args[1:])
