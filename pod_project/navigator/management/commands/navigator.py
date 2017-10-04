@@ -98,6 +98,14 @@ def get_video_scales():
     return [ e.output_height
         for e in EncodingType.objects.filter(mediatype='video') ]
 
+def get_place(video,filename):
+    video = V(video)
+    place = os.path.join\
+        ( path_for_items_of_video(video)
+        , os.path.basename(filename) )
+    return [video, place]
+
+
 class Command(BaseCommand):
     args = '<video t t ...>'
     help = 'Encodes the specified content.'
@@ -120,21 +128,15 @@ class Command(BaseCommand):
 
     def get_video_path(self,video): print(V(video).video.path)
 
-    def get_place(video,filename):
-        video = V(video)
-        place = os.path.join\
-            ( path_for_items_of_video(video)
-            , os.path.basename(filename) )
-        return [video, place]
-
-    def add_overview_for(self,video,filename):
-        video, place = get_place(video,filename)
+    def add_overview_for(self,vid,filename):
+        video, place = get_place(vid,filename)
         video.overview = place
         video.save()
         print(root_for(place))
 
-    def add_mp3_for(self,video,filename):
-        place, video  = get_place(video,filename)
+    def add_mp3_for(self,vid,filename):
+        video, place = get_place(vid,filename)
+
         etype         = EncodingType.objects.filter( mediatype='audio' )[0]
         epod, DEVNULL = EncodingPods.objects.get_or_create\
             ( video=video
@@ -146,8 +148,8 @@ class Command(BaseCommand):
         video.save()
         print(root_for(place))
 
-    def add_encoding_for(self,video,height,filename):
-        place, video  = get_place(video,filename)
+    def add_encoding_for(self,vid,height,filename):
+        video, place = get_place(vid,filename)
         etype = EncodingType.objects.filter\
             ( mediatype='video'
             , output_height=height )[0]
@@ -159,5 +161,10 @@ class Command(BaseCommand):
         epod.save()
         video.save()
         print(root_for(place))
+
+    def setattr(self,video,k,v):
+        video = V(video)
+        setattr(video,k,v)
+        video.save()
 
     def handle(self, *args, **options): getattr(self,args[0])(*args[1:])
