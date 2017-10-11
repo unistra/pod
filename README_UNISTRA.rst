@@ -112,9 +112,15 @@ Concernant elasticsearch:
 
 Pour lancer les tests unitaires :
 
-* Il faut installer **docker** au préalable pour utiliser un elasticsearch dans
-  les tests
-* Puis, exécuter la commande **tox**
+* Vous pouvez les lancer à travers docker-compose. Voir dans *eg/docker*.
+
+* Sinon, sans docker-compose, depuis le répertoire du projet django, lancer un elasticsearch de test et exécuter la commande *tox*: ::
+
+    docker pull elasticsearch:2.3
+    docker run --name pod-test-es -d -v $PWD/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /tmp/pod-test/es-data:/usr/share/elasticsearch/data -p 9211:9200 -p 9311:9300 elasticsearch:2.3
+    ES_URL="http://127.0.0.1:9211/" tox
+    docker stop pod-test-es
+    docker rm pod-test-es
 
 Astuces : 
 
