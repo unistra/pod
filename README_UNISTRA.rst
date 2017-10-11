@@ -90,7 +90,7 @@ Installation en prod
   * sudo apt-get update && sudo apt-get install elasticsearch
   * sudo systemctl enable elasticsearch && sudo systemctl restart elasticsearch
 
-* Configurer elasticsearch dans /etc/elasticsearch/elasticsearch.yml : ::
+* Configurer elasticsearch dans /etc/elasticsearch/elasticsearch.yml sans oublier de le redémarrer : ::
 
         #POD
         cluster.name: pod
