@@ -128,8 +128,8 @@ On peut utiliser pour l'instant pydiploy via **fab myenv custom_manage_cmd:ma_co
 
 * **fab myenv custom_manage_cmd:makemigrations**
 * **fab myenv custom_manage_cmd:migrate**
-* **fab myenv custom_manage_cmd:loaddata core/fixtures/initial_data.json**
-* **fab myenv custom_manage_cmd:createsuperuser --username root**
+* **fab myenv custom_manage_cmd:"loaddata core/fixtures/initial_data.json"**
+* **fab myenv custom_manage_cmd:"createsuperuser --username mycasuser"**
 
 Concernant elasticsearch:
 
