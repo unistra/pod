@@ -63,7 +63,25 @@ Installation en prod
 --------------------
 
 * Préparer une machine virtuelle Ubuntu 16.04
-* Pour test, preprod et prod, créer une base de données postgresql vide.
+* Pour **dev**, vous pouvez utiliser *vagrant* avec le *Vagrantfile* suivant: ::
+
+    # -*- mode: ruby -*-
+    # vi: set ft=ruby :
+
+    Vagrant.configure("2") do |config|
+
+      config.vm.define "web" do |web|
+        web.vm.box = "ubuntu/xenial64"
+        web.vm.network :private_network, ip: "192.168.1.2"
+        web.vm.hostname = "web"
+        config.vm.provider "virtualbox" do |vb|
+          vb.memory = "1024"
+        end
+      end
+    end
+	
+
+* Pour **test**, **preprod** et **prod**, créer une base de données postgresql vide.
 * Installer manuellement Elasticsearch 2:
 
   * apt-get install openjdk-8-jre-headless
@@ -85,22 +103,28 @@ Installation en prod
 
 * Préparer l'environnement python via pydiploy : **fab prod pre_install**
 
-* Créer le répertoire des médias : mkdir -p /nfs/media/pod && chown -R django:di /nfs/media
-* Créer le répertoire temporaire pour l'upload nginx : mkdir -p /nfs/tmp/django && chown -R django:di /nfs/tmp
-* Créer le répertoire temporaire pour l'upload django : mkdir -p /nfs/tmp/nginx && chown -R django:di /nfs/tmp
+* Pour **test**, **prod** et **preprod**:
+  
+  * Créer le répertoire des médias : mkdir -p /nfs/media/pod && chown -R django:di /nfs/media
+  * Créer le répertoire temporaire pour l'upload nginx : mkdir -p /nfs/tmp/django && chown -R django:di /nfs/tmp
+  * Créer le répertoire temporaire pour l'upload django : mkdir -p /nfs/tmp/nginx && chown -R django:di /nfs/tmp
+
+* Pour **dev**, le répertoire des médias à créer est dans */srv* : mkdir -p /srv/media/pod
+
 
 * Déployer le code de la branche **unistra** via pydiploy: **fab tag:unistra prod deploy --set default_db_host=X,default_db_user=X,
   default_db_password=X,default_db_name=X,cas_server_url=X,auth_ldap_server_uri=X,auth_ldap_bind_dn=X,auth_ldap_bind_password=X,
   auth_ldap_base_dn=X,avcast_db_uri=X,celery_broker=X**
-* Pour les déploiements suivant, un **fab tag:unistra prod deploy** suffira
+* Pour les déploiements suivant ou pour le déploiement en **dev** avec *vagrant*, un **fab tag:unistra prod deploy** suffira
 * Finir la configuration via pydiploy: **fab prod post_install**
 
 Il reste encore du paramétrage manuel à faire. A voir pour l'automatiser plus tard.
 On peut utiliser pour l'instant pydiploy via **fab prod custom_manage_cmd:ma_commande**:
 
-* **python manage.py makemigrations** && **python manage.py migrate**
-* **python manage.py loaddata core/fixtures/initial_data.json**
-* **python manage.py createsuperuser --username root**
+* **fab prod custom_manage_cmd:makemigrations**
+* **fab prod custom_manage_cmd:migrate**
+* **fab prod custom_manage_cmd:loaddata core/fixtures/initial_data.json**
+* **fab prod custom_manage_cmd:createsuperuser --username root**
 
 Concernant elasticsearch:
 
@@ -110,7 +134,12 @@ Concernant elasticsearch:
 * **python manage.py create_pod_index**
 * si des vidéos sont déjà présentes : **python manage.py index_videos __ALL__**
 
+Astuces : 
+
+* Si vous utilisez des "username" supérieurs à 30 caractères, n'hésitez pas à augmenter la limite de la table auth_user en base.
+
 Pour lancer les tests unitaires :
+=================================
 
 * Vous pouvez les lancer à travers docker-compose. Voir dans *eg/docker*.
 
@@ -122,9 +151,6 @@ Pour lancer les tests unitaires :
     docker stop pod-test-es
     docker rm pod-test-es
 
-Astuces : 
-
-* Si vous utilisez des "username" supérieurs à 30 caractères, n'hésitez pas à augmenter la limite de la table auth_user en base.
 
 TODO
 ----
