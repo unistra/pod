@@ -72,7 +72,7 @@ def app_uwsgi_conf():
     if not fabtools.files.is_link('%s/%s.ini' % (uwsgi_enabled,
                                                   env.server_name)):
         with fabric.api.cd(uwsgi_enabled):
-            fabric.api.sudo('ln -s %s .' % app_conf)
+            fabric.api.sudo('ln -sf %s .' % app_conf)
 
 
 @do_verbose

@@ -77,17 +77,18 @@ env.remote_media_folder = '/srv/media/pod' # root of media files
 @task
 def dev():
     """Define test stage"""
-    env.user = 'vagrant'
+    env.user = 'ubuntu'
     env.roledefs = {
         'web': ['192.168.1.2'],
         'lb': ['192.168.1.2'],
-        'encoding': []
+        'encoding': ['192.168.1.2']
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-dev.u-strasbg.fr'
     env.short_server_name = 'podcast-dev'
     env.static_folder = '/static/'
     env.server_ip = ''
+    env.extra_pkg_to_install += ["rabbitmq-server", "elasticsearch", "openjdk-8-jre-headless"]
     env.no_shared_sessions = False
     env.server_ssl_on = False
     env.nginx_location_extra_directives = [
@@ -423,8 +424,9 @@ def post_install_frontend():
     """Post installation of frontend"""
     #execute(pydiploy.django.post_install_frontend)
     execute(pydiploy.require.nginx.web_configuration)
-    put('nginx_with_load_balancer.patch', '/tmp/')
-    sudo("patch /etc/nginx/sites-available/%s.conf < /tmp/nginx_with_load_balancer.patch" % env.server_name)
+    if env.goal != "dev":
+        put('nginx_with_load_balancer.patch', '/tmp/')
+        sudo("patch /etc/nginx/sites-available/%s.conf < /tmp/nginx_with_load_balancer.patch" % env.server_name)
     execute(pydiploy.require.nginx.nginx_restart)
 
 
