@@ -88,7 +88,7 @@ Installation en prod
   * wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
   * echo "deb https://packages.elastic.co/elasticsearch/2.x/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-2.x.list
   * sudo apt-get update && sudo apt-get install elasticsearch
-  * sudo update-rc.d elasticsearch defaults 95 10
+  * sudo systemctl enable elasticsearch && sudo systemctl restart elasticsearch
 
 * Configurer elasticsearch dans /etc/elasticsearch/elasticsearch.yml : ::
 
@@ -99,7 +99,12 @@ Installation en prod
         discovery.zen.ping.multicast.enabled: false
         discovery.zen.ping.unicast.hosts: ["127.0.0.1"]
 
-* Configurer rabbitmq à l'aide du script dans eg/rabbitmq
+* Installer rabbitmq sur une vm : ::
+
+  sudo apt install rabbitmq-server
+  sudo systemctl enable rabbitmq-server && sudo systemctl restart rabbitmq-server
+  
+* Configurer rabbitmq à l'aide du script dans eg/rabbitmq pour la **prod**
 
 * Préparer l'environnement python via pydiploy : **fab prod pre_install**
 
