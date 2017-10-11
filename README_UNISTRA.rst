@@ -133,7 +133,7 @@ On peut utiliser pour l'instant pydiploy via **fab myenv custom_manage_cmd:ma_co
 
 Concernant elasticsearch:
 
-* si l'index pod existe déjà : **curl -XDELETE 'http://localhost:9200/pod/'**
+* si l'index pod existe déjà, effacez-le depuis la vm elasticsearch : **curl -XDELETE 'http://localhost:9200/pod/'**
 * **fab myenv custom_manage_cmd:create_pod_index**
 * si des vidéos sont déjà présentes : **fab myenv custom_manage_cmd:"index_videos __ALL__"**
 
