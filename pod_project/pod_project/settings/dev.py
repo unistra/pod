@@ -14,7 +14,7 @@ SITE_ROOT = dirname(DJANGO_ROOT)
 SITE_NAME = basename(DJANGO_ROOT)
 
 ALLOWED_HOSTS = [
-    '127.0.0.1'
+    '*'
 ]
 
 #######################
