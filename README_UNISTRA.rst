@@ -101,8 +101,8 @@ Installation en prod
 
 * Installer rabbitmq sur une vm : ::
 
-  sudo apt install rabbitmq-server
-  sudo systemctl enable rabbitmq-server && sudo systemctl restart rabbitmq-server
+  	sudo apt install rabbitmq-server
+  	sudo systemctl enable rabbitmq-server && sudo systemctl restart rabbitmq-server
   
 * Configurer rabbitmq à l'aide du script dans eg/rabbitmq pour la **prod**
 
