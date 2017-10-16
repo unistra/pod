@@ -11,6 +11,7 @@ from fabric.operations import put
 from .celery import install_celery, deploy_celery_file, celery_restart
 from .uwsgi import install_uwsgi, uwsgi_restart, app_uwsgi_conf
 import os
+from .strict_roles import strict_roles
 
 # edit config here !
 
@@ -108,7 +109,8 @@ def test():
     env.roledefs = {
         'web': ['podcast-test.di.unistra.fr'],
         'lb': ['podcast-test.di.unistra.fr'],
-        'encoding': ['podcast-test.di.unistra.fr']
+        #'encoding': ['podcast-test.di.unistra.fr']
+        'encoding': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-test.u-strasbg.fr'
@@ -299,7 +301,7 @@ def pre_install():
     execute(pre_install_encoding)
 
 
-@roles('encoding')
+@strict_roles('encoding')
 @task
 def pre_install_encoding():
     """ Setup encoding server """
@@ -370,7 +372,7 @@ def deploy_frontend():
     execute(pydiploy.django.deploy_frontend)
 
 
-@roles('encoding')
+@strict_roles('encoding')
 @task
 def deploy_encoding(update_pkg=False, **kwargs):
     """Deploy static files on load balancer"""
@@ -430,7 +432,7 @@ def post_install_frontend():
     execute(pydiploy.require.nginx.nginx_restart)
 
 
-@roles('encoding')
+@strict_roles('encoding')
 @task
 def post_install_encoding():
     """Post installation of encoding"""
