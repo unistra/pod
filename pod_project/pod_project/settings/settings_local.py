@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from __future__ import unicode_literals
 import os
 
 
@@ -77,7 +77,7 @@ DATABASES = {
         'PASSWORD': 'test',
         'HOST': '',
         'PORT': '',
-        'OPTIONS': {'init_command': 'SET storage_engine=INNODB;'}
+        'OPTIONS': {'init_command': 'SET default_storage_engine=INNODB;'}
     }
 }
 """
@@ -273,6 +273,15 @@ HOMEPAGE_SHOWS_RESTRICTED = True
 
 
 ##
+# Main menu settings:
+#
+# Do not show inactive users in “Owners” main menu list.
+MENUBAR_HIDE_INACTIVE_OWNERS = False
+# Show only staff users in “Owners” main menu list.
+MENUBAR_SHOW_STAFF_OWNERS_ONLY = False
+
+
+##
 # WebM video encoding activation:
 #
 #   True: video files will be available in both mp4 and WebM formats,
@@ -351,6 +360,7 @@ USE_XHR_FORM_UPLOAD = 1
 #
 ALLOW_VISIBILITY_SETTING_TO_CHANNEL_OWNERS = 1
 
+
 ##
 # Enable is_360 field in video upload form:
 #
@@ -360,6 +370,7 @@ ALLOW_VISIBILITY_SETTING_TO_CHANNEL_OWNERS = 1
 #
 SHOW_IS_360_IN_FORM_UPLOAD = 1
 
+
 ##
 # REMOVE VIDEO SOURCE FILE ON DELETE:
 #
@@ -367,6 +378,7 @@ SHOW_IS_360_IN_FORM_UPLOAD = 1
 #   - when true, the video file uploaded is removed when video was deleted
 #
 REMOVE_VIDEO_FILE_SOURCE_ON_DELETE = True
+
 
 ##
 # Content reporting:
@@ -435,6 +447,7 @@ RECORDER_SALT = 'a.string.used.as.salt'
 #   if set it's used for download and encoding test
 # HTTP_PROXY = 'http://localhost:3128/'
 
+
 ##
 # Enable RSS feed and ATOM feed on channels and search results
 #
@@ -445,17 +458,45 @@ RSS = False
 ATOM_HD = False
 ATOM_SD = False
 
+
 # Encode with Celery
-CELERY_TO_ENCODE = False
-CELERY_NAME = "pod_project"
-CELERY_BACKEND = "amqp"
-CELERY_BROKER = "amqp://guest@localhost//"
+#--------------------
+
+# from pod_project.tasks import task_start_encode
+# def encode_video(video):
+#     task_start_encode.delay(video)
+#
+# ENCODE_VIDEO = encode_video
+# CELERY_NAME = "pod_project"
+# CELERY_BACKEND = "amqp"
+# CELERY_BROKER = "amqp://guest@localhost//"
+# ENCODE_VIDEO = encode_video
+
+# Encode with an external command
+#--------------------------------
+
+# def external_command(command):
+#     (status,out) = commands.getstatusoutput(command)
+#     logging.getLogger(__name__).info(
+#         'command %s exited with %s outputed %s' %
+#         ( command, status, out )
+#     )
+#
+# def encode_video(video):
+#     external_command( 'ssh hpc process %s' % video.id )
+#
+# ENCODE_VIDEO = encode_video
+
 
 ##
 # Video in draft mode can be shared
+#
 USE_PRIVATE_VIDEO = False
 
+
+##
 # H5P relative parameters
+#
 H5P_ENABLED = False                                     # Active the module or not
 H5P_VERSION = '7.x'                                     # Current version of H5P module
 H5P_DEV_MODE = 0                                        # Active the development mode or not
