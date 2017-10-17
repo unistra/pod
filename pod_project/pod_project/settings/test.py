@@ -328,9 +328,14 @@ def external_command(command):
         'command %s exited with %s outputed %s' %
         ( command, status, out ))
 
+# Slurm
+# def encode_video(video):
+#     external_command(ENCODE_COMMAND % video.id)
+
+# CELERY
+from pod_project.tasks import task_start_encode
 def encode_video(video):
-    # external_command( 'ssh hpc process %s' % video.id )
-    external_command(ENCODE_COMMAND % video.id)
+    task_start_encode.delay(video)
 
 ENCODE_VIDEO = encode_video
 CELERY_NAME = "pod_project"
