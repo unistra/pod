@@ -2,6 +2,8 @@
 
 from .base import *
 from os.path import join, normpath, dirname, abspath, basename
+import commands
+import logging
 
 ######################
 # Path configuration #
@@ -308,7 +310,7 @@ ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
 # Avcast migration #
 ####################
 
-INSTALLED_APPS += ('migration_avcast',)
+INSTALLED_APPS += ('migration_avcast','navigator')
 AVCAST_DB_URI = '{{ avcast_db_uri }}'
 AVCAST_COURSE_DEFAULT_USERNAME = "di-info-pod@unistra.fr"
 AVCAST_VOLUME_PATH = "/audiovideocours/cours/1"
@@ -342,16 +344,24 @@ CURSUS_CODES = (
 MEDIA_GUARD = True
 MEDIA_GUARD_SALT = 'S3CR3T'
 
-# CELERY
-from pod_project.tasks import task_start_encode
+# SLURM
+
+ENCODE_COMMAND = '{{ encode_command }}'
+
+def external_command(command):
+    (status,out) = commands.getstatusoutput(command)
+    logging.getLogger(__name__).info(
+        'command %s exited with %s outputed %s' %
+        ( command, status, out ))
+
 def encode_video(video):
-    task_start_encode.delay(video)
+    # external_command( 'ssh hpc process %s' % video.id )
+    external_command(ENCODE_COMMAND % video.id)
 
 ENCODE_VIDEO = encode_video
 CELERY_NAME = "pod_project"
 CELERY_BACKEND = "amqp"
 CELERY_BROKER = '{{ celery_broker }}'
 
-##
 # Video in draft mode can be shared
 USE_PRIVATE_VIDEO = True

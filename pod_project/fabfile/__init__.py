@@ -10,7 +10,8 @@ import pydiploy
 from fabric.operations import put
 from .celery import install_celery, deploy_celery_file, celery_restart
 from .uwsgi import install_uwsgi, uwsgi_restart, app_uwsgi_conf
-
+import os
+from .strict_roles import strict_roles
 
 # edit config here !
 
@@ -26,7 +27,7 @@ env.remote_virtualenv_root = join(env.remote_home, '.virtualenvs')  # venv root
 env.remote_virtualenv_dir = join(env.remote_virtualenv_root,
                                  env.application_name)  # venv for webapp dir
 # git repository url
-env.remote_repo_url = '../.' # Relative git local folder because github doesn't support git archive
+env.remote_repo_url = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Relative git local folder because github doesn't support git archive
 env.remote_repo_specific_folder = 'pod_project' # specify a subfolder for the remote repository
 env.local_tmp_dir = '/tmp'  # tmp dir
 env.remote_static_root = '/var/www/static/'  # root of static files
@@ -77,17 +78,18 @@ env.remote_media_folder = '/srv/media/pod' # root of media files
 @task
 def dev():
     """Define test stage"""
-    env.user = 'vagrant'
+    env.user = 'ubuntu'
     env.roledefs = {
         'web': ['192.168.1.2'],
         'lb': ['192.168.1.2'],
-        'encoding': []
+        'encoding': ['192.168.1.2']
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-dev.u-strasbg.fr'
     env.short_server_name = 'podcast-dev'
     env.static_folder = '/static/'
     env.server_ip = ''
+    env.extra_pkg_to_install += ["rabbitmq-server", "elasticsearch", "openjdk-8-jre-headless"]
     env.no_shared_sessions = False
     env.server_ssl_on = False
     env.nginx_location_extra_directives = [
@@ -107,7 +109,8 @@ def test():
     env.roledefs = {
         'web': ['podcast-test.di.unistra.fr'],
         'lb': ['podcast-test.di.unistra.fr'],
-        'encoding': ['podcast-test.di.unistra.fr']
+        #'encoding': ['podcast-test.di.unistra.fr']
+        'encoding': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-test.u-strasbg.fr'
@@ -224,7 +227,8 @@ def preprod():
         'auth_ldap_bind_password': "AUTH_LDAP_BIND_PASSWORD",
         'auth_ldap_base_dn': "AUTH_LDAP_BASE_DN",
         'avcast_db_uri': "AVCAST_DB_URI",
-        'celery_broker': "CELERY_BROKER"
+        'celery_broker': "CELERY_BROKER",
+        'encode_command': "ENCODE_COMMAND"
     }
     execute(build_env)
 
@@ -297,7 +301,7 @@ def pre_install():
     execute(pre_install_encoding)
 
 
-@roles('encoding')
+@strict_roles('encoding')
 @task
 def pre_install_encoding():
     """ Setup encoding server """
@@ -368,7 +372,7 @@ def deploy_frontend():
     execute(pydiploy.django.deploy_frontend)
 
 
-@roles('encoding')
+@strict_roles('encoding')
 @task
 def deploy_encoding(update_pkg=False, **kwargs):
     """Deploy static files on load balancer"""
@@ -422,12 +426,13 @@ def post_install_frontend():
     """Post installation of frontend"""
     #execute(pydiploy.django.post_install_frontend)
     execute(pydiploy.require.nginx.web_configuration)
-    put('nginx_with_load_balancer.patch', '/tmp/')
-    sudo("patch /etc/nginx/sites-available/%s.conf < /tmp/nginx_with_load_balancer.patch" % env.server_name)
+    if env.goal != "dev":
+        put('nginx_with_load_balancer.patch', '/tmp/')
+        sudo("patch /etc/nginx/sites-available/%s.conf < /tmp/nginx_with_load_balancer.patch" % env.server_name)
     execute(pydiploy.require.nginx.nginx_restart)
 
 
-@roles('encoding')
+@strict_roles('encoding')
 @task
 def post_install_encoding():
     """Post installation of encoding"""

@@ -62,6 +62,10 @@ execute celery with the following command:
 
     docker-compose exec pod celery -A pod_project worker -l info
 
+execute unit tests:
+
+     docker-compose exec pod tox
+
 the application is available here:
 
     http://127.0.0.1:8010/

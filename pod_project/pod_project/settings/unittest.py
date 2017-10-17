@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import *
+from os import environ
 
 #######################
 # Debug configuration #
@@ -49,8 +50,8 @@ FMS_ROOT_URL = ''
 # Video #
 #########
 
-FFMPEG = 'nice -n 19 /usr/local/ffmpeg/ffmpeg'
-FFPROBE = 'nice -n 19 /usr/local/ffmpeg/ffprobe'
+FFMPEG = 'nice -n 19 ffmpeg'
+FFPROBE = 'nice -n 19 ffprobe'
 
 ########
 # Misc #
@@ -64,7 +65,7 @@ FILE_UPLOAD_TEMP_DIR = '/tmp'
 # ES #
 ######
 
-ES_URL = ['http://127.0.0.1:9211/']
+ES_URL = [ environ.get("ES_URL", 'http://127.0.0.1:9211/') ]
 
 ENCODE_VIDEO_CMD = "%(ffprobe)s -v quiet -show_format -show_streams -print_format json -i %(src)s"
 ADD_THUMBNAILS_CMD = "%(ffmpeg)s -i \"%(src)s\" -vf fps=\"fps=1/%(thumbnail)s,scale=%(scale)s\" -an -vsync 0 -f image2 -y %(out)s_%(num)s.png"

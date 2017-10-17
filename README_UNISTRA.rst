@@ -59,20 +59,39 @@ Développement
 * Utiliser docker-compose dans eg/docker
 * On utilise sqlite en dev.
 
-Installation en prod
---------------------
+Déploiement
+-----------
 
+* Pour les commandes qui suivent, remplacer **myenv** par **dev**, **test**, **preprod** ou **prod**
 * Préparer une machine virtuelle Ubuntu 16.04
-* Pour test, preprod et prod, créer une base de données postgresql vide.
-* Installer manuellement Elasticsearch 2:
+* Pour **dev**, vous pouvez utiliser *vagrant* avec le *Vagrantfile* suivant: ::
 
-  * apt-get install openjdk-8-jre-headless
-  * wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-  * echo "deb https://packages.elastic.co/elasticsearch/2.x/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-2.x.list
-  * sudo apt-get update && sudo apt-get install elasticsearch
-  * sudo update-rc.d elasticsearch defaults 95 10
+    # -*- mode: ruby -*-
+    # vi: set ft=ruby :
 
-* Configurer elasticsearch dans /etc/elasticsearch/elasticsearch.yml : ::
+    Vagrant.configure("2") do |config|
+
+      config.vm.define "web" do |web|
+        web.vm.box = "ubuntu/xenial64"
+        web.vm.network :private_network, ip: "192.168.1.2"
+        web.vm.hostname = "web"
+        config.vm.provider "virtualbox" do |vb|
+          vb.memory = "1024"
+        end
+      end
+    end
+	
+
+* Pour **test**, **preprod** et **prod**, créer une base de données postgresql vide.
+* Installer manuellement Elasticsearch 2 sur une vm: ::
+	
+	apt-get install openjdk-8-jre-headless
+  	wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+  	echo "deb https://packages.elastic.co/elasticsearch/2.x/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-2.x.list
+  	sudo apt-get update && sudo apt-get install elasticsearch
+  	sudo systemctl enable elasticsearch && sudo systemctl restart elasticsearch
+
+* Configurer elasticsearch dans /etc/elasticsearch/elasticsearch.yml sans oublier de le redémarrer : ::
 
         #POD
         cluster.name: pod
@@ -81,44 +100,66 @@ Installation en prod
         discovery.zen.ping.multicast.enabled: false
         discovery.zen.ping.unicast.hosts: ["127.0.0.1"]
 
-* Configurer rabbitmq à l'aide du script dans eg/rabbitmq
+* Installer rabbitmq sur une vm si vous utilisez Celery: ::
 
-* Préparer l'environnement python via pydiploy : **fab prod pre_install**
+  	sudo apt install rabbitmq-server
+  	sudo systemctl enable rabbitmq-server && sudo systemctl restart rabbitmq-server
+  
+* Configurer rabbitmq à l'aide du script dans eg/rabbitmq pour la **prod**
 
-* Créer le répertoire des médias : mkdir -p /nfs/media/pod && chown -R django:di /nfs/media
-* Créer le répertoire temporaire pour l'upload nginx : mkdir -p /nfs/tmp/django && chown -R django:di /nfs/tmp
-* Créer le répertoire temporaire pour l'upload django : mkdir -p /nfs/tmp/nginx && chown -R django:di /nfs/tmp
+* Pour **test**, **prod** et **preprod**:
+  
+  * Créer le répertoire des médias : mkdir -p /nfs/media/pod && chown -R django:di /nfs/media
+  * Créer le répertoire temporaire pour l'upload nginx : mkdir -p /nfs/tmp/django && chown -R django:di /nfs/tmp
+  * Créer le répertoire temporaire pour l'upload django : mkdir -p /nfs/tmp/nginx && chown -R django:di /nfs/tmp
 
-* Déployer le code de la branche **unistra** via pydiploy: **fab tag:unistra prod deploy --set default_db_host=X,default_db_user=X,
+* Pour **dev**, le répertoire des médias à créer est dans */srv* : mkdir -p /srv/media/pod && chown -R ubuntu:ubuntu /srv/media
+
+* Préparer l'environnement python via pydiploy : **fab myenv pre_install**
+
+* Déployer le code de la branche **unistra** via pydiploy pour **test**, **preprod** et **prod**: **fab tag:unistra prod deploy --set default_db_host=X,default_db_user=X,
   default_db_password=X,default_db_name=X,cas_server_url=X,auth_ldap_server_uri=X,auth_ldap_bind_dn=X,auth_ldap_bind_password=X,
   auth_ldap_base_dn=X,avcast_db_uri=X,celery_broker=X**
-* Pour les déploiements suivant, un **fab tag:unistra prod deploy** suffira
-* Finir la configuration via pydiploy: **fab prod post_install**
+* Pour les déploiements suivant ou pour le déploiement en **dev** avec *vagrant*, un **fab tag:unistra myenv deploy** suffira
+* Finir la configuration via pydiploy: **fab myenv post_install**
 
 Il reste encore du paramétrage manuel à faire. A voir pour l'automatiser plus tard.
-On peut utiliser pour l'instant pydiploy via **fab prod custom_manage_cmd:ma_commande**:
+On peut utiliser pour l'instant pydiploy via **fab myenv custom_manage_cmd:ma_commande**:
 
-* **python manage.py makemigrations** && **python manage.py migrate**
-* **python manage.py loaddata core/fixtures/initial_data.json**
-* **python manage.py createsuperuser --username root**
+* **fab myenv custom_manage_cmd:makemigrations**
+* **fab myenv custom_manage_cmd:migrate**
+* **fab myenv custom_manage_cmd:"loaddata core/fixtures/initial_data.json"**
+* **fab myenv custom_manage_cmd:"createsuperuser --username mycasuser"**
 
 Concernant elasticsearch:
 
+* si l'index pod existe déjà, effacez-le depuis la vm elasticsearch : **curl -XDELETE 'http://localhost:9200/pod/'**
+* **fab myenv custom_manage_cmd:create_pod_index**
+* si des vidéos sont déjà présentes : **fab myenv custom_manage_cmd:"index_videos __ALL__"**
+
+Dans l'interfaçe d'admin:
+
 * dans l'interfaçe d'admin de pod, il faut modifier l'url qui est dans Sites
 * dans l'interface d'admin, modifier la page statique "/" et ajouter la page statique "/unistra-mentionslegales/", en utilisant le template "default.html"
-* si l'index pod existe déjà : **curl -XDELETE 'http://localhost:9200/pod/'**
-* **python manage.py create_pod_index**
-* si des vidéos sont déjà présentes : **python manage.py index_videos __ALL__**
 
-Pour lancer les tests unitaires :
-
-* Il faut installer **docker** au préalable pour utiliser un elasticsearch dans
-  les tests
-* Puis, exécuter la commande **tox**
 
 Astuces : 
 
 * Si vous utilisez des "username" supérieurs à 30 caractères, n'hésitez pas à augmenter la limite de la table auth_user en base.
+
+Pour lancer les tests unitaires :
+=================================
+
+* Vous pouvez les lancer à travers docker-compose. Voir dans *eg/docker*.
+
+* Sinon, sans docker-compose, depuis le répertoire du projet django, lancer un elasticsearch de test et exécuter la commande *tox*: ::
+
+    docker pull elasticsearch:2.3
+    docker run --name pod-test-es -d -v $PWD/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /tmp/pod-test/es-data:/usr/share/elasticsearch/data -p 9211:9200 -p 9311:9300 elasticsearch:2.3
+    ES_URL="http://127.0.0.1:9211/" tox
+    docker stop pod-test-es
+    docker rm pod-test-es
+
 
 TODO
 ----

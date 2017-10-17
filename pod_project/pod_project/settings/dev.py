@@ -14,7 +14,7 @@ SITE_ROOT = dirname(DJANGO_ROOT)
 SITE_NAME = basename(DJANGO_ROOT)
 
 ALLOWED_HOSTS = [
-    '127.0.0.1'
+    '*'
 ]
 
 #######################
@@ -272,7 +272,7 @@ ENCODE_WAV_CMD = "%(ffmpeg)s -i %(src)s -ar %(ar)s -ab %(ab)s -f wav -y %(out)s"
 # Avcast migration #
 ####################
 
-INSTALLED_APPS += ('migration_avcast', 'django_extensions')
+INSTALLED_APPS += ('migration_avcast', 'django_extensions','navigator')
 AVCAST_DB_URI = environ.get("AVCAST_DB_URI", "host=localhost port=5432 dbname=univrav user=sqluser password=S3CR3T")
 AVCAST_COURSE_DEFAULT_USERNAME = environ.get("AVCAST_COURSE_DEFAULT_USERNAME", "di-info-pod@unistra.fr")
 AVCAST_VOLUME_PATH = environ.get("AVCAST_VOLUME_PATH", "/audiovideocours/cours/1")
