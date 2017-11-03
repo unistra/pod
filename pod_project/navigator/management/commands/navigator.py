@@ -167,4 +167,14 @@ class Command(BaseCommand):
         setattr(video,k,v)
         video.save()
 
+    def enable(self,video,k):
+        video = V(video)
+        setattr(video,k,True)
+        video.save()
+
+    def disable(self,video,k):
+        video = V(video)
+        setattr(video,k,False)
+        video.save()
+
     def handle(self, *args, **options): getattr(self,args[0])(*args[1:])
