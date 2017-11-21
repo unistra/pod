@@ -369,7 +369,7 @@ BASE_URL = 'https://podcast-test.u-strasbg.fr'         # Hostname of your django
 #   - add in video pages a link tag with type application/json+oembed and href to json representation of the URL video. https://oembed.com/#section4
 #   - add url oembed and buid the json representation of the URL video
 #
-OEMBED=True
+OEMBED = True
 
 ##
 # Video in draft mode can be shared
