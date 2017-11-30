@@ -7,7 +7,7 @@ from fabric.api import (env, roles, execute, task, sudo, warn_only)
 from os.path import join
 import fabtools
 import pydiploy
-from fabric.operations import put
+from fabric.operations import put, local
 from .celery import install_celery, deploy_celery_file, celery_restart
 from .uwsgi import install_uwsgi, uwsgi_restart, app_uwsgi_conf
 import os
@@ -82,7 +82,8 @@ def dev():
     env.roledefs = {
         'web': ['192.168.1.2'],
         'lb': ['192.168.1.2'],
-        'encoding': ['192.168.1.2']
+        'encoding': ['192.168.1.2'],
+        'slurm': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-dev.u-strasbg.fr'
@@ -110,7 +111,8 @@ def test():
         'web': ['podcast-test.di.unistra.fr'],
         'lb': ['podcast-test.di.unistra.fr'],
         #'encoding': ['podcast-test.di.unistra.fr']
-        'encoding': []
+        'encoding': [],
+        'slurm': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-test.u-strasbg.fr'
@@ -154,7 +156,8 @@ def utvtest():
     env.roledefs = {
         'web': ['pod-utv-test.di.unistra.fr'],
         'lb': ['pod-utv-test.di.unistra.fr'],
-        'encoding': ['pod-utv-test.di.unistra.fr']
+        'encoding': ['pod-utv-test.di.unistra.fr'],
+        'slurm': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'pod-utv-test.di.unistra.fr'
@@ -196,7 +199,8 @@ def preprod():
     env.roledefs = {
         'web': ['podcast-w1-pprd.di.unistra.fr', 'podcast-w2-pprd.di.unistra.fr'],
         'lb': ['podcast-w1-pprd.di.unistra.fr', 'podcast-w2-pprd.di.unistra.fr'],
-        'encoding': ['podcast-enc1-pprd.di.unistra.fr ', 'podcast-enc2-pprd.di.unistra.fr']
+        'encoding': ['podcast-enc1-pprd.di.unistra.fr ', 'podcast-enc2-pprd.di.unistra.fr'],
+        'slurm': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'podcast-pprd.unistra.fr'
@@ -240,7 +244,8 @@ def prod():
     env.roledefs = {
         'web': ['podcast-w1.di.unistra.fr', 'podcast-w2.di.unistra.fr', 'podcast-w3.di.unistra.fr', 'podcast-w4.di.unistra.fr'],
         'lb': ['podcast-w1.di.unistra.fr', 'podcast-w2.di.unistra.fr', 'podcast-w3.di.unistra.fr', 'podcast-w4.di.unistra.fr'],
-        'encoding': ['podcast-enc1.di.unistra.fr', 'podcast-enc2.di.unistra.fr', 'podcast-enc3.di.unistra.fr', 'podcast-enc4.di.unistra.fr']
+        'encoding': ['podcast-enc1.di.unistra.fr', 'podcast-enc2.di.unistra.fr', 'podcast-enc3.di.unistra.fr', 'podcast-enc4.di.unistra.fr'],
+        'slurm': []
     }
     env.backends = ['127.0.0.1']
     env.server_name = 'pod.unistra.fr'
@@ -299,6 +304,15 @@ def pre_install():
     execute(pre_install_backend)
     execute(pre_install_frontend)
     execute(pre_install_encoding)
+    execute(pre_install_slurm)
+
+
+@strict_roles('slurm')
+@task
+def pre_install_slurm():
+    """ Setup slurm server """
+    # TODO use local("mycommand") and  env.hosts for machines names
+    pass
 
 
 @strict_roles('encoding')
