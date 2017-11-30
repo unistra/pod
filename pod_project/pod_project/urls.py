@@ -177,7 +177,6 @@ if settings.OEMBED:
             'pods.views.video_oembed', name='video_oembed'),
     ]
 
-
 #
 #       End of optional feature patterns
 #

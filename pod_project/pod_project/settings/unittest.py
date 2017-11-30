@@ -101,5 +101,13 @@ CELERY_BACKEND = "amqp"
 CELERY_BROKER = "amqp://guest@localhost//"
 
 ##
+# Enable OEMBED
+#   if True
+#   - add in video pages a link tag with type application/json+oembed and href to json representation of the URL video. https://oembed.com/#section4
+#   - add url oembed and buid the json representation of the URL video
+#
+OEMBED = False
+
+##
 # Video in draft mode can be shared
 USE_PRIVATE_VIDEO = True
