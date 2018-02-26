@@ -329,13 +329,13 @@ def external_command(command):
         ( command, status, out ))
 
 # Slurm
-# def encode_video(video):
-#     external_command(ENCODE_COMMAND % video.id)
+def encode_video(video):
+    external_command(ENCODE_COMMAND % video.id)
 
 # CELERY
-from pod_project.tasks import task_start_encode
-def encode_video(video):
-    task_start_encode.delay(video)
+#from pod_project.tasks import task_start_encode
+#def encode_video(video):
+#    task_start_encode.delay(video)
 
 ENCODE_VIDEO = encode_video
 CELERY_NAME = "pod_project"
