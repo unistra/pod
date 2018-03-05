@@ -2,6 +2,8 @@
 
 from .base import *
 from os.path import join, normpath, dirname, abspath, basename
+import commands
+import logging
 
 ######################
 # Path configuration #
