@@ -2,6 +2,8 @@
 
 from .base import *
 from os.path import join, normpath, dirname, abspath, basename
+import commands
+import logging
 
 ######################
 # Path configuration #
@@ -16,7 +18,7 @@ SITE_NAME = basename(DJANGO_ROOT)
 #######################
 
 ADMINS = (
-    ('morgan.bohn', 'morgan.bohn@unistra.fr'),
+    ('cdebeire', 'cdebeire@unistra.fr'),
     ('cvedrine', 'cvedrine@unistra.fr'),
 )
 
@@ -120,7 +122,7 @@ LOGO_ETB = 'images/unistra_top-01.png'
 LOGO_PLAYER = 'images/logo_white_compact_unistra.png'
 SERV_LOGO = 'images/semm_unistra.png'
 
-HELP_MAIL = 'di-info-pod@unistra.fr'
+HELP_MAIL = 'support@unistra.fr'
 WEBTV = ''
 
 ##
@@ -344,10 +346,25 @@ CURSUS_CODES = (
 MEDIA_GUARD = True
 MEDIA_GUARD_SALT = '{{ media_guard_salt }}'
 
-# CELERY
-from pod_project.tasks import task_start_encode
+# SLURM
+
+ENCODE_COMMAND = '{{ encode_command }}'
+
+def external_command(command):
+    (status,out) = commands.getstatusoutput(command)
+    logging.getLogger(__name__).info(
+        'command %s exited with %s outputed %s' %
+        ( command, status, out ))
+
 def encode_video(video):
-    task_start_encode.delay(video)
+    # external_command( 'ssh hpc process %s' % video.id )
+    external_command(ENCODE_COMMAND % video.id)
+
+
+# CELERY
+#from pod_project.tasks import task_start_encode
+#def encode_video(video):
+#    task_start_encode.delay(video)
 
 ENCODE_VIDEO = encode_video
 CELERY_NAME = "pod_project"
